@@ -1,36 +1,50 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# StageLink
 
-## Getting Started
+A premium full-stack marketplace platform connecting musicians, bands, and DJs with event organizers. Built with a stunning modern aesthetic, featuring glassmorphism, dark themes, and ultra-smooth animations.
 
-First, run the development server:
+## Tech Stack
+- **Framework:** Next.js 15 (App Router)
+- **Styling:** Tailwind CSS v4, Framer Motion
+- **UI Components:** shadcn/ui, Radix Primitives
+- **Database & Auth:** Supabase (PostgreSQL, Realtime, Storage)
+- **State Management:** Zustand
+- **Icons:** Lucide React
 
+## Setup Instructions
+
+### 1. Clone & Install
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Environment Variables
+Copy `.env.example` to `.env.local` and fill in your Supabase credentials.
+```bash
+cp .env.example .env.local
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 3. Database Setup (Supabase)
+Run the SQL schema located in `supabase/schema.sql` inside your Supabase project's SQL Editor. This will create all 10 tables, Row Level Security (RLS) policies, triggers, and storage buckets.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 4. Run Development Server
+```bash
+npm run dev
+```
 
-## Learn More
+Visit `http://localhost:3000` to see the platform in action.
 
-To learn more about Next.js, take a look at the following resources:
+## Project Structure
+- `/app` - Next.js App Router (pages, layouts, api routes)
+- `/components` - Reusable UI components (shadcn, layout, shared)
+- `/lib/services` - Supabase data access layer
+- `/lib/supabase` - Client/Server initialization
+- `/store` - Zustand global state management
+- `/types` - TypeScript interfaces and types
+- `/supabase` - Database schema and configurations
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Features
+- **Cinematic UI:** Floating elements, glowing borders, smooth page transitions.
+- **Role-Based Auth:** Distinct flows for Musicians and Organizers.
+- **Advanced Filtering:** Real-time search by location, genre, budget, and team size.
+- **Real-Time Chat:** Built-in messaging between users via Supabase Realtime.
+- **Media Gallery:** Portfolio uploads to Supabase Storage.
