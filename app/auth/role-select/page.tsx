@@ -3,137 +3,105 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Music, Calendar, ArrowRight, CheckCircle2 } from "lucide-react";
+import { Briefcase, Hammer, ArrowRight, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { updateUserRole, getCurrentUser } from "@/lib/services/auth";
-import { UserRole } from "@/types/database";
+import { setRole } from "@/lib/services/auth";
+import { APP_NAME } from "@/lib/constants";
 
 export default function RoleSelectPage() {
   const router = useRouter();
-  const [selectedRole, setSelectedRole] = useState<UserRole | null>(null);
+  const [selectedRole, setSelectedRole] = useState<"client" | "freelancer" | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleContinue = async () => {
     if (!selectedRole) return;
-    
     setIsLoading(true);
     try {
-      const { user, error: authError } = await getCurrentUser();
-      
-      if (authError || !user) {
-        toast.error("Authentication error. Please log in again.");
-        router.push("/login");
-        return;
-      }
-
-      const { error } = await updateUserRole(user.id, selectedRole);
-      
-      if (error) {
-        toast.error("Failed to update role. Please try again.");
-        setIsLoading(false);
-        return;
-      }
-      
-      toast.success(`Welcome to StageLink as a${selectedRole === 'organizer' ? 'n' : ''} ${selectedRole}!`);
-      
-      if (selectedRole === 'musician') {
-        router.push("/musician/profile");
-      } else {
-        router.push("/organizer/profile");
-      }
-    } catch (err) {
-      toast.error("An unexpected error occurred");
+      const { error } = await setRole(selectedRole);
+      if (error) throw error;
+      toast.success(`Welcome to ${APP_NAME}!`);
+      router.push("/settings/profile?onboarding=1");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to set account type");
       setIsLoading(false);
     }
   };
 
   const containerVariants = {
     hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
+    visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
   };
-
   const itemVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 100 } },
   };
 
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-black px-4 py-12">
-      {/* Background gradients */}
-      <div className="absolute inset-0 z-0">
-        <div className="absolute left-1/2 top-0 h-[500px] w-[800px] -translate-x-1/2 rounded-full bg-purple-900/20 blur-[120px] pointer-events-none" />
-      </div>
-
+    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4 py-12">
       <motion.div
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="z-10 w-full max-w-4xl flex flex-col items-center"
+        className="flex w-full max-w-4xl flex-col items-center"
       >
         <motion.div variants={itemVariants} className="mb-12 text-center">
-          <h1 className="mb-4 text-4xl font-bold tracking-tight text-white md:text-5xl">
-            How will you use <span className="gradient-text">StageLink</span>?
+          <p className="eyebrow mb-4">One quick question</p>
+          <h1 className="font-display mb-4 text-4xl font-semibold tracking-tight md:text-5xl">
+            How will you use <span className="italic text-brand">{APP_NAME}</span>?
           </h1>
-          <p className="text-lg text-zinc-400">Choose your role to personalize your experience.</p>
+          <p className="text-lg text-muted-foreground">
+            This sets up your workspace — it can&apos;t be changed later.
+          </p>
         </motion.div>
 
-        <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-2">
-          {/* Musician Card */}
-          <motion.div variants={itemVariants} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-            <div 
-              onClick={() => setSelectedRole('musician')}
-              className={`relative cursor-pointer overflow-hidden rounded-2xl border p-8 transition-all duration-300 ${
-                selectedRole === 'musician' 
-                  ? 'border-purple-500 bg-purple-500/10 shadow-[0_0_30px_rgba(168,85,247,0.2)]' 
-                  : 'border-white/10 bg-white/5 hover:border-purple-500/50 hover:bg-white/10'
+        <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
+          <motion.div variants={itemVariants} whileHover={{ y: -3 }} whileTap={{ scale: 0.99 }}>
+            <div
+              onClick={() => setSelectedRole("client")}
+              className={`relative h-full cursor-pointer rounded-2xl border bg-white p-8 transition-all duration-300 ${
+                selectedRole === "client"
+                  ? "border-ink shadow-[0_24px_50px_-30px_rgba(26,23,19,0.4)]"
+                  : "border-border hover:border-ink/40"
               }`}
             >
-              {selectedRole === 'musician' && (
-                <div className="absolute right-6 top-6 text-purple-400 animate-in zoom-in">
+              {selectedRole === "client" && (
+                <div className="absolute right-6 top-6 text-brand">
                   <CheckCircle2 className="h-6 w-6" />
                 </div>
               )}
-              
-              <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500/20 to-purple-600/20 border border-purple-500/30">
-                <Music className="h-8 w-8 text-purple-400" />
+              <div className="mb-6 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-brand-soft">
+                <Briefcase className="h-7 w-7 text-brand" />
               </div>
-              
-              <h2 className="mb-3 text-2xl font-bold text-white">I'm a Performer</h2>
-              <p className="text-zinc-400 leading-relaxed">
-                Create a stunning profile, showcase your talent, set your availability, and get booked for amazing events.
+              <h2 className="font-display mb-3 text-2xl font-semibold">I&apos;m hiring</h2>
+              <p className="leading-relaxed text-muted-foreground">
+                Post projects, structure the work into milestones, compare
+                competing bids, and only pay as approved work is delivered.
               </p>
             </div>
           </motion.div>
 
-          {/* Organizer Card */}
-          <motion.div variants={itemVariants} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-            <div 
-              onClick={() => setSelectedRole('organizer')}
-              className={`relative cursor-pointer overflow-hidden rounded-2xl border p-8 transition-all duration-300 ${
-                selectedRole === 'organizer' 
-                  ? 'border-pink-500 bg-pink-500/10 shadow-[0_0_30px_rgba(236,72,153,0.2)]' 
-                  : 'border-white/10 bg-white/5 hover:border-pink-500/50 hover:bg-white/10'
+          <motion.div variants={itemVariants} whileHover={{ y: -3 }} whileTap={{ scale: 0.99 }}>
+            <div
+              onClick={() => setSelectedRole("freelancer")}
+              className={`relative h-full cursor-pointer rounded-2xl border bg-white p-8 transition-all duration-300 ${
+                selectedRole === "freelancer"
+                  ? "border-ink shadow-[0_24px_50px_-30px_rgba(26,23,19,0.4)]"
+                  : "border-border hover:border-ink/40"
               }`}
             >
-              {selectedRole === 'organizer' && (
-                <div className="absolute right-6 top-6 text-pink-400 animate-in zoom-in">
+              {selectedRole === "freelancer" && (
+                <div className="absolute right-6 top-6 text-brand">
                   <CheckCircle2 className="h-6 w-6" />
                 </div>
               )}
-              
-              <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-br from-pink-500/20 to-pink-600/20 border border-pink-500/30">
-                <Calendar className="h-8 w-8 text-pink-400" />
+              <div className="mb-6 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-secondary">
+                <Hammer className="h-7 w-7 text-foreground" />
               </div>
-              
-              <h2 className="mb-3 text-2xl font-bold text-white">I'm an Organizer</h2>
-              <p className="text-zinc-400 leading-relaxed">
-                Find the perfect musicians for weddings, corporate events, college fests, private parties, and more.
+              <h2 className="font-display mb-3 text-2xl font-semibold">I&apos;m freelancing</h2>
+              <p className="leading-relaxed text-muted-foreground">
+                Find projects with clear milestones and budgets, bid
+                competitively, and get paid per milestone — escrow-protected.
               </p>
             </div>
           </motion.div>
@@ -142,20 +110,19 @@ export default function RoleSelectPage() {
         <motion.div variants={itemVariants} className="mt-12">
           <Button
             size="lg"
-            className={`h-14 px-10 text-lg transition-all ${
-              selectedRole 
-                ? 'bg-white text-black hover:bg-zinc-200' 
-                : 'bg-white/10 text-white/50 cursor-not-allowed hover:bg-white/10'
+            className={`h-14 rounded-full px-10 text-lg transition-all ${
+              selectedRole
+                ? "bg-ink text-paper hover:bg-ink-soft"
+                : "cursor-not-allowed bg-secondary text-muted-foreground"
             }`}
             onClick={handleContinue}
             disabled={!selectedRole || isLoading}
           >
             {isLoading ? (
-              <span className="animate-pulse">Setting up your account...</span>
+              <span className="animate-pulse">Setting up your workspace…</span>
             ) : (
               <>
-                Continue
-                <ArrowRight className="ml-2 h-5 w-5" />
+                Continue <ArrowRight className="ml-2 h-5 w-5" />
               </>
             )}
           </Button>

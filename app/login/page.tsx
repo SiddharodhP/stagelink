@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
-import { Mail, Music, Sparkles } from "lucide-react";
+import { Mail, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,7 +21,7 @@ export default function LoginPage() {
       toast.error("Please enter your email address");
       return;
     }
-    
+
     setIsLoading(true);
     const { error } = await signInWithMagicLink(email);
     setIsLoading(false);
@@ -41,41 +42,32 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-black px-4">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 z-0">
-        <div className="absolute -left-1/4 top-1/4 h-96 w-96 rounded-full bg-purple-600/20 blur-[128px] animate-pulse-glow" />
-        <div className="absolute -right-1/4 bottom-1/4 h-96 w-96 rounded-full bg-blue-600/20 blur-[128px] animate-pulse-glow" style={{ animationDelay: "1s" }} />
-        <div className="absolute left-1/2 top-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-pink-600/10 blur-[128px] animate-float" />
-      </div>
-
+    <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-        className="z-10 w-full max-w-md"
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className="w-full max-w-md"
       >
-        <div className="glass-card flex flex-col p-8 sm:p-10">
+        <div className="flex flex-col rounded-2xl border border-border bg-white p-8 shadow-[0_24px_60px_-30px_rgba(26,23,19,0.3)] sm:p-10">
           <div className="mb-8 flex flex-col items-center text-center">
-            <motion.div 
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-              className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 shadow-[0_0_40px_rgba(168,85,247,0.4)]"
-            >
-              <Music className="h-8 w-8 text-white" />
-            </motion.div>
-            <h1 className="mb-2 text-3xl font-bold tracking-tight text-white">{APP_NAME}</h1>
-            <p className="text-sm text-zinc-400">Welcome back to the stage</p>
+            <Link href="/" className="mb-3 inline-flex items-baseline gap-1.5">
+              <span className="font-display text-4xl font-bold tracking-tight">
+                {APP_NAME}
+              </span>
+              <span className="mb-1 inline-block h-2.5 w-2.5 rounded-full bg-brand" aria-hidden />
+            </Link>
+            <p className="text-sm text-muted-foreground">
+              Where brands and creators find each other
+            </p>
           </div>
 
           <div className="flex flex-col space-y-4">
             <Button
               variant="outline"
-              className="relative h-12 w-full overflow-hidden border-white/10 bg-white/5 text-white transition-all hover:bg-white/10 hover:border-white/20"
+              className="h-12 w-full rounded-full"
               onClick={handleGoogleSignIn}
             >
-              <span className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-pink-500/10 opacity-0 transition-opacity group-hover:opacity-100" />
               <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24">
                 <path
                   d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -99,49 +91,51 @@ export default function LoginPage() {
 
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-white/10" />
+                <span className="w-full border-t border-border" />
               </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-black px-2 text-zinc-500">or</span>
+              <div className="relative flex justify-center text-xs uppercase tracking-wider">
+                <span className="bg-white px-2 text-muted-foreground">or</span>
               </div>
             </div>
 
             <form onSubmit={handleMagicLink} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-zinc-400">Email</Label>
+                <Label htmlFor="email">Email</Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-zinc-500" />
+                  <Mail className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     id="email"
                     type="email"
                     placeholder="name@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="pl-10 h-12"
+                    className="h-12 pl-10"
                     required
                   />
                 </div>
               </div>
-              
-              <Button 
-                type="submit" 
-                className="group h-12 w-full bg-white text-black hover:bg-zinc-200"
+
+              <Button
+                type="submit"
+                className="h-12 w-full rounded-full bg-ink text-paper hover:bg-ink-soft"
                 disabled={isLoading}
               >
                 {isLoading ? (
-                  <span className="animate-pulse">Sending link...</span>
+                  <span className="animate-pulse">Sending link…</span>
                 ) : (
                   <>
-                    <Sparkles className="mr-2 h-4 w-4 transition-transform group-hover:scale-125 group-hover:text-purple-500" />
-                    Send Magic Link
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    Send magic link
                   </>
                 )}
               </Button>
             </form>
           </div>
 
-          <p className="mt-8 text-center text-sm text-zinc-400">
-            By continuing, you agree to our <a href="#" className="text-white hover:underline">Terms of Service</a> and <a href="#" className="text-white hover:underline">Privacy Policy</a>.
+          <p className="mt-8 text-center text-sm text-muted-foreground">
+            By continuing, you agree to our{" "}
+            <a href="#" className="link-editorial text-foreground">Terms of Service</a> and{" "}
+            <a href="#" className="link-editorial text-foreground">Privacy Policy</a>.
           </p>
         </div>
       </motion.div>

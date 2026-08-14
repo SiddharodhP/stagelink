@@ -1,37 +1,44 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Fraunces, Instrument_Sans } from "next/font/google";
 import { Toaster } from "sonner";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-inter",
+const instrument = Instrument_Sans({
+  variable: "--font-instrument",
   subsets: ["latin"],
   display: "swap",
 });
 
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
+  subsets: ["latin"],
+  display: "swap",
+  axes: ["opsz", "SOFT", "WONK"],
+});
+
 export const metadata: Metadata = {
   title: {
-    default: "StageLink — Find the Perfect Sound for Your Event",
-    template: "%s | StageLink",
+    default: "Roster — Freelance work, structured in milestones",
+    template: "%s | Roster",
   },
   description:
-    "Discover live musicians, bands, DJs, and performers for weddings, college fests, corporate events, and unforgettable nights.",
+    "The freelance marketplace where clients structure projects into milestones, freelancers compete on merit, and every payment is protected by escrow.",
   keywords: [
-    "musicians",
-    "bands",
-    "DJs",
-    "live music",
-    "event booking",
-    "wedding music",
-    "corporate events",
-    "performers",
+    "freelance marketplace",
+    "hire freelancers",
+    "freelance projects",
+    "milestone payments",
+    "escrow freelance",
+    "freelance bidding",
+    "remote work",
+    "find freelance work",
   ],
   openGraph: {
-    title: "StageLink — Find the Perfect Sound for Your Event",
+    title: "Roster — Freelance work, structured in milestones",
     description:
-      "Discover live musicians, bands, DJs, and performers for weddings, college fests, corporate events, and unforgettable nights.",
+      "Clients define milestones. Freelancers bid on the full picture. Payment is released as each stage is approved.",
     type: "website",
-    siteName: "StageLink",
+    siteName: "Roster",
   },
 };
 
@@ -41,17 +48,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} dark`}>
+    <html lang="en" className={`${instrument.variable} ${fraunces.variable}`}>
       <body className="min-h-screen bg-background text-foreground font-sans antialiased">
         {children}
         <Toaster
           position="bottom-right"
           toastOptions={{
             style: {
-              background: "rgba(17, 17, 17, 0.95)",
-              border: "1px solid rgba(255, 255, 255, 0.1)",
-              color: "#ededed",
-              backdropFilter: "blur(16px)",
+              background: "#ffffff",
+              border: "1px solid rgba(26, 23, 19, 0.12)",
+              color: "#1a1713",
+              boxShadow: "0 18px 40px -18px rgba(26, 23, 19, 0.25)",
             },
           }}
         />

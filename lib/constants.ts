@@ -1,54 +1,87 @@
-export const APP_NAME = 'StageLink';
-export const APP_DESCRIPTION = 'Discover live musicians, bands, DJs, and performers for weddings, college fests, corporate events, and unforgettable nights.';
+export const APP_NAME = 'Roster';
+export const APP_DESCRIPTION =
+  'The freelance marketplace where clients structure work into milestones, freelancers compete on merit, and every payment is protected by escrow.';
 export const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 
-export const GENRES = [
-  'Bollywood', 'Classical', 'Rock', 'Pop', 'Jazz', 'Blues', 'Folk',
-  'Hip Hop', 'EDM', 'Sufi', 'Ghazal', 'Carnatic', 'Hindustani',
-  'Fusion', 'Indie', 'Metal', 'R&B', 'Country', 'Reggae', 'Punk',
-] as const;
-
-export const LANGUAGES = [
-  'Hindi', 'English', 'Tamil', 'Telugu', 'Kannada', 'Malayalam',
-  'Marathi', 'Bengali', 'Gujarati', 'Punjabi', 'Urdu', 'Sanskrit',
-] as const;
-
-export const EVENT_TYPES = [
-  'Wedding', 'Corporate Event', 'College Fest', 'Private Party',
-  'Concert', 'Festival', 'Birthday', 'Anniversary', 'Club Night',
-  'Product Launch', 'Charity Event', 'House Party',
-] as const;
-
-export const CITIES = [
-  'Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Chennai', 'Kolkata',
-  'Pune', 'Ahmedabad', 'Jaipur', 'Lucknow', 'Chandigarh', 'Goa',
-  'Kochi', 'Indore', 'Bhopal', 'Nagpur', 'Coimbatore', 'Vizag',
-] as const;
-
-export const TEAM_SIZES = [
-  { label: 'Solo', value: '1' },
-  { label: 'Duo', value: '2' },
-  { label: 'Trio', value: '3' },
-  { label: 'Small Band (4-6)', value: '4-6' },
-  { label: 'Full Band (7+)', value: '7+' },
-] as const;
-
-export const BUDGET_RANGES = [
-  { label: 'Under ₹10,000', min: 0, max: 10000 },
-  { label: '₹10,000 - ₹25,000', min: 10000, max: 25000 },
-  { label: '₹25,000 - ₹50,000', min: 25000, max: 50000 },
-  { label: '₹50,000 - ₹1,00,000', min: 50000, max: 100000 },
-  { label: '₹1,00,000 - ₹5,00,000', min: 100000, max: 500000 },
-  { label: '₹5,00,000+', min: 500000, max: Infinity },
-] as const;
-
 export const NAV_LINKS = [
-  { label: 'Explore Artists', href: '/musicians' },
+  { label: 'Browse projects', href: '/projects' },
+  { label: 'How it works', href: '/#how-it-works' },
+  { label: 'For freelancers', href: '/#for-freelancers' },
 ] as const;
 
-export const INQUIRY_STATUS = {
-  PENDING: 'pending',
-  ACCEPTED: 'accepted',
-  DECLINED: 'declined',
-  COMPLETED: 'completed',
-} as const;
+export const EXPERIENCE_LEVELS = [
+  { value: 'entry', label: 'Entry level', hint: 'New talent, budget-friendly' },
+  { value: 'intermediate', label: 'Intermediate', hint: 'Solid track record' },
+  { value: 'expert', label: 'Expert', hint: 'Deep specialist experience' },
+] as const;
+
+export const LOCATION_PREFS = [
+  { value: 'remote', label: 'Remote' },
+  { value: 'onsite', label: 'On-site' },
+  { value: 'hybrid', label: 'Hybrid' },
+] as const;
+
+export const DURATION_OPTIONS = [
+  'Less than 1 week',
+  '1–2 weeks',
+  '2–4 weeks',
+  '1–3 months',
+  '3–6 months',
+  'More than 6 months',
+] as const;
+
+export const BUDGET_PRESETS = [
+  { label: 'Any budget', min: null, max: null },
+  { label: 'Under ₹10,000', min: null, max: 10_000 },
+  { label: '₹10,000 – ₹50,000', min: 10_000, max: 50_000 },
+  { label: '₹50,000 – ₹2,00,000', min: 50_000, max: 200_000 },
+  { label: '₹2,00,000+', min: 200_000, max: null },
+] as const;
+
+export const PROJECT_SORTS = [
+  { value: 'newest', label: 'Newest first' },
+  { value: 'budget_desc', label: 'Highest budget' },
+  { value: 'budget_asc', label: 'Lowest budget' },
+  { value: 'deadline', label: 'Earliest deadline' },
+  { value: 'fewest_bids', label: 'Fewest bids' },
+] as const;
+
+export const AVAILABILITY_OPTIONS = [
+  { value: 'available', label: 'Available for work' },
+  { value: 'limited', label: 'Limited availability' },
+  { value: 'unavailable', label: 'Not available' },
+] as const;
+
+/** Fallback list shown before the categories table loads. */
+export const CATEGORY_FALLBACK = [
+  'Web Development', 'Mobile Apps', 'Design & Creative', 'Writing & Translation',
+  'Digital Marketing', 'Video & Animation', 'Data & AI', 'Engineering & Architecture',
+  'Finance & Accounting', 'Admin & Support', 'Music & Audio', 'Legal',
+] as const;
+
+export const MILESTONE_STATUS_LABELS: Record<string, string> = {
+  pending: 'Awaiting funding',
+  in_progress: 'In progress',
+  submitted: 'Under review',
+  revision_requested: 'Revision requested',
+  approved: 'Approved',
+  paid: 'Paid',
+  disputed: 'Disputed',
+  cancelled: 'Cancelled',
+};
+
+export const BID_STATUS_LABELS: Record<string, string> = {
+  submitted: 'Submitted',
+  shortlisted: 'Shortlisted',
+  accepted: 'Accepted',
+  rejected: 'Not selected',
+  withdrawn: 'Withdrawn',
+};
+
+export const CONTRACT_STATUS_LABELS: Record<string, string> = {
+  pending_acceptance: 'Awaiting freelancer confirmation',
+  active: 'Active',
+  completed: 'Completed',
+  cancelled: 'Cancelled',
+  declined: 'Declined',
+};

@@ -2,92 +2,138 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { 
-  LayoutDashboard, 
-  User, 
-  Image as ImageIcon, 
-  Calendar, 
-  Inbox, 
+import {
+  LayoutDashboard,
+  User,
+  Briefcase,
+  Gavel,
   MessageSquare,
   LogOut,
-  Music
+  Heart,
+  Compass,
+  ArrowUpRight,
+  Wallet,
+  Images,
+  PlusCircle,
+  Users,
+  ShieldAlert,
+  Flag,
+  FileSignature,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import { APP_NAME } from "@/lib/constants";
 import { signOut } from "@/lib/services/auth";
 
 interface SidebarProps {
-  role: "musician" | "organizer";
+  role: "client" | "freelancer" | "admin";
   className?: string;
 }
 
 export function Sidebar({ role, className }: SidebarProps) {
   const pathname = usePathname();
 
-  const musicianLinks = [
-    { href: "/musician/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/musician/profile", label: "Profile", icon: User },
-    { href: "/musician/media", label: "Media Gallery", icon: ImageIcon },
-    { href: "/musician/availability", label: "Availability", icon: Calendar },
-    { href: "/musician/inquiries", label: "Inquiries", icon: Inbox },
-    { href: "/musician/messages", label: "Messages", icon: MessageSquare },
+  const clientLinks = [
+    { href: "/client/dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/client/projects", label: "My projects", icon: Briefcase },
+    { href: "/projects/new", label: "Post a project", icon: PlusCircle },
+    { href: "/client/contracts", label: "Contracts", icon: FileSignature },
+    { href: "/client/payments", label: "Payments", icon: Wallet },
+    { href: "/messages", label: "Messages", icon: MessageSquare },
+    { href: "/settings/profile", label: "Profile", icon: User },
   ];
 
-  const organizerLinks = [
-    { href: "/organizer/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/organizer/profile", label: "Profile", icon: User },
-    { href: "/organizer/inquiries", label: "Inquiries", icon: Inbox },
-    { href: "/organizer/saved", label: "Saved Artists", icon: User },
-    { href: "/organizer/messages", label: "Messages", icon: MessageSquare },
+  const freelancerLinks = [
+    { href: "/freelancer/dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/projects", label: "Find work", icon: Compass },
+    { href: "/freelancer/bids", label: "My bids", icon: Gavel },
+    { href: "/freelancer/contracts", label: "Contracts", icon: FileSignature },
+    { href: "/freelancer/saved", label: "Saved projects", icon: Heart },
+    { href: "/freelancer/earnings", label: "Earnings", icon: Wallet },
+    { href: "/freelancer/portfolio", label: "Portfolio", icon: Images },
+    { href: "/messages", label: "Messages", icon: MessageSquare },
+    { href: "/settings/profile", label: "Profile", icon: User },
   ];
 
-  const links = role === "musician" ? musicianLinks : organizerLinks;
+  const adminLinks = [
+    { href: "/admin", label: "Overview", icon: LayoutDashboard },
+    { href: "/admin/users", label: "Users", icon: Users },
+    { href: "/admin/disputes", label: "Disputes", icon: ShieldAlert },
+    { href: "/admin/reports", label: "Reports", icon: Flag },
+  ];
+
+  const links =
+    role === "client" ? clientLinks : role === "admin" ? adminLinks : freelancerLinks;
+  const sectionLabel =
+    role === "client" ? "Client workspace" : role === "admin" ? "Admin" : "Freelancer workspace";
 
   return (
-    <div className={cn("flex h-screen w-64 flex-col bg-black border-r border-white/10", className)}>
-      <div className="flex h-16 items-center px-6 border-b border-white/10">
-        <Link href="/" className="flex items-center gap-2 group">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 shadow-[0_0_15px_rgba(168,85,247,0.3)]">
-            <Music className="h-4 w-4 text-white" />
-          </div>
-          <span className="text-xl font-bold tracking-tight text-white">{APP_NAME}</span>
+    <div
+      className={cn(
+        "flex h-screen w-64 flex-col border-r border-border bg-white",
+        className
+      )}
+    >
+      <div className="flex h-16 items-center border-b border-border px-6">
+        <Link href="/" className="flex items-baseline gap-1.5">
+          <span className="font-display text-[22px] font-bold leading-none tracking-tight">
+            {APP_NAME}
+          </span>
+          <span className="mb-0.5 inline-block h-1.5 w-1.5 rounded-full bg-brand" aria-hidden />
         </Link>
       </div>
 
-      <div className="flex-1 overflow-y-auto py-6 px-4">
-        <nav className="space-y-2">
+      <div className="flex-1 overflow-y-auto px-4 py-6">
+        <p className="eyebrow mb-3 px-3">{sectionLabel}</p>
+        <nav className="space-y-1">
           {links.map((link) => {
-            const isActive = pathname === link.href || pathname.startsWith(`${link.href}/`);
+            const isActive =
+              pathname === link.href ||
+              (link.href !== "/projects" && pathname.startsWith(`${link.href}/`));
             return (
               <Link
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
+                  "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                   isActive
-                    ? "bg-purple-500/10 text-purple-400 border border-purple-500/20 shadow-[0_0_15px_rgba(168,85,247,0.1)]"
-                    : "text-zinc-400 hover:bg-white/5 hover:text-white border border-transparent"
+                    ? "bg-ink text-paper"
+                    : "text-foreground/65 hover:bg-secondary hover:text-foreground"
                 )}
               >
-                <link.icon className={cn("h-5 w-5", isActive ? "text-purple-400" : "text-zinc-400")} />
+                <link.icon
+                  className={cn("h-[18px] w-[18px]", isActive ? "text-paper" : "text-foreground/50")}
+                />
                 {link.label}
               </Link>
             );
           })}
         </nav>
+
+        {role === "client" && (
+          <div className="mt-8 rounded-xl border border-border bg-brand-soft p-4">
+            <p className="mb-1 text-sm font-semibold">Ready to hire?</p>
+            <p className="mb-3 text-xs leading-relaxed text-muted-foreground">
+              Post a project with milestones and let freelancers compete for it.
+            </p>
+            <Link
+              href="/projects/new"
+              className="inline-flex items-center gap-1 text-sm font-semibold text-brand hover:text-brand-deep"
+            >
+              Post a project <ArrowUpRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
+        )}
       </div>
 
-      <div className="p-4 border-t border-white/10">
-        <Button
-          variant="ghost"
-          className="w-full justify-start text-zinc-400 hover:text-red-400 hover:bg-red-950/20"
+      <div className="border-t border-border p-4">
+        <button
           onClick={() => signOut()}
+          className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-foreground/65 transition-colors hover:bg-red-50 hover:text-red-600"
         >
-          <LogOut className="mr-3 h-5 w-5" />
+          <LogOut className="h-[18px] w-[18px]" />
           Log out
-        </Button>
+        </button>
       </div>
     </div>
   );

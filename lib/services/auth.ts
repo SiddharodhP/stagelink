@@ -1,5 +1,5 @@
 import { createClient as createBrowserClient } from "@/lib/supabase/client";
-import { UserRole } from "@/types/database";
+import { MarketplaceRole } from "@/types/marketplace";
 
 // Use this for browser-side auth actions
 const supabase = createBrowserClient();
@@ -35,27 +35,33 @@ export async function signOut() {
 }
 
 export async function getCurrentUser() {
-  const { data: { user }, error } = await supabase.auth.getUser();
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
   return { user, error };
 }
 
-export async function getUserProfile(userId: string) {
+export async function getMyProfile() {
+  const { user } = await getCurrentUser();
+  if (!user) return { data: null, error: new Error("Not signed in") };
   const { data, error } = await supabase
-    .from("users")
+    .from("profiles")
     .select("*")
-    .eq("id", userId)
-    .single();
-
+    .eq("id", user.id)
+    .maybeSingle();
   return { data, error };
 }
 
-export async function updateUserRole(userId: string, role: UserRole) {
+/** First-time role selection ('client' | 'freelancer'); locked afterwards by a DB trigger. */
+export async function setRole(role: Exclude<MarketplaceRole, "admin">) {
+  const { user } = await getCurrentUser();
+  if (!user) return { data: null, error: new Error("Not signed in") };
   const { data, error } = await supabase
-    .from("users")
+    .from("profiles")
     .update({ role })
-    .eq("id", userId)
+    .eq("id", user.id)
     .select()
     .single();
-
   return { data, error };
 }
