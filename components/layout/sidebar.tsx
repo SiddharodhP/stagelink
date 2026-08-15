@@ -19,6 +19,7 @@ import {
   ShieldAlert,
   Flag,
   FileSignature,
+  Globe2,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -46,6 +47,7 @@ export function Sidebar({ role, className }: SidebarProps) {
   const freelancerLinks = [
     { href: "/freelancer/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/projects", label: "Find work", icon: Compass },
+    { href: "/discover", label: "Discover (external)", icon: Globe2 },
     { href: "/freelancer/bids", label: "My bids", icon: Gavel },
     { href: "/freelancer/contracts", label: "Contracts", icon: FileSignature },
     { href: "/freelancer/saved", label: "Saved projects", icon: Heart },

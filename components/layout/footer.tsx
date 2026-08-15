@@ -35,6 +35,7 @@ export function Footer() {
             <h3 className="eyebrow mb-4 !text-white/40">Marketplace</h3>
             <ul className="space-y-3">
               <li><Link href="/projects" className="text-sm text-white/60 transition-colors hover:text-white">Browse projects</Link></li>
+              <li><Link href="/discover" className="text-sm text-white/60 transition-colors hover:text-white">Discover (external listings)</Link></li>
               <li><Link href="/#how-it-works" className="text-sm text-white/60 transition-colors hover:text-white">How it works</Link></li>
               <li><Link href="/login" className="text-sm text-white/60 transition-colors hover:text-white">Sign in</Link></li>
             </ul>
