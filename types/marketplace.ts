@@ -32,7 +32,8 @@ export interface Profile {
   is_verified: boolean;
   is_suspended: boolean;
   created_at: string;
-  // joined aggregates (optional)
+  // Denormalised aggregates, maintained by DB triggers (migration 003).
+  // Optional because narrow `select` projections may omit them.
   avg_rating?: number;
   total_reviews?: number;
   total_earned?: number;

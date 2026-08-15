@@ -13,26 +13,22 @@ export async function updateProfile(id: string, patch: Partial<Profile>) {
   return { data: data as Profile | null, error };
 }
 
-/** Public profile with reputation + financial aggregates. */
+/**
+ * Public profile. Reputation and financial aggregates are denormalised
+ * columns maintained by DB triggers (see migration 003) — they used to come
+ * from SECURITY DEFINER views that bypassed RLS.
+ */
 export async function getPublicProfile(id: string) {
-  const { data: profile, error } = await supabase
+  const { data, error } = await supabase
     .from("profiles")
     .select("*")
     .eq("id", id)
     .maybeSingle();
-  if (error || !profile) return { data: null, error };
-
-  const [{ data: rating }, { data: fin }] = await Promise.all([
-    supabase.from("user_ratings").select("*").eq("reviewee_id", id).maybeSingle(),
-    supabase.from("user_financials").select("*").eq("user_id", id).maybeSingle(),
-  ]);
+  if (error || !data) return { data: null, error };
 
   const result: Profile = {
-    ...profile,
-    avg_rating: rating?.avg_rating ? Number(rating.avg_rating) : 0,
-    total_reviews: rating?.total_reviews || 0,
-    total_earned: fin?.total_earned || 0,
-    total_spent: fin?.total_spent || 0,
+    ...data,
+    avg_rating: data.avg_rating ? Number(data.avg_rating) : 0,
   };
   return { data: result, error: null };
 }

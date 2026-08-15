@@ -51,7 +51,11 @@ Full schema in [supabase/migrations/001_marketplace.sql](supabase/migrations/001
 `reviews` · `conversations` · `messages` · `notifications` · `saved_projects` ·
 `portfolio_items` · `disputes` · `reports`
 
-Views: `user_ratings` (avg rating + count), `user_financials` (earned/spent).
+Reputation and financial aggregates (`avg_rating`, `total_reviews`,
+`total_earned`, `total_spent`) are denormalised columns on `profiles`,
+maintained by triggers on `reviews` and `transactions`. They were originally
+Postgres views, but views run with their creator's permissions and so bypassed
+RLS on `transactions` — migration 003 removed them.
 
 ### State machines (enforced by triggers, not app code)
 
@@ -87,6 +91,11 @@ Direct table writes are blocked where it matters:
   and milestones that bypass the RPCs.
 - `guard_profile_update` prevents self-verification, self-unsuspension, and
   role escalation to `admin`.
+- Every RPC calls `require_auth()` first. Without it, `auth.uid()` being NULL
+  made ownership checks like `client_id <> auth.uid()` evaluate to NULL rather
+  than TRUE, so the guard silently passed (fixed in migration 002).
+- No SECURITY DEFINER views. Aggregates that need to be public live as columns
+  on `profiles` under its ordinary RLS policy (migration 003).
 
 ---
 

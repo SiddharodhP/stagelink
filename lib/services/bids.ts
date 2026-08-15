@@ -51,29 +51,20 @@ export async function getProjectBids(projectId: string) {
   const { data, error } = await supabase
     .from("bids")
     .select(
-      "*, freelancer:freelancer_id(id, full_name, headline, avatar_url, location, skills, experience_years, hourly_rate, is_verified, availability)"
+      `*, freelancer:freelancer_id(
+        id, full_name, headline, avatar_url, location, skills,
+        experience_years, hourly_rate, is_verified, availability,
+        avg_rating, total_reviews, total_earned
+      )`
     )
     .eq("project_id", projectId)
     .order("created_at", { ascending: true });
   if (error || !data) return { data: [] as Bid[], error };
 
-  // attach ratings in one query
-  const ids = [...new Set(data.map((b: any) => b.freelancer_id))];
-  const { data: ratings } = await supabase
-    .from("user_ratings")
-    .select("*")
-    .in("reviewee_id", ids);
-  const map = new Map((ratings || []).map((r: any) => [r.reviewee_id, r]));
   const bids = data.map((b: any) => ({
     ...b,
     freelancer: b.freelancer
-      ? {
-          ...b.freelancer,
-          avg_rating: map.get(b.freelancer_id)?.avg_rating
-            ? Number(map.get(b.freelancer_id)!.avg_rating)
-            : 0,
-          total_reviews: map.get(b.freelancer_id)?.total_reviews || 0,
-        }
+      ? { ...b.freelancer, avg_rating: Number(b.freelancer.avg_rating) || 0 }
       : undefined,
   }));
   return { data: bids as Bid[], error: null };
