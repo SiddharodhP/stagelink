@@ -2,6 +2,15 @@ import type { Metadata } from "next";
 import { Fraunces, Instrument_Sans } from "next/font/google";
 import { Toaster } from "sonner";
 import "./globals.css";
+import {
+  SITE_URL,
+  SITE_NAME,
+  DEFAULT_DESCRIPTION,
+  PRIMARY_KEYWORDS,
+  organizationJsonLd,
+  websiteJsonLd,
+} from "@/lib/seo";
+import { JsonLd } from "@/components/shared/json-ld";
 
 const instrument = Instrument_Sans({
   variable: "--font-instrument",
@@ -17,29 +26,47 @@ const fraunces = Fraunces({
 });
 
 export const metadata: Metadata = {
+  // Makes every relative canonical/OG URL resolve against the real domain.
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: "Roster — Freelance work, structured in milestones",
-    template: "%s | Roster",
+    default: `${SITE_NAME} — Hire Freelancers With Milestone-Based Escrow Payments`,
+    template: `%s | ${SITE_NAME}`,
   },
-  description:
-    "The freelance marketplace where clients structure projects into milestones, freelancers compete on merit, and every payment is protected by escrow.",
-  keywords: [
-    "freelance marketplace",
-    "hire freelancers",
-    "freelance projects",
-    "milestone payments",
-    "escrow freelance",
-    "freelance bidding",
-    "remote work",
-    "find freelance work",
-  ],
+  description: DEFAULT_DESCRIPTION,
+  keywords: PRIMARY_KEYWORDS,
+  applicationName: SITE_NAME,
+  authors: [{ name: SITE_NAME }],
+  creator: SITE_NAME,
+  publisher: SITE_NAME,
+  alternates: { canonical: "/" },
   openGraph: {
-    title: "Roster — Freelance work, structured in milestones",
-    description:
-      "Clients define milestones. Freelancers bid on the full picture. Payment is released as each stage is approved.",
     type: "website",
-    siteName: "Roster",
+    locale: "en_IN",
+    url: SITE_URL,
+    siteName: SITE_NAME,
+    title: `${SITE_NAME} — Hire Freelancers With Milestone-Based Escrow Payments`,
+    description: DEFAULT_DESCRIPTION,
   },
+  twitter: {
+    card: "summary_large_image",
+    title: `${SITE_NAME} — Hire Freelancers With Milestone-Based Escrow Payments`,
+    description: DEFAULT_DESCRIPTION,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-snippet": -1,
+      "max-image-preview": "large",
+      "max-video-preview": -1,
+    },
+  },
+  category: "business",
+  // Add your Search Console HTML-tag token here if you verify by meta tag
+  // instead of by DNS record:
+  // verification: { google: "your-token" },
 };
 
 export default function RootLayout({
@@ -49,6 +76,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${instrument.variable} ${fraunces.variable}`}>
+      <head>
+        <JsonLd data={[organizationJsonLd(), websiteJsonLd()]} />
+      </head>
       <body className="min-h-screen bg-background text-foreground font-sans antialiased">
         {children}
         <Toaster
