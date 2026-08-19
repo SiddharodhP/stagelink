@@ -1,27 +1,29 @@
+export type ExternalSource = "Remotive";
+
 /**
- * Listings pulled live from an external job board (currently Remote OK)
- * and displayed read-only, with an outbound link to apply on the source
- * site. These never enter Roster's bidding/escrow system — they exist to
- * give visitors something real to browse on day one.
+ * A freelance/contract listing pulled live from an external board and shown
+ * read-only, with an outbound link to apply at the source. These never enter
+ * Roster's bidding/escrow system.
+ *
+ * Only genuinely freelance/contract work is surfaced — see the filters in
+ * app/api/external-jobs/route.ts. Full-time roles are excluded on purpose.
  */
 export interface ExternalJob {
   id: string;
-  source: "Remote OK";
-  sourceUrl: string; // Remote OK's own homepage, for the required attribution link
+  source: ExternalSource;
+  sourceUrl: string; // source homepage, for the required attribution link
   position: string;
   company: string;
   companyLogo: string | null;
   tags: string[];
   location: string;
-  salaryMin: number;
-  salaryMax: number;
-  postedAt: string; // ISO date
-  applyUrl: string; // deep link to the specific listing — where "booking" happens
+  salary: string | null; // free-text; sources are inconsistent about format
+  postedAt: string; // ISO
+  applyUrl: string;
 }
 
 export interface ExternalJobsResponse {
   jobs: ExternalJob[];
-  source: string;
-  sourceUrl: string;
+  sources: { name: ExternalSource; url: string }[];
   fetchedAt: string;
 }
