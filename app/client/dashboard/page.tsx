@@ -52,6 +52,11 @@ function Dashboard({ profile }: { profile: Profile }) {
 
   const open = projects.filter((p) => p.status === "open");
   const drafts = projects.filter((p) => p.status === "draft");
+  // Pre-award only. Once awarded, a project is represented by its contract,
+  // so the two dashboard cards never show the same thing twice.
+  const hiringProjects = projects.filter((p) =>
+    ["draft", "open"].includes(p.status)
+  );
   const activeContracts = contracts.filter((c) => c.status === "active");
   const pendingAcceptance = contracts.filter((c) => c.status === "pending_acceptance");
   const totalBids = open.reduce((s, p) => s + p.bids_count, 0);
@@ -191,21 +196,27 @@ function Dashboard({ profile }: { profile: Profile }) {
       )}
 
       <div className="grid gap-6 lg:grid-cols-2">
-        {/* Projects */}
+        {/* Still hiring — drafts and projects collecting bids. Awarded work
+            lives in Contracts, so a project never appears in both cards. */}
         <section className="rounded-xl border border-border bg-white">
           <div className="flex items-center justify-between border-b border-border px-6 py-5">
-            <h2 className="font-display text-xl font-semibold">Your projects</h2>
+            <div>
+              <h2 className="font-display text-xl font-semibold">Still hiring</h2>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                Drafts and projects collecting bids
+              </p>
+            </div>
             <Link
               href="/client/projects"
-              className="flex items-center gap-1 text-sm font-medium text-brand hover:text-brand-deep"
+              className="flex shrink-0 items-center gap-1 text-sm font-medium text-brand hover:text-brand-deep"
             >
               View all <ArrowUpRight className="h-3.5 w-3.5" />
             </Link>
           </div>
 
-          {projects.length > 0 ? (
+          {hiringProjects.length > 0 ? (
             <ul className="divide-y divide-border">
-              {projects.slice(0, 5).map((p) => (
+              {hiringProjects.slice(0, 5).map((p) => (
                 <li key={p.id}>
                   <Link
                     href={p.status === "draft" ? "/client/projects" : `/projects/${p.id}`}
@@ -228,8 +239,16 @@ function Dashboard({ profile }: { profile: Profile }) {
             <div className="p-6">
               <EmptyCard
                 icon={Briefcase}
-                title="No projects yet"
-                description="Post your first project with clear milestones and start receiving bids within hours."
+                title={
+                  projects.length > 0
+                    ? "Every project is awarded"
+                    : "No projects yet"
+                }
+                description={
+                  projects.length > 0
+                    ? "Nothing is waiting on bids right now — your active work is tracked under Contracts."
+                    : "Post your first project with clear milestones and start receiving bids within hours."
+                }
                 actionLabel="Post a project"
                 actionHref="/projects/new"
               />
@@ -237,13 +256,18 @@ function Dashboard({ profile }: { profile: Profile }) {
           )}
         </section>
 
-        {/* Contracts */}
+        {/* Awarded work — the same project never appears in "Still hiring". */}
         <section className="rounded-xl border border-border bg-white">
           <div className="flex items-center justify-between border-b border-border px-6 py-5">
-            <h2 className="font-display text-xl font-semibold">Contracts</h2>
+            <div>
+              <h2 className="font-display text-xl font-semibold">Awarded work</h2>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                Contracts with a freelancer engaged
+              </p>
+            </div>
             <Link
               href="/client/contracts"
-              className="flex items-center gap-1 text-sm font-medium text-brand hover:text-brand-deep"
+              className="flex shrink-0 items-center gap-1 text-sm font-medium text-brand hover:text-brand-deep"
             >
               View all <ArrowUpRight className="h-3.5 w-3.5" />
             </Link>

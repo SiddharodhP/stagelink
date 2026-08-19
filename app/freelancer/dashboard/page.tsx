@@ -12,6 +12,7 @@ import {
   Star,
   Upload,
   CheckCircle2,
+  ExternalLink,
 } from "lucide-react";
 
 import { WorkspaceShell } from "@/components/layout/workspace-shell";
@@ -30,7 +31,9 @@ import { getMyBids } from "@/lib/services/bids";
 import { getMyContracts, getMyTransactions } from "@/lib/services/contracts";
 import { searchProjects } from "@/lib/services/projects";
 import { getPublicProfile } from "@/lib/services/profiles";
+import { getExternalJobs } from "@/lib/services/external-jobs";
 import { Bid, Contract, Profile, Project, Transaction } from "@/types/marketplace";
+import { ExternalJob } from "@/types/external-jobs";
 import { formatPrice, timeAgo, cn } from "@/lib/utils";
 
 function Dashboard({ profile }: { profile: Profile }) {
@@ -40,6 +43,8 @@ function Dashboard({ profile }: { profile: Profile }) {
   const [recommended, setRecommended] = useState<Project[]>([]);
   const [stats, setStats] = useState({ rating: 0, reviews: 0 });
   const [loading, setLoading] = useState(true);
+  const [externalJobs, setExternalJobs] = useState<ExternalJob[]>([]);
+  const [loadingExternal, setLoadingExternal] = useState(false);
 
   useEffect(() => {
     Promise.all([
@@ -60,6 +65,16 @@ function Dashboard({ profile }: { profile: Profile }) {
       setRecommended(r.data.slice(0, 3));
       setStats({ rating: p.data?.avg_rating || 0, reviews: p.data?.total_reviews || 0 });
       setLoading(false);
+
+      // Only reach out to the external board when Roster has nothing to
+      // show — no wasted request on an active marketplace.
+      if (r.data.length === 0) {
+        setLoadingExternal(true);
+        getExternalJobs().then(({ data }) => {
+          setExternalJobs(data.jobs.slice(0, 4));
+          setLoadingExternal(false);
+        });
+      }
     });
   }, [profile.id, profile.skills]);
 
@@ -302,43 +317,95 @@ function Dashboard({ profile }: { profile: Profile }) {
         </section>
       </div>
 
-      {/* Recommended projects */}
-      <section>
-        <div className="mb-4 flex items-end justify-between">
-          <div>
-            <h2 className="font-display text-2xl font-semibold tracking-tight">
-              Recommended for you
-            </h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              {profile.skills?.length
-                ? "Matched to the skills on your profile."
-                : "Add skills to your profile for better matches."}
-            </p>
+      {/* Recommended projects. With nothing to match on Roster yet, fall back
+          to real external freelance listings rather than a dead-end empty
+          state — showing work beats announcing there is none. */}
+      {recommended.length > 0 ? (
+        <section>
+          <div className="mb-4 flex items-end justify-between">
+            <div>
+              <h2 className="font-display text-2xl font-semibold tracking-tight">
+                Recommended for you
+              </h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {profile.skills?.length
+                  ? "Matched to the skills on your profile."
+                  : "Add skills to your profile for better matches."}
+              </p>
+            </div>
+            <Link
+              href="/projects"
+              className="flex items-center gap-1 text-sm font-medium text-brand hover:text-brand-deep"
+            >
+              Browse all <ArrowUpRight className="h-3.5 w-3.5" />
+            </Link>
           </div>
-          <Link
-            href="/projects"
-            className="flex items-center gap-1 text-sm font-medium text-brand hover:text-brand-deep"
-          >
-            Browse all <ArrowUpRight className="h-3.5 w-3.5" />
-          </Link>
-        </div>
 
-        {recommended.length > 0 ? (
           <div className="space-y-4">
             {recommended.map((p) => (
               <ProjectCard key={p.id} project={p} />
             ))}
           </div>
-        ) : (
-          <EmptyCard
-            icon={Compass}
-            title="No matching projects right now"
-            description="New projects are posted daily. Broaden your skills list or check the full board."
-            actionLabel="Browse all projects"
-            actionHref="/projects"
-          />
-        )}
-      </section>
+        </section>
+      ) : (
+        <section>
+          <div className="mb-4 flex items-end justify-between">
+            <div>
+              <h2 className="font-display text-2xl font-semibold tracking-tight">
+                Freelance work elsewhere
+              </h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Nothing on Roster matches your skills yet — here&apos;s live
+                contract work from around the web.
+              </p>
+            </div>
+            <Link
+              href="/discover"
+              className="flex items-center gap-1 text-sm font-medium text-brand hover:text-brand-deep"
+            >
+              See all <ArrowUpRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
+
+          {loadingExternal ? (
+            <SkeletonRows count={3} height={92} />
+          ) : externalJobs.length > 0 ? (
+            <>
+              <div className="overflow-hidden rounded-xl border border-border bg-white">
+                {externalJobs.map((job) => (
+                  <a
+                    key={job.id}
+                    href={job.applyUrl}
+                    target="_blank"
+                    rel="noopener"
+                    className="flex items-center justify-between gap-4 border-b border-border px-5 py-4 transition-colors last:border-b-0 hover:bg-secondary"
+                  >
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold">{job.position}</p>
+                      <p className="truncate text-xs text-muted-foreground">
+                        {job.company} · {job.location} · via {job.source}
+                      </p>
+                    </div>
+                    <ExternalLink className="h-4 w-4 shrink-0 text-muted-foreground" />
+                  </a>
+                ))}
+              </div>
+              <p className="mt-3 text-xs text-muted-foreground">
+                These are hosted on other job boards and aren&apos;t covered by
+                Roster&apos;s milestone escrow.
+              </p>
+            </>
+          ) : (
+            <EmptyCard
+              icon={Compass}
+              title="Find work while the board fills up"
+              description="Browse live freelance and contract listings pulled from other job boards, or check every open Roster project."
+              actionLabel="Open Discover"
+              actionHref="/discover"
+            />
+          )}
+        </section>
+      )}
     </div>
   );
 }
