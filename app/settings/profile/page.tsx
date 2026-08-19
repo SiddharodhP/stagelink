@@ -46,6 +46,11 @@ function ProfileSettingsInner() {
     availability: "available",
     avatar_url: "",
     skills: [] as string[],
+    billing_address: "",
+    billing_email: "",
+    phone: "",
+    tax_id: "",
+    tax_id_label: "GSTIN",
   });
 
   useEffect(() => {
@@ -67,6 +72,11 @@ function ProfileSettingsInner() {
         availability: data.availability || "available",
         avatar_url: data.avatar_url || "",
         skills: data.skills || [],
+        billing_address: data.billing_address || "",
+        billing_email: data.billing_email || "",
+        phone: data.phone || "",
+        tax_id: data.tax_id || "",
+        tax_id_label: data.tax_id_label || "GSTIN",
       });
     });
     getSkillsList().then(({ data }) => setSkillOptions(data));
@@ -110,6 +120,11 @@ function ProfileSettingsInner() {
       availability: form.availability as Profile["availability"],
       avatar_url: form.avatar_url || null,
       skills: form.skills,
+      billing_address: form.billing_address.trim() || null,
+      billing_email: form.billing_email.trim() || null,
+      phone: form.phone.trim() || null,
+      tax_id: form.tax_id.trim() || null,
+      tax_id_label: form.tax_id_label.trim() || "Tax ID",
     });
     setIsSaving(false);
 
@@ -362,6 +377,83 @@ function ProfileSettingsInner() {
             </SectionCard>
           </>
         )}
+
+        {/* Appears on every invoice. Snapshotted at issue time, so editing
+            these later never alters an invoice you've already sent. */}
+        <SectionCard
+          title="Billing details"
+          description="Shown on invoices and receipts. Leave blank to omit a line."
+        >
+          <div className="space-y-5">
+            <Field
+              label="Billing address"
+              htmlFor="billing_address"
+              hint="Appears under your name on the invoice."
+            >
+              <textarea
+                id="billing_address"
+                className={`${textareaClass} min-h-[80px]`}
+                value={form.billing_address}
+                onChange={(e) => setForm({ ...form, billing_address: e.target.value })}
+                placeholder={"e.g. 14 MG Road\nBangalore, Karnataka 560001\nIndia"}
+              />
+            </Field>
+
+            <div className="grid gap-5 md:grid-cols-2">
+              <Field label="Billing email" htmlFor="billing_email">
+                <input
+                  id="billing_email"
+                  type="email"
+                  className={inputClass}
+                  value={form.billing_email}
+                  onChange={(e) => setForm({ ...form, billing_email: e.target.value })}
+                  placeholder="accounts@example.com"
+                />
+              </Field>
+
+              <Field label="Phone" htmlFor="phone">
+                <input
+                  id="phone"
+                  className={inputClass}
+                  value={form.phone}
+                  onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                  placeholder="+91 98765 43210"
+                />
+              </Field>
+            </div>
+
+            <div className="grid gap-5 md:grid-cols-[160px_1fr]">
+              <Field label="Tax ID type" htmlFor="tax_id_label">
+                <select
+                  id="tax_id_label"
+                  className={selectClass}
+                  value={form.tax_id_label}
+                  onChange={(e) => setForm({ ...form, tax_id_label: e.target.value })}
+                >
+                  {["GSTIN", "PAN", "VAT No.", "Tax ID", "ABN", "EIN"].map((t) => (
+                    <option key={t} value={t}>
+                      {t}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+
+              <Field
+                label="Tax ID number"
+                htmlFor="tax_id"
+                hint="Optional. Displayed as-is — it isn't validated or filed for you."
+              >
+                <input
+                  id="tax_id"
+                  className={inputClass}
+                  value={form.tax_id}
+                  onChange={(e) => setForm({ ...form, tax_id: e.target.value })}
+                  placeholder="29ABCDE1234F1Z5"
+                />
+              </Field>
+            </div>
+          </div>
+        </SectionCard>
 
         <div className="flex justify-end gap-3">
           <Button

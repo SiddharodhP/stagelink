@@ -17,6 +17,7 @@ import {
   Star,
   XCircle,
   Send,
+  Receipt,
 } from "lucide-react";
 
 import { WorkspaceShellFree } from "@/components/layout/workspace-shell-free";
@@ -46,6 +47,7 @@ import {
   getContract,
   getContractMilestones,
   getMilestoneSubmissions,
+  // invoice helpers live in their own service; imported separately below
   getContractReviews,
   respondContract,
   fundMilestone,
@@ -56,10 +58,13 @@ import {
   cancelContract,
   createReview,
 } from "@/lib/services/contracts";
+import { createInvoice, getContractInvoices } from "@/lib/services/invoices";
+import { InvoiceStatusPill } from "@/components/shared/invoice-ui";
 import { getOrCreateConversation } from "@/lib/services/messaging";
 import { uploadFile } from "@/lib/services/storage";
 import {
   Contract,
+  Invoice,
   Milestone,
   MilestoneSubmission,
   Profile,
@@ -107,6 +112,7 @@ function Workspace({ profile }: { profile: Profile }) {
   const [contract, setContract] = useState<Contract | null>(null);
   const [milestones, setMilestones] = useState<Milestone[]>([]);
   const [submissions, setSubmissions] = useState<MilestoneSubmission[]>([]);
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [hasReviewed, setHasReviewed] = useState(false);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -125,13 +131,16 @@ function Workspace({ profile }: { profile: Profile }) {
       return;
     }
     setContract(data);
-    const [{ data: ms }, { data: subs }, { data: revs }] = await Promise.all([
-      getContractMilestones(data.project_id),
-      getMilestoneSubmissions(data.id),
-      getContractReviews(data.id),
-    ]);
+    const [{ data: ms }, { data: subs }, { data: revs }, { data: invs }] =
+      await Promise.all([
+        getContractMilestones(data.project_id),
+        getMilestoneSubmissions(data.id),
+        getContractReviews(data.id),
+        getContractInvoices(data.id),
+      ]);
     setMilestones(ms);
     setSubmissions(subs);
+    setInvoices(invs);
     setHasReviewed(revs.some((r: any) => r.reviewer_id === profile.id));
     setLoading(false);
   }, [id, profile.id]);
@@ -231,11 +240,39 @@ function Workspace({ profile }: { profile: Profile }) {
   })();
 
   const milestoneActions = (m: Milestone) => {
-    if (!isActive) return null;
+    // Completed contracts still render actions so a freelancer can generate
+    // receipts for past milestones. Every button below gates on the
+    // milestone's own status, so nothing else becomes available.
+    if (!isActive && !isOver) return null;
     const subs = submissions.filter((s) => s.milestone_id === m.id);
+    const invoice = invoices.find(
+      (i) => i.milestone_id === m.id && i.status !== "cancelled"
+    );
 
     return (
       <div className="space-y-3">
+        {/* Invoice for this milestone, once one exists */}
+        {invoice && (
+          <Link
+            href={`/invoices/${invoice.id}`}
+            className="flex items-center justify-between gap-3 rounded-lg border border-border bg-white p-3 transition-colors hover:border-ink/40"
+          >
+            <span className="flex min-w-0 items-center gap-2.5">
+              <Receipt className="h-4 w-4 shrink-0 text-brand" />
+              <span className="min-w-0">
+                <span className="block text-sm font-medium">
+                  {invoice.invoice_number}
+                </span>
+                <span className="block text-xs text-muted-foreground">
+                  {isClient ? "Invoice received" : "Invoice sent"} ·{" "}
+                  {formatPrice(invoice.total_amount)}
+                </span>
+              </span>
+            </span>
+            <InvoiceStatusPill status={invoice.status} />
+          </Link>
+        )}
+
         {subs.length > 0 && (
           <div className="rounded-lg border border-border bg-secondary p-3 text-sm">
             <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -278,6 +315,36 @@ function Workspace({ profile }: { profile: Profile }) {
               <Upload className="mr-1.5 h-3.5 w-3.5" /> Submit work
             </Button>
           )}
+
+          {/* One-click invoicing on any delivered milestone. Already-paid
+              work produces a receipt rather than a payment request. */}
+          {!isClient &&
+            ["submitted", "revision_requested", "paid"].includes(m.status) &&
+            !invoice && (
+              <Button
+                size="sm"
+                variant={m.status === "paid" ? "outline" : "default"}
+                className={cn(
+                  "rounded-full",
+                  m.status !== "paid" && "bg-ink text-paper hover:bg-ink-soft"
+                )}
+                disabled={busy}
+                onClick={() =>
+                  run(
+                    async () => {
+                      const { error } = await createInvoice(m.id);
+                      return { error };
+                    },
+                    m.status === "paid"
+                      ? `Receipt generated for ${formatPrice(m.amount)}`
+                      : `Invoice sent for ${formatPrice(m.amount)}`
+                  )
+                }
+              >
+                <Receipt className="mr-1.5 h-3.5 w-3.5" />
+                {m.status === "paid" ? "Generate receipt" : "Send invoice"}
+              </Button>
+            )}
 
           {isClient && m.status === "submitted" && (
             <>

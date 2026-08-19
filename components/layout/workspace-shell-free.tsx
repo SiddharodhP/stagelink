@@ -49,13 +49,15 @@ export function WorkspaceShellFree({
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background">
-      <div className="hidden md:block">
+    // print:* overrides let the invoice page produce a clean PDF — the
+    // shell's fixed height and scroll containers otherwise clip the output.
+    <div className="flex h-screen overflow-hidden bg-background print:block print:h-auto print:overflow-visible">
+      <div className="hidden md:block print:hidden">
         <Sidebar role={profile.role as "client" | "freelancer" | "admin"} />
       </div>
 
-      <div className="flex-1 overflow-y-auto">
-        <div className="sticky top-0 z-30 flex items-center justify-between border-b border-border bg-background/90 px-4 py-3 backdrop-blur-md md:px-10">
+      <div className="flex-1 overflow-y-auto print:overflow-visible">
+        <div className="sticky top-0 z-30 flex items-center justify-between border-b border-border bg-background/90 px-4 py-3 backdrop-blur-md md:px-10 print:hidden">
           <span className="font-display text-lg font-bold md:hidden">{APP_NAME}</span>
           <span className="hidden text-sm text-muted-foreground md:block">
             {profile.full_name || "Complete your profile"}

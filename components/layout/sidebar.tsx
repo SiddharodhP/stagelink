@@ -20,6 +20,7 @@ import {
   Flag,
   FileSignature,
   Globe2,
+  Receipt,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -40,6 +41,7 @@ export function Sidebar({ role, className }: SidebarProps) {
     { href: "/projects/new", label: "Post a project", icon: PlusCircle },
     { href: "/client/contracts", label: "Contracts", icon: FileSignature },
     { href: "/client/payments", label: "Payments", icon: Wallet },
+    { href: "/invoices", label: "Invoices", icon: Receipt },
     { href: "/messages", label: "Messages", icon: MessageSquare },
     { href: "/settings/profile", label: "Profile", icon: User },
   ];
@@ -52,6 +54,7 @@ export function Sidebar({ role, className }: SidebarProps) {
     { href: "/freelancer/contracts", label: "Contracts", icon: FileSignature },
     { href: "/freelancer/saved", label: "Saved projects", icon: Heart },
     { href: "/freelancer/earnings", label: "Earnings", icon: Wallet },
+    { href: "/invoices", label: "Invoices", icon: Receipt },
     { href: "/freelancer/portfolio", label: "Portfolio", icon: Images },
     { href: "/messages", label: "Messages", icon: MessageSquare },
     { href: "/settings/profile", label: "Profile", icon: User },

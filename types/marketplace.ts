@@ -29,6 +29,11 @@ export interface Profile {
   experience_years: number;
   availability: Availability;
   skills: string[];
+  billing_address?: string | null;
+  billing_email?: string | null;
+  phone?: string | null;
+  tax_id?: string | null;
+  tax_id_label?: string | null;
   is_verified: boolean;
   is_suspended: boolean;
   created_at: string;
@@ -231,4 +236,51 @@ export interface ProjectFilters {
   maxBids: number | null;
   sortBy: "newest" | "budget_desc" | "budget_asc" | "deadline" | "fewest_bids";
   page: number;
+}
+
+export type InvoiceStatus = "sent" | "acknowledged" | "paid" | "cancelled";
+
+export interface Invoice {
+  id: string;
+  invoice_number: string;
+  milestone_id: string;
+  contract_id: string;
+  project_id: string;
+  freelancer_id: string;
+  client_id: string;
+  amount: number;
+  tax_percent: number;
+  tax_amount: number;
+  total_amount: number;
+  currency: string;
+  status: InvoiceStatus;
+  notes: string | null;
+  milestone_title: string;
+  project_title: string;
+  due_date: string | null;
+  issued_at: string;
+  acknowledged_at: string | null;
+  paid_at: string | null;
+  created_at: string;
+  // Billing snapshot, captured at issue time (migration 006)
+  from_name?: string | null;
+  from_address?: string | null;
+  from_email?: string | null;
+  from_phone?: string | null;
+  from_tax_id?: string | null;
+  from_tax_label?: string | null;
+  to_name?: string | null;
+  to_address?: string | null;
+  to_email?: string | null;
+  to_phone?: string | null;
+  to_tax_id?: string | null;
+  to_tax_label?: string | null;
+  deliverables?: string | null;
+  milestone_seq?: number | null;
+  milestone_count?: number | null;
+  payment_terms?: string | null;
+  reference?: string | null;
+  // joins
+  freelancer?: Profile;
+  client?: Profile;
 }

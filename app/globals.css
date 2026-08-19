@@ -240,3 +240,30 @@ body.modal-open {
 .bg-section-gradient {
   background: transparent;
 }
+
+
+/* ============================================
+   Print — used by the invoice "Save PDF" action.
+   App chrome is hidden per-component via Tailwind's
+   print:hidden; these are the page-canvas fallbacks.
+   ============================================ */
+@media print {
+  body {
+    background: #ffffff !important;
+    overflow: visible !important;
+  }
+
+  main {
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  /* Toasts must never land in a printed invoice */
+  [data-sonner-toaster] {
+    display: none !important;
+  }
+
+  @page {
+    margin: 16mm;
+  }
+}
