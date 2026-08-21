@@ -71,3 +71,22 @@ export async function cancelInvoice(invoiceId: string) {
   const { error } = await supabase.rpc("cancel_invoice", { p_invoice_id: invoiceId });
   return { error };
 }
+
+/** Emails the invoice (PDF attached) via the server route. */
+export async function emailInvoice(
+  invoiceId: string,
+  opts?: { to?: string; note?: string }
+) {
+  try {
+    const res = await fetch(`/api/invoices/${invoiceId}/email`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(opts || {}),
+    });
+    const data = await res.json();
+    if (!res.ok) return { sentTo: null, error: new Error(data.error || "Send failed") };
+    return { sentTo: data.sentTo as string, error: null };
+  } catch (err) {
+    return { sentTo: null, error: err as Error };
+  }
+}

@@ -12,10 +12,20 @@ import {
   Check,
   ShieldCheck,
   XCircle,
+  Mail,
 } from "lucide-react";
 
 import { WorkspaceShellFree } from "@/components/layout/workspace-shell-free";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Field, textareaClass } from "@/components/shared/dashboard-ui";
 import { InvoiceStatusPill } from "@/components/shared/invoice-ui";
 import { UserAvatar, NameWithBadge } from "@/components/shared/marketplace-ui";
 import {
@@ -23,6 +33,7 @@ import {
   acknowledgeInvoice,
   payInvoice,
   cancelInvoice,
+  emailInvoice,
 } from "@/lib/services/invoices";
 import { Invoice, Profile } from "@/types/marketplace";
 import { formatPrice, formatDate, cn } from "@/lib/utils";
@@ -37,6 +48,39 @@ function InvoiceDetail({ profile }: { profile: Profile }) {
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [downloading, setDownloading] = useState(false);
+  const [emailOpen, setEmailOpen] = useState(false);
+  const [emailNote, setEmailNote] = useState("");
+  const [sending, setSending] = useState(false);
+
+  const openEmailDialog = () => {
+    setEmailNote("");
+    setEmailOpen(true);
+  };
+
+  /**
+   * Sends without a recipient: the server resolves it from the invoice's
+   * billing email, falling back to the client's account email. Nobody has to
+   * look up — or see — the other party's address to send them their invoice.
+   */
+  const sendEmail = async () => {
+    if (!invoice) return;
+    setSending(true);
+    const { error } = await emailInvoice(invoice.id, {
+      note: emailNote.trim() || undefined,
+    });
+    setSending(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success(
+      profile.id === invoice.freelancer_id
+        ? `Sent to ${invoice.to_name || "the client"}`
+        : "Copy sent to you"
+    );
+    setEmailOpen(false);
+    setEmailNote("");
+  };
 
   /**
    * The PDF renderer is ~1MB, so it's imported only when someone actually
@@ -141,6 +185,15 @@ function InvoiceDetail({ profile }: { profile: Profile }) {
               <Download className="mr-2 h-4 w-4" />
             )}
             Download PDF
+          </Button>
+
+          <Button
+            variant="outline"
+            className="rounded-full"
+            onClick={openEmailDialog}
+          >
+            <Mail className="mr-2 h-4 w-4" />
+            {isFreelancer ? "Email to client" : "Email me a copy"}
           </Button>
 
           <Button
@@ -360,6 +413,59 @@ function InvoiceDetail({ profile }: { profile: Profile }) {
           View the full contract and milestone timeline →
         </Link>
       </div>
+
+      {/* Send dialog. The recipient is resolved server-side, so the address
+          is never rendered here — only the name it's going to. */}
+      <Dialog open={emailOpen} onOpenChange={setEmailOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-display text-2xl">
+              Email {invoice.status === "paid" ? "receipt" : "invoice"}
+            </DialogTitle>
+            <DialogDescription>
+              {`Sends ${invoice.invoice_number} with the PDF attached to `}
+              <span className="font-medium text-foreground">
+                {isFreelancer ? invoice.to_name || "the client" : "you"}
+              </span>
+              {isFreelancer ? ". Replies come back to you." : "."}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-2">
+            <Field label="Add a note" htmlFor="email_note">
+              <textarea
+                id="email_note"
+                className={`${textareaClass} min-h-[90px]`}
+                value={emailNote}
+                onChange={(e) => setEmailNote(e.target.value)}
+                placeholder="Optional — appears in the email body."
+              />
+            </Field>
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              className="rounded-full"
+              onClick={() => setEmailOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              className="rounded-full bg-ink text-paper hover:bg-ink-soft"
+              disabled={sending}
+              onClick={sendEmail}
+            >
+              {sending ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Mail className="mr-2 h-4 w-4" />
+              )}
+              Send
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
