@@ -240,10 +240,54 @@ export interface ProjectFilters {
 
 export type InvoiceStatus = "sent" | "acknowledged" | "paid" | "cancelled";
 
+export type InvoiceKind = "milestone" | "recurring";
+
+export type RecurrenceCadence = "weekly" | "fortnightly" | "monthly";
+
+export type RecurrenceStatus =
+  | "pending_approval"
+  | "active"
+  | "paused"
+  | "declined"
+  | "ended";
+
+/** A retainer: the schedule that issues invoices, not an invoice itself. */
+export interface RecurringInvoice {
+  id: string;
+  contract_id: string;
+  project_id: string;
+  freelancer_id: string;
+  client_id: string;
+  title: string;
+  description: string | null;
+  amount: number;
+  tax_percent: number;
+  currency: string;
+  cadence: RecurrenceCadence;
+  payment_terms_days: number;
+  starts_on: string;
+  next_run_on: string;
+  ends_on: string | null;
+  max_occurrences: number | null;
+  occurrences_created: number;
+  status: RecurrenceStatus;
+  approved_at: string | null;
+  ended_at: string | null;
+  end_reason: string | null;
+  last_run_at: string | null;
+  created_at: string;
+  updated_at: string;
+  // joins
+  freelancer?: Profile;
+  client?: Profile;
+  project?: Project;
+}
+
 export interface Invoice {
   id: string;
   invoice_number: string;
-  milestone_id: string;
+  /** Null on retainer invoices — they bill a period, not a milestone. */
+  milestone_id: string | null;
   contract_id: string;
   project_id: string;
   freelancer_id: string;
@@ -280,6 +324,13 @@ export interface Invoice {
   milestone_count?: number | null;
   payment_terms?: string | null;
   reference?: string | null;
+  // Recurrence (migration 009)
+  kind?: InvoiceKind;
+  recurring_invoice_id?: string | null;
+  period_start?: string | null;
+  period_end?: string | null;
+  reminders_sent?: number;
+  last_reminder_at?: string | null;
   // joins
   freelancer?: Profile;
   client?: Profile;
