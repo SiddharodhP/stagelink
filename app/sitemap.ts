@@ -20,7 +20,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}`, lastModified: now, changeFrequency: "daily", priority: 1 },
     { url: `${SITE_URL}/projects`, lastModified: now, changeFrequency: "hourly", priority: 0.9 },
     { url: `${SITE_URL}/discover`, lastModified: now, changeFrequency: "daily", priority: 0.6 },
-    { url: `${SITE_URL}/freelancers`, lastModified: now, changeFrequency: "daily", priority: 0.9 },
+    { url: `${SITE_URL}/people`, lastModified: now, changeFrequency: "daily", priority: 0.9 },
     { url: `${SITE_URL}/login`, lastModified: now, changeFrequency: "monthly", priority: 0.3 },
   ];
 
@@ -74,7 +74,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     );
 
     const cityRoutes: MetadataRoute.Sitemap = citySlugs.map((slug) => ({
-      url: `${SITE_URL}/freelancers/${slug}`,
+      url: `${SITE_URL}/people/${slug}`,
       lastModified: now,
       changeFrequency: "daily" as const,
       priority: 0.8,

@@ -99,7 +99,7 @@ function DirectoryInner() {
     if (next.q) qs.set("q", next.q);
     if (next.city) qs.set("city", next.city);
     if (next.skill) qs.set("skill", next.skill);
-    router.replace(qs.toString() ? `/freelancers?${qs}` : "/freelancers", {
+    router.replace(qs.toString() ? `/people?${qs}` : "/people", {
       scroll: false,
     });
   };
@@ -296,7 +296,7 @@ function DirectoryInner() {
                   setFilters({ ...EMPTY, role: filters.role });
                   setSearchInput("");
                   router.replace(
-                    filters.role === "client" ? "/freelancers?role=client" : "/freelancers",
+                    filters.role === "client" ? "/people?role=client" : "/people",
                     { scroll: false }
                   );
                 }}
@@ -372,7 +372,7 @@ function DirectoryInner() {
                   setFilters({ ...EMPTY, role: filters.role });
                   setSearchInput("");
                   router.replace(
-                    filters.role === "client" ? "/freelancers?role=client" : "/freelancers",
+                    filters.role === "client" ? "/people?role=client" : "/people",
                     { scroll: false }
                   );
                 }

@@ -57,8 +57,8 @@ export async function getMyBilling() {
 /**
  * Typeahead over the full worldwide city list.
  *
- * getCities() below is unusable at this size — the table holds ~34,000
- * cities — so anything user-facing goes through this instead.
+ * The table holds ~34,000 cities, so there is no "fetch them all" call to
+ * fall back on — every lookup goes through this.
  */
 export async function searchCities(query: string, limit = 12) {
   if (!query || query.trim().length < 2) return { data: [] as City[], error: null };
@@ -66,40 +66,6 @@ export async function searchCities(query: string, limit = 12) {
     p_query: query.trim(),
     p_limit: limit,
   });
-  return { data: (data || []) as City[], error };
-}
-
-/**
- * Resolves a city, creating it if GeoNames doesn't list it — anything under
- * 15,000 people is missing from that dataset, and plenty of real work
- * happens in those places.
- */
-export async function getOrCreateCity(input: {
-  name: string;
-  state?: string;
-  country?: string;
-  countryCode?: string;
-}) {
-  const { data, error } = await supabase.rpc("get_or_create_city", {
-    p_name: input.name,
-    p_state: input.state ?? null,
-    p_country: input.country ?? "India",
-    p_country_code: input.countryCode ?? "IN",
-  });
-  return { id: (data as number | null) ?? null, error };
-}
-
-/**
- * The whole table. Only safe where the list is known to be small — it is
- * NOT suitable for a dropdown now that cities are worldwide. Prefer
- * searchCities().
- */
-export async function getCities() {
-  const { data, error } = await supabase
-    .from("cities")
-    .select("*")
-    .order("is_metro", { ascending: false })
-    .order("name");
   return { data: (data || []) as City[], error };
 }
 

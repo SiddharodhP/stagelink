@@ -14,8 +14,8 @@ export default function robots(): MetadataRoute.Robots {
           "/admin",
           "/admin/",
           "/client/",
-          // Trailing slash matters: this blocks the private /freelancer/
-          // workspace WITHOUT touching the public /freelancers directory.
+          // The private freelancer workspace. The public directory moved to
+          // /people, so this can no longer catch it by accident.
           "/freelancer/",
           "/contracts/",
           "/messages",

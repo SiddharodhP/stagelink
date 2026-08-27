@@ -43,7 +43,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return buildMetadata({
       title: "City not found",
       description: "This city page does not exist.",
-      path: `/freelancers/${slug}`,
+      path: `/people/${slug}`,
       noIndex: true,
     });
   }
@@ -55,7 +55,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     noIndex: people.length === 0,
     title: `Photographers & Videographers in ${n} — Hire Freelancers`,
     description: `Find and book freelance photographers, videographers and video editors in ${n}, ${city.state}. Compare portfolios, ratings and day rates. Milestone payments held in escrow until you approve the work.`,
-    path: `/freelancers/${slug}`,
+    path: `/people/${slug}`,
     keywords: [
       `photographers in ${n}`,
       `videographers in ${n}`,
@@ -138,8 +138,8 @@ export default async function CityPage({ params }: Props) {
       <JsonLd
         data={breadcrumbJsonLd([
           { name: "Home", path: "/" },
-          { name: "Freelancers", path: "/freelancers" },
-          { name: city.name, path: `/freelancers/${city.slug}` },
+          { name: "People", path: "/people" },
+          { name: city.name, path: `/people/${city.slug}` },
         ])}
       />
       {people.length > 0 && (
@@ -190,7 +190,7 @@ export default async function CityPage({ params }: Props) {
               </div>
               <div className="mt-5 flex flex-wrap gap-3">
                 <Button asChild className="rounded-full bg-ink text-paper hover:bg-ink-soft">
-                  <Link href={`/freelancers?city=${encodeURIComponent(city.name)}`}>
+                  <Link href={`/people?city=${encodeURIComponent(city.name)}`}>
                     Filter by skill and rate
                   </Link>
                 </Button>
@@ -213,7 +213,7 @@ export default async function CityPage({ params }: Props) {
                   <Link href="/projects/new">Post a project</Link>
                 </Button>
                 <Button asChild variant="outline" className="rounded-full">
-                  <Link href="/freelancers">Browse everyone</Link>
+                  <Link href="/people">Browse everyone</Link>
                 </Button>
               </div>
             </div>
@@ -231,7 +231,7 @@ export default async function CityPage({ params }: Props) {
               {nearby.map((c) => (
                 <Link
                   key={c.slug}
-                  href={`/freelancers/${c.slug}`}
+                  href={`/people/${c.slug}`}
                   className="rounded-full border border-border bg-white px-4 py-2 text-sm font-medium transition-colors hover:bg-secondary"
                 >
                   {c.name}
@@ -247,7 +247,7 @@ export default async function CityPage({ params }: Props) {
             {metros.map((c) => (
               <Link
                 key={c.slug}
-                href={`/freelancers/${c.slug}`}
+                href={`/people/${c.slug}`}
                 className="inline-flex items-center gap-1 rounded-full border border-border bg-white px-4 py-2 text-sm font-medium transition-colors hover:bg-secondary"
               >
                 {c.name} <ArrowUpRight className="h-3.5 w-3.5 opacity-50" />

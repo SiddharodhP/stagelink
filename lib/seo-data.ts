@@ -167,17 +167,6 @@ export interface SeoFreelancer {
   completeness: number;
 }
 
-export async function getAllCities(): Promise<SeoCity[]> {
-  const supabase = serverClient();
-  if (!supabase) return [];
-  const { data } = await supabase
-    .from("cities")
-    .select("name, state, slug, is_metro")
-    .order("is_metro", { ascending: false })
-    .order("name");
-  return (data || []) as SeoCity[];
-}
-
 export async function getCityBySlug(slug: string): Promise<SeoCity | null> {
   const supabase = serverClient();
   if (!supabase) return null;

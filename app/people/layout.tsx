@@ -7,7 +7,7 @@ export const metadata: Metadata = buildMetadata({
   title: "Hire Photographers & Videographers — Freelance Directory",
   description:
     "Browse freelance photographers, videographers, editors and drone operators across India. Filter by city, craft, rate and availability. Milestone payments held in escrow until you approve the work.",
-  path: "/freelancers",
+  path: "/people",
   keywords: [
     "hire freelance photographer",
     "hire videographer india",

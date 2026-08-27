@@ -4,7 +4,7 @@ export const APP_DESCRIPTION =
 export const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 
 export const NAV_LINKS = [
-  { label: 'Find people', href: '/freelancers' },
+  { label: 'Find people', href: '/people' },
   { label: 'Browse projects', href: '/projects' },
   { label: 'Discover', href: '/discover' },
   { label: 'How it works', href: '/#how-it-works' },
