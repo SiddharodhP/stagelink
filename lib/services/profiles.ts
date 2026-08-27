@@ -4,7 +4,7 @@ import {
   PortfolioItem,
   Review,
   City,
-  FreelancerFilters,
+  PeopleFilters,
 } from "@/types/marketplace";
 
 const supabase = createBrowserClient();
@@ -104,42 +104,56 @@ export async function getCities() {
 }
 
 /**
- * The directory query.
+ * The directory query, for either side of the marketplace.
  *
- * Ranks complete profiles above empty ones by default — a photographer with
- * no avatar, bio or portfolio is not a useful search result, and surfacing
+ * Ranks complete profiles above empty ones by default — someone with no
+ * avatar, bio or portfolio is not a useful search result, and surfacing
  * them makes the whole marketplace look abandoned.
+ *
+ * Rate, skill and availability filters only mean anything for freelancers,
+ * so they're ignored when listing clients rather than silently returning
+ * nothing.
  */
-export async function searchFreelancers(
-  filters: FreelancerFilters = {},
+export async function searchPeople(
+  filters: PeopleFilters = { role: "freelancer" },
   limit = 48
 ) {
+  const isFreelancer = filters.role === "freelancer";
+
   let query = supabase
     .from("profiles")
     .select(PUBLIC_PROFILE_COLUMNS)
-    .eq("role", "freelancer")
+    .eq("role", filters.role)
     .eq("is_suspended", false);
 
   if (filters.q) {
     const q = filters.q.replace(/[%,()]/g, " ").trim();
     if (q) {
-      query = query.or(
-        `full_name.ilike.%${q}%,headline.ilike.%${q}%,bio.ilike.%${q}%`
-      );
+      const fields = isFreelancer
+        ? `full_name.ilike.%${q}%,headline.ilike.%${q}%,bio.ilike.%${q}%`
+        : `full_name.ilike.%${q}%,company_name.ilike.%${q}%,bio.ilike.%${q}%`;
+      query = query.or(fields);
     }
   }
+
   if (filters.city) {
-    // Someone who works remotely should still surface for a city search.
-    query = filters.remoteOnly
-      ? query.eq("works_remotely", true)
-      : query.or(`city.eq.${filters.city},works_remotely.eq.true`);
-  } else if (filters.remoteOnly) {
+    // A freelancer who works remotely is a real option for any city, so
+    // they stay in city results. Clients have no such notion.
+    query = isFreelancer
+      ? filters.remoteOnly
+        ? query.eq("works_remotely", true)
+        : query.or(`city.eq.${filters.city},works_remotely.eq.true`)
+      : query.eq("city", filters.city);
+  } else if (filters.remoteOnly && isFreelancer) {
     query = query.eq("works_remotely", true);
   }
-  if (filters.skill) query = query.contains("skills", [filters.skill]);
+
+  if (isFreelancer) {
+    if (filters.skill) query = query.contains("skills", [filters.skill]);
+    if (filters.maxRate) query = query.lte("hourly_rate", filters.maxRate);
+    if (filters.availability) query = query.eq("availability", filters.availability);
+  }
   if (filters.minRating) query = query.gte("avg_rating", filters.minRating);
-  if (filters.maxRate) query = query.lte("hourly_rate", filters.maxRate);
-  if (filters.availability) query = query.eq("availability", filters.availability);
   if (filters.verifiedOnly) query = query.eq("is_verified", true);
 
   switch (filters.sort) {
@@ -169,6 +183,28 @@ export async function searchFreelancers(
     })),
     error,
   };
+}
+
+/**
+ * How many projects each of these clients currently has open.
+ *
+ * A separate query because there's no denormalised count on profiles, and
+ * "posted 3 projects" is the one number that tells a freelancer whether a
+ * client is worth approaching.
+ */
+export async function getOpenProjectCounts(clientIds: string[]) {
+  if (clientIds.length === 0) return { data: {} as Record<string, number>, error: null };
+  const { data, error } = await supabase
+    .from("projects")
+    .select("client_id")
+    .in("client_id", clientIds)
+    .eq("status", "open");
+
+  const counts: Record<string, number> = {};
+  for (const row of (data || []) as { client_id: string }[]) {
+    counts[row.client_id] = (counts[row.client_id] || 0) + 1;
+  }
+  return { data: counts, error };
 }
 
 /**

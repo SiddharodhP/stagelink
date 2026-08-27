@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { MapPin, Globe, Star } from "lucide-react";
+import { MapPin, Globe, Star, Briefcase } from "lucide-react";
 
 import { UserAvatar, NameWithBadge, SkillTags } from "@/components/shared/marketplace-ui";
 import { Profile } from "@/types/marketplace";
@@ -100,6 +100,95 @@ export function FreelancerCard({ profile }: { profile: Profile }) {
           </span>
         ) : (
           <span className="text-xs text-muted-foreground">Rate on request</span>
+        )}
+      </div>
+    </Link>
+  );
+}
+
+/**
+ * Client card.
+ *
+ * Shows the things a freelancer actually weighs before spending an hour on
+ * a proposal: is this a real company, have they hired here before, and are
+ * they hiring right now. Deliberately not a mirror of the freelancer card
+ * — rate, skills and availability mean nothing on this side.
+ */
+export function ClientCard({
+  profile,
+  openProjects = 0,
+}: {
+  profile: Profile;
+  openProjects?: number;
+}) {
+  const rating = Number(profile.avg_rating || 0);
+  const reviews = profile.total_reviews || 0;
+  const spent = profile.total_spent || 0;
+  const place = [profile.city, profile.state].filter(Boolean).join(", ");
+  const name = profile.company_name || profile.full_name || "Client";
+
+  return (
+    <Link
+      href={`/u/${profile.id}`}
+      className="group flex h-full flex-col rounded-xl border border-border bg-white p-5 transition-all hover:-translate-y-0.5 hover:border-foreground/20 hover:shadow-sm"
+    >
+      <div className="flex items-start gap-3.5">
+        <UserAvatar name={name} src={profile.avatar_url} size={52} />
+        <div className="min-w-0 flex-1">
+          <NameWithBadge name={name} verified={profile.is_verified} />
+          {profile.company_name && profile.full_name && (
+            <p className="mt-0.5 truncate text-sm text-muted-foreground">
+              {profile.full_name}
+            </p>
+          )}
+        </div>
+      </div>
+
+      <div className="mt-3.5 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-muted-foreground">
+        {place && (
+          <span className="inline-flex items-center gap-1">
+            <MapPin className="h-3.5 w-3.5" /> {place}
+          </span>
+        )}
+        {reviews > 0 ? (
+          <span className="inline-flex items-center gap-1 font-medium text-foreground">
+            <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+            {rating.toFixed(1)}
+            <span className="font-normal text-muted-foreground">({reviews})</span>
+          </span>
+        ) : (
+          <span className="italic">No reviews yet</span>
+        )}
+      </div>
+
+      {profile.bio && (
+        <p className="mt-3 line-clamp-2 text-sm text-muted-foreground">
+          {profile.bio}
+        </p>
+      )}
+
+      <div className="mt-auto flex items-center justify-between gap-3 pt-4">
+        {openProjects > 0 ? (
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-emerald-800">
+            <Briefcase className="h-3 w-3" />
+            {openProjects} hiring
+          </span>
+        ) : (
+          <span className="inline-flex items-center rounded-full border border-border bg-secondary px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-foreground/60">
+            Not hiring
+          </span>
+        )}
+        {spent > 0 ? (
+          <span className="text-right">
+            <span className="font-display text-base font-semibold">
+              {formatPrice(spent)}
+            </span>
+            <span className="block text-[11px] text-muted-foreground">
+              paid out
+            </span>
+          </span>
+        ) : (
+          <span className="text-xs text-muted-foreground">New client</span>
         )}
       </div>
     </Link>

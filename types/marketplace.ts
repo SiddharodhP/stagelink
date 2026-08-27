@@ -29,7 +29,9 @@ export interface City {
   longitude?: number | null;
 }
 
-export interface FreelancerFilters {
+/** Directory filters. `role` decides which side of the marketplace is listed. */
+export interface PeopleFilters {
+  role: "freelancer" | "client";
   q?: string;
   city?: string;
   skill?: string;
