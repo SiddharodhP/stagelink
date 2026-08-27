@@ -10,6 +10,7 @@ const PROTECTED_PREFIXES = [
   '/contracts',
   '/settings',
   '/invoices',
+  '/onboarding',
   '/projects/new',
 ];
 

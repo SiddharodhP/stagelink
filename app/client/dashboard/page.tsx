@@ -21,6 +21,7 @@ import {
   EmptyCard,
   SkeletonRows,
 } from "@/components/shared/dashboard-ui";
+import { CompletenessMeter } from "@/components/shared/completeness-meter";
 import {
   ProjectStatusPill,
   ContractStatusPill,
@@ -72,7 +73,6 @@ function Dashboard({ profile }: { profile: Profile }) {
     (c.project?.milestones || []).some((m) => m.status === "submitted")
   );
 
-  const profileIncomplete = !profile.full_name || !profile.bio;
 
   if (loading) {
     return (
@@ -99,25 +99,7 @@ function Dashboard({ profile }: { profile: Profile }) {
         }
       />
 
-      {profileIncomplete && (
-        <div className="mb-8 flex flex-col items-start justify-between gap-4 rounded-xl border border-amber-200 bg-amber-50 p-6 md:flex-row md:items-center">
-          <div className="flex items-start gap-4">
-            <div className="rounded-full bg-amber-100 p-2.5 text-amber-700">
-              <AlertTriangle className="h-5 w-5" />
-            </div>
-            <div>
-              <h3 className="mb-1 font-semibold">Complete your client profile</h3>
-              <p className="text-sm text-muted-foreground">
-                Freelancers check who they&apos;d be working with — profiles with a
-                bio attract noticeably stronger bids.
-              </p>
-            </div>
-          </div>
-          <Button asChild className="rounded-full bg-ink text-paper hover:bg-ink-soft">
-            <Link href="/settings/profile">Complete profile</Link>
-          </Button>
-        </div>
-      )}
+      <CompletenessMeter profile={profile} className="mb-8" />
 
       {/* Stats */}
       <div className="mb-8 grid grid-cols-2 gap-4 lg:grid-cols-4">

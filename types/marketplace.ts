@@ -15,6 +15,32 @@ export type TransactionStatus = "pending" | "completed" | "failed";
 export type DisputeStatus = "open" | "under_review" | "resolved";
 export type Availability = "available" | "limited" | "unavailable";
 
+export interface City {
+  id: number;
+  name: string;
+  state: string | null;
+  country: string;
+  /** ISO 3166-1 alpha-2. Cities are worldwide as of migration 012. */
+  country_code?: string | null;
+  slug: string;
+  is_metro: boolean;
+  population?: number | null;
+  latitude?: number | null;
+  longitude?: number | null;
+}
+
+export interface FreelancerFilters {
+  q?: string;
+  city?: string;
+  skill?: string;
+  minRating?: number;
+  maxRate?: number;
+  availability?: Availability | "";
+  remoteOnly?: boolean;
+  verifiedOnly?: boolean;
+  sort?: "relevance" | "rating" | "rate_asc" | "rate_desc" | "newest";
+}
+
 export interface Profile {
   id: string;
   role: MarketplaceRole | null;
@@ -29,6 +55,17 @@ export interface Profile {
   experience_years: number;
   availability: Availability;
   skills: string[];
+  // Structured location (migration 011). `location` is kept as the free-text
+  // label people typed; `city` is what the directory actually filters on.
+  city?: string | null;
+  state?: string | null;
+  country?: string | null;
+  works_remotely?: boolean;
+  travel_radius_km?: number | null;
+  /** 0-100, maintained by DB trigger. See compute_profile_completeness. */
+  completeness?: number;
+  // Billing fields are NOT selectable by anon/authenticated (migration 011).
+  // They arrive only via getMyBilling(), never on a public profile read.
   billing_address?: string | null;
   billing_email?: string | null;
   phone?: string | null;

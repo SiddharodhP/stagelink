@@ -95,13 +95,20 @@ function Dashboard({ profile }: { profile: Profile }) {
 
   const checklist = [
     { done: Boolean(profile.full_name), label: "Add your name" },
-    { done: Boolean(profile.headline), label: "Write a headline" },
-    { done: Boolean(profile.bio), label: "Write your bio" },
-    { done: (profile.skills?.length || 0) > 0, label: "Add your skills" },
     { done: Boolean(profile.avatar_url), label: "Upload a photo" },
+    { done: Boolean(profile.headline), label: "Write a headline" },
+    { done: (profile.bio || "").length >= 80, label: "Write your bio" },
+    { done: Boolean(profile.city), label: "Set your city" },
+    { done: (profile.skills?.length || 0) >= 3, label: "Add 3+ skills" },
+    { done: Boolean(profile.hourly_rate), label: "Set your rate" },
   ];
   const doneCount = checklist.filter((c) => c.done).length;
-  const completion = Math.round((doneCount / checklist.length) * 100);
+  // The percentage comes from the database, not from this list: the
+  // directory ranks on profiles.completeness, so showing a different
+  // number here would tell people their profile is finished when search
+  // still buries them. The checklist above mirrors those weights.
+  const completion =
+    profile.completeness ?? Math.round((doneCount / checklist.length) * 100);
 
   if (loading) {
     return (

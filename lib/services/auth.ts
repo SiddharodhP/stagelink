@@ -1,5 +1,6 @@
 import { createClient as createBrowserClient } from "@/lib/supabase/client";
 import { MarketplaceRole } from "@/types/marketplace";
+import { PUBLIC_PROFILE_COLUMNS } from "@/lib/services/profiles";
 
 // Use this for browser-side auth actions
 const supabase = createBrowserClient();
@@ -45,9 +46,11 @@ export async function getCurrentUser() {
 export async function getMyProfile() {
   const { user } = await getCurrentUser();
   if (!user) return { data: null, error: new Error("Not signed in") };
+  // Not select("*") — migration 011 revoked column-level SELECT on the
+  // billing block. Own billing details come from getMyBilling().
   const { data, error } = await supabase
     .from("profiles")
-    .select("*")
+    .select(PUBLIC_PROFILE_COLUMNS)
     .eq("id", user.id)
     .maybeSingle();
   return { data, error };
@@ -61,7 +64,7 @@ export async function setRole(role: Exclude<MarketplaceRole, "admin">) {
     .from("profiles")
     .update({ role })
     .eq("id", user.id)
-    .select()
+    .select(PUBLIC_PROFILE_COLUMNS)
     .single();
   return { data, error };
 }

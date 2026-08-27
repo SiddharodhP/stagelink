@@ -21,7 +21,7 @@ export default function RoleSelectPage() {
       const { error } = await setRole(selectedRole);
       if (error) throw error;
       toast.success(`Welcome to ${APP_NAME}!`);
-      router.push("/settings/profile?onboarding=1");
+      router.push("/onboarding");
     } catch (err: any) {
       toast.error(err.message || "Failed to set account type");
       setIsLoading(false);

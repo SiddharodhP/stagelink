@@ -4,10 +4,10 @@ export const APP_DESCRIPTION =
 export const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 
 export const NAV_LINKS = [
+  { label: 'Find creators', href: '/freelancers' },
   { label: 'Browse projects', href: '/projects' },
   { label: 'Discover', href: '/discover' },
   { label: 'How it works', href: '/#how-it-works' },
-  { label: 'For freelancers', href: '/#for-freelancers' },
 ] as const;
 
 export const EXPERIENCE_LEVELS = [

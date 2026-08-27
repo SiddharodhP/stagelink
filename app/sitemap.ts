@@ -20,6 +20,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}`, lastModified: now, changeFrequency: "daily", priority: 1 },
     { url: `${SITE_URL}/projects`, lastModified: now, changeFrequency: "hourly", priority: 0.9 },
     { url: `${SITE_URL}/discover`, lastModified: now, changeFrequency: "daily", priority: 0.6 },
+    { url: `${SITE_URL}/freelancers`, lastModified: now, changeFrequency: "daily", priority: 0.9 },
     { url: `${SITE_URL}/login`, lastModified: now, changeFrequency: "monthly", priority: 0.3 },
   ];
 
@@ -30,8 +31,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     const supabase = createClient(url, key);
 
-    const [categories, projects, profiles] = await Promise.all([
+    const [categories, cities, projects, profiles] = await Promise.all([
       supabase.from("categories").select("slug"),
+      // Only cities with freelancers — see getCitiesWithFreelancers().
+      // The table is worldwide, so listing every slug would put ~34,000
+      // empty URLs in the sitemap.
+      supabase
+        .from("profiles")
+        .select("city")
+        .eq("role", "freelancer")
+        .eq("is_suspended", false)
+        .not("city", "is", null)
+        .limit(5000),
       supabase
         .from("projects")
         .select("id, updated_at, published_at")
@@ -52,6 +63,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     }));
 
+    // City directory pages — the ones that can rank for "photographer in X".
+    const citySlugs = Array.from(
+      new Set(
+        (cities.data || [])
+          .map((p: { city: string | null }) => p.city)
+          .filter((c): c is string => Boolean(c))
+          .map((c) => c.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""))
+      )
+    );
+
+    const cityRoutes: MetadataRoute.Sitemap = citySlugs.map((slug) => ({
+      url: `${SITE_URL}/freelancers/${slug}`,
+      lastModified: now,
+      changeFrequency: "daily" as const,
+      priority: 0.8,
+    }));
+
     const projectRoutes: MetadataRoute.Sitemap = (projects.data || []).map((p) => ({
       url: `${SITE_URL}/projects/${p.id}`,
       lastModified: new Date(p.updated_at || p.published_at || now),
@@ -66,7 +94,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.5,
     }));
 
-    return [...staticRoutes, ...categoryRoutes, ...projectRoutes, ...profileRoutes];
+    return [
+      ...staticRoutes,
+      ...categoryRoutes,
+      ...cityRoutes,
+      ...projectRoutes,
+      ...profileRoutes,
+    ];
   } catch {
     // Never let a DB hiccup break the sitemap entirely.
     return staticRoutes;

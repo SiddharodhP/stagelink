@@ -1,5 +1,6 @@
 import { createClient as createBrowserClient } from "@/lib/supabase/client";
 import { Dispute, Profile } from "@/types/marketplace";
+import { PUBLIC_PROFILE_COLUMNS } from "@/lib/services/profiles";
 
 const supabase = createBrowserClient();
 
@@ -21,9 +22,12 @@ export async function getPlatformStats() {
 }
 
 export async function getAllUsers() {
+  // Admins have no column-level access to the billing block either — the
+  // revoke in migration 011 applies to the `authenticated` role, not to a
+  // person's admin flag. Moderation never needed those fields anyway.
   const { data, error } = await supabase
     .from("profiles")
-    .select("*")
+    .select(PUBLIC_PROFILE_COLUMNS)
     .order("created_at", { ascending: false })
     .limit(200);
   return { data: (data || []) as Profile[], error };

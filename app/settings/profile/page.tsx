@@ -18,7 +18,8 @@ import {
 } from "@/components/shared/dashboard-ui";
 import { UserAvatar } from "@/components/shared/marketplace-ui";
 import { getMyProfile } from "@/lib/services/auth";
-import { updateProfile } from "@/lib/services/profiles";
+import { updateProfile, getMyBilling } from "@/lib/services/profiles";
+import { CityCombobox } from "@/components/shared/city-combobox";
 import { getSkillsList } from "@/lib/services/projects";
 import { uploadFile } from "@/lib/services/storage";
 import { Profile } from "@/types/marketplace";
@@ -39,6 +40,10 @@ function ProfileSettingsInner() {
     headline: "",
     bio: "",
     location: "",
+    city: "",
+    state: "",
+    works_remotely: false,
+    travel_radius_km: "",
     company_name: "",
     website: "",
     hourly_rate: "",
@@ -65,6 +70,10 @@ function ProfileSettingsInner() {
         headline: data.headline || "",
         bio: data.bio || "",
         location: data.location || "",
+        city: data.city || "",
+        state: data.state || "",
+        works_remotely: Boolean(data.works_remotely),
+        travel_radius_km: data.travel_radius_km ? String(data.travel_radius_km) : "",
         company_name: data.company_name || "",
         website: data.website || "",
         hourly_rate: data.hourly_rate ? String(data.hourly_rate) : "",
@@ -72,13 +81,29 @@ function ProfileSettingsInner() {
         availability: data.availability || "available",
         avatar_url: data.avatar_url || "",
         skills: data.skills || [],
+        // Billing arrives separately — see below.
+        billing_address: "",
+        billing_email: "",
+        phone: "",
+        tax_id: "",
+        tax_id_label: "GSTIN",
+      });
+    });
+
+    // Column-level SELECT on the billing block is revoked (migration 011),
+    // so these can't ride along on the profile read any more.
+    getMyBilling().then(({ data }) => {
+      if (!data) return;
+      setForm((f) => ({
+        ...f,
         billing_address: data.billing_address || "",
         billing_email: data.billing_email || "",
         phone: data.phone || "",
         tax_id: data.tax_id || "",
         tax_id_label: data.tax_id_label || "GSTIN",
-      });
+      }));
     });
+
     getSkillsList().then(({ data }) => setSkillOptions(data));
   }, [router]);
 
@@ -113,6 +138,12 @@ function ProfileSettingsInner() {
       headline: form.headline.trim() || null,
       bio: form.bio.trim() || null,
       location: form.location.trim() || null,
+      city: form.city || null,
+      state: form.state || null,
+      works_remotely: form.works_remotely,
+      travel_radius_km: form.travel_radius_km
+        ? Number(form.travel_radius_km)
+        : null,
       company_name: form.company_name.trim() || null,
       website: form.website.trim() || null,
       hourly_rate: form.hourly_rate ? Number(form.hourly_rate) : null,
@@ -207,16 +238,77 @@ function ProfileSettingsInner() {
               />
             </Field>
 
-            <Field label="Location" htmlFor="location">
+            <Field
+              label="City"
+              htmlFor="city"
+              hint="Clients filter the directory by city, so pick the closest one."
+            >
+              <CityCombobox
+                id="city"
+                value={form.city}
+                onChange={(c) =>
+                  setForm({ ...form, city: c?.name || "", state: c?.state || "" })
+                }
+              />
+            </Field>
+          </div>
+
+          <div className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2">
+            <Field
+              label="Area or neighbourhood"
+              htmlFor="location"
+              hint="Optional, free text. Shown on your profile."
+            >
               <input
                 id="location"
                 className={inputClass}
                 value={form.location}
                 onChange={(e) => setForm({ ...form, location: e.target.value })}
-                placeholder="e.g. Bangalore, India"
+                placeholder="e.g. Indiranagar"
               />
             </Field>
+
+            {isFreelancer && (
+              <Field
+                label="Willing to travel (km)"
+                htmlFor="travel_radius_km"
+                hint="Leave blank if you only work in your own city."
+              >
+                <input
+                  id="travel_radius_km"
+                  type="number"
+                  min={0}
+                  max={5000}
+                  className={inputClass}
+                  value={form.travel_radius_km}
+                  onChange={(e) =>
+                    setForm({ ...form, travel_radius_km: e.target.value })
+                  }
+                  placeholder="e.g. 150"
+                />
+              </Field>
+            )}
           </div>
+
+          {isFreelancer && (
+            <label className="mt-5 flex cursor-pointer items-start gap-3 rounded-xl border border-border bg-secondary/40 px-4 py-3">
+              <input
+                type="checkbox"
+                className="mt-0.5 h-4 w-4 accent-[color:var(--brand,#d6440f)]"
+                checked={form.works_remotely}
+                onChange={(e) =>
+                  setForm({ ...form, works_remotely: e.target.checked })
+                }
+              />
+              <span className="text-sm">
+                <span className="font-medium">I take remote work too</span>
+                <span className="block text-muted-foreground">
+                  Editing, retouching, colour grading — anything not tied to a
+                  location. You&apos;ll show up in every city&apos;s results.
+                </span>
+              </span>
+            </label>
+          )}
 
           {isFreelancer ? (
             <div className="mt-5">
