@@ -3,7 +3,16 @@
 import { Suspense, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Search, Send, MessageSquare, Loader2, ArrowLeft } from "lucide-react";
+import {
+  Search,
+  Send,
+  MessageSquare,
+  Loader2,
+  ArrowLeft,
+  Video,
+  PhoneOff,
+  Phone,
+} from "lucide-react";
 
 import { WorkspaceShellFree } from "@/components/layout/workspace-shell-free";
 import { UserAvatar } from "@/components/shared/marketplace-ui";
@@ -14,7 +23,16 @@ import {
   markConversationRead,
   subscribeToMessages,
 } from "@/lib/services/messaging";
-import { Conversation, Message, Profile } from "@/types/marketplace";
+import { Button } from "@/components/ui/button";
+import { VideoCall } from "@/components/shared/video-call";
+import {
+  startCall,
+  answerCall,
+  endCall,
+  getActiveCall,
+  subscribeToCalls,
+} from "@/lib/services/calls";
+import { CallSession, Conversation, Message, Profile } from "@/types/marketplace";
 import { cn, timeAgo } from "@/lib/utils";
 
 function MessagesInner({ profile }: { profile: Profile }) {
@@ -28,6 +46,9 @@ function MessagesInner({ profile }: { profile: Profile }) {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [mobileShowThread, setMobileShowThread] = useState(false);
+  const [call, setCall] = useState<CallSession | null>(null);
+  const [inCall, setInCall] = useState(false);
+  const [callBusy, setCallBusy] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -54,9 +75,69 @@ function MessagesInner({ profile }: { profile: Profile }) {
     return unsubscribe;
   }, [active, profile.id]);
 
+  // Call state for the open thread. The realtime subscription is what
+  // makes the callee's phone ring — without it they'd have to refresh to
+  // notice they were being called.
+  useEffect(() => {
+    if (!active) return;
+    let cancelled = false;
+
+    getActiveCall(active.id).then(({ data }) => {
+      if (!cancelled) setCall(data);
+    });
+
+    const unsubscribe = subscribeToCalls(active.id, (row) => {
+      if (cancelled) return;
+      const live = row.status === "ringing" || row.status === "active";
+      setCall(live ? row : null);
+      // Whoever hung up first, the other side leaves the meeting too.
+      if (!live) setInCall(false);
+    });
+
+    return () => {
+      cancelled = true;
+      unsubscribe();
+      // Runs when the open conversation changes too, so switching threads
+      // can't carry one thread's call state into another.
+      setCall(null);
+      setInCall(false);
+    };
+  }, [active]);
+
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  const beginCall = async () => {
+    if (!active) return;
+    setCallBusy(true);
+    const { callId, error } = await startCall(active.id);
+    setCallBusy(false);
+    if (error || !callId) return;
+    const { data } = await getActiveCall(active.id);
+    setCall(data);
+    setInCall(true);
+  };
+
+  const acceptCall = async () => {
+    if (!call) return;
+    setCallBusy(true);
+    const { error } = await answerCall(call.id);
+    setCallBusy(false);
+    if (error) return;
+    setInCall(true);
+  };
+
+  const hangUp = async () => {
+    if (!call) return;
+    setInCall(false);
+    setCallBusy(true);
+    await endCall(call.id);
+    setCallBusy(false);
+    setCall(null);
+    // The RPC writes a "call ended" line into the thread; pick it up.
+    if (active) getMessages(active.id).then(({ data }) => setMessages(data));
+  };
 
   const send = async () => {
     const body = draft.trim();
@@ -221,8 +302,100 @@ function MessagesInner({ profile }: { profile: Profile }) {
                   </p>
                 </div>
               </Link>
+
+              <Button
+                variant="outline"
+                size="sm"
+                className="ml-auto shrink-0 rounded-full"
+                disabled={callBusy || inCall}
+                onClick={beginCall}
+                aria-label={`Start a video call with ${
+                  active.other?.full_name || "this person"
+                }`}
+              >
+                {callBusy && !call ? (
+                  <Loader2 className="h-4 w-4 animate-spin sm:mr-2" />
+                ) : (
+                  <Video className="h-4 w-4 sm:mr-2" />
+                )}
+                <span className="hidden sm:inline">
+                  {call && call.status === "active" ? "Rejoin" : "Call"}
+                </span>
+              </Button>
             </div>
 
+            {/* Incoming call. Only the person being rung sees this. */}
+            {call &&
+              call.status === "ringing" &&
+              call.callee_id === profile.id &&
+              !inCall && (
+                <div className="flex flex-wrap items-center gap-3 border-b border-border bg-emerald-50 px-4 py-3">
+                  <span className="relative flex h-2.5 w-2.5 shrink-0">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-75" />
+                    <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-600" />
+                  </span>
+                  <p className="text-sm font-medium">
+                    {active.other?.full_name || "Someone"} is calling
+                  </p>
+                  <div className="ml-auto flex gap-2">
+                    <Button
+                      size="sm"
+                      className="rounded-full bg-emerald-600 text-white hover:bg-emerald-700"
+                      disabled={callBusy}
+                      onClick={acceptCall}
+                    >
+                      <Phone className="mr-1.5 h-3.5 w-3.5" /> Answer
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="rounded-full"
+                      disabled={callBusy}
+                      onClick={hangUp}
+                    >
+                      Decline
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+            {/* Caller's side while it rings out. */}
+            {call &&
+              call.status === "ringing" &&
+              call.caller_id === profile.id &&
+              !inCall && (
+                <div className="flex flex-wrap items-center gap-3 border-b border-border bg-secondary px-4 py-3">
+                  <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                  <p className="text-sm text-muted-foreground">
+                    Ringing {active.other?.full_name || "them"}…
+                  </p>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="ml-auto rounded-full"
+                    disabled={callBusy}
+                    onClick={hangUp}
+                  >
+                    <PhoneOff className="mr-1.5 h-3.5 w-3.5" /> Cancel
+                  </Button>
+                </div>
+              )}
+
+            {/* The meeting itself, in place of the message list. */}
+            {inCall && call ? (
+              <div className="flex-1 overflow-y-auto bg-background/60 p-4">
+                <VideoCall callId={call.id} onLeave={hangUp} />
+                <div className="mt-3 flex justify-center">
+                  <Button
+                    variant="outline"
+                    className="rounded-full text-rose-700 hover:text-rose-800"
+                    onClick={hangUp}
+                  >
+                    <PhoneOff className="mr-2 h-4 w-4" /> Leave call
+                  </Button>
+                </div>
+              </div>
+            ) : (
             <div className="flex-1 space-y-3 overflow-y-auto bg-background/60 p-6">
               {messages.length === 0 ? (
                 <div className="flex h-full flex-col items-center justify-center text-muted-foreground">
@@ -258,6 +431,7 @@ function MessagesInner({ profile }: { profile: Profile }) {
               )}
               <div ref={endRef} />
             </div>
+            )}
 
             <div className="border-t border-border p-4">
               <div className="relative flex gap-2">

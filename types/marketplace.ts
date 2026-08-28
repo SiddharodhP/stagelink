@@ -277,6 +277,23 @@ export interface ProjectFilters {
   page: number;
 }
 
+export type CallStatus = "ringing" | "active" | "ended" | "declined" | "missed";
+
+/** A video call between the two people on a conversation (migration 014). */
+export interface CallSession {
+  id: string;
+  conversation_id: string;
+  caller_id: string;
+  callee_id: string;
+  /** Derived from the conversation id. Access is gated by the JaaS JWT. */
+  room_name: string;
+  status: CallStatus;
+  started_at: string;
+  answered_at: string | null;
+  ended_at: string | null;
+  created_at: string;
+}
+
 export type InvoiceStatus = "sent" | "acknowledged" | "paid" | "cancelled";
 
 export type InvoiceKind = "milestone" | "recurring";
