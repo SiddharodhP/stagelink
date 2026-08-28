@@ -22,6 +22,18 @@ export async function endCall(callId: string) {
   return { error };
 }
 
+/**
+ * Heartbeat while in a call.
+ *
+ * Without this a closed tab leaves the session 'active' forever, which
+ * wedges the conversation: start_call finds a "live" call and hands it
+ * back instead of starting a new one. See migration 015.
+ */
+export async function touchCall(callId: string) {
+  const { error } = await supabase.rpc("touch_call", { p_call_id: callId });
+  return { error };
+}
+
 export async function getActiveCall(conversationId: string) {
   const { data, error } = await supabase.rpc("get_active_call", {
     p_conversation_id: conversationId,

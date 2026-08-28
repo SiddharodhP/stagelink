@@ -104,6 +104,23 @@ function MessagesInner({ profile }: { profile: Profile }) {
     };
   }, [active]);
 
+  // Realtime is the fast path, not the only path. A dropped socket or a
+  // missed event used to leave the other person staring at "Connecting…"
+  // long after the call had ended, so poll while anything is live.
+  useEffect(() => {
+    if (!active || !call) return;
+    const interval = setInterval(async () => {
+      const { data } = await getActiveCall(active.id);
+      if (!data) {
+        setCall(null);
+        setInCall(false);
+      } else {
+        setCall(data);
+      }
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [active, call]);
+
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -129,13 +146,17 @@ function MessagesInner({ profile }: { profile: Profile }) {
   };
 
   const hangUp = async () => {
-    if (!call) return;
+    const id = call?.id;
     setInCall(false);
-    setCallBusy(true);
-    await endCall(call.id);
-    setCallBusy(false);
     setCall(null);
-    // The RPC writes a "call ended" line into the thread; pick it up.
+    if (!id) return;
+    setCallBusy(true);
+    // Read the id before clearing state: if a realtime event cleared `call`
+    // first, the old guard returned early and end_call never ran, which is
+    // how a session ends up stranded as 'active'.
+    await endCall(id);
+    setCallBusy(false);
+    // end_call writes a "call ended" line into the thread; pick it up.
     if (active) getMessages(active.id).then(({ data }) => setMessages(data));
   };
 
@@ -318,9 +339,7 @@ function MessagesInner({ profile }: { profile: Profile }) {
                 ) : (
                   <Video className="h-4 w-4 sm:mr-2" />
                 )}
-                <span className="hidden sm:inline">
-                  {call && call.status === "active" ? "Rejoin" : "Call"}
-                </span>
+                <span className="hidden sm:inline">Call</span>
               </Button>
             </div>
 

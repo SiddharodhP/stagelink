@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Loader2, VideoOff } from "lucide-react";
 
-import { getCallToken } from "@/lib/services/calls";
+import { getCallToken, touchCall } from "@/lib/services/calls";
 import { Button } from "@/components/ui/button";
 
 /**
@@ -34,6 +34,15 @@ interface JitsiApi {
   executeCommand(command: string, ...args: unknown[]): void;
   dispose(): void;
 }
+
+/**
+ * How long to wait for the meeting to connect before giving up.
+ *
+ * Without a ceiling the overlay spins forever when the iframe never
+ * reaches "joined" — a blocked camera, a failed connection, or the other
+ * side hanging up mid-connect all look identical to the user otherwise.
+ */
+const CONNECT_TIMEOUT_MS = 25_000;
 
 const scriptCache = new Map<string, Promise<void>>();
 
@@ -82,6 +91,7 @@ export function VideoCall({
 
   useEffect(() => {
     let disposed = false;
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
 
     (async () => {
       const { data, error: tokenError } = await getCallToken(callId);
@@ -131,19 +141,55 @@ export function VideoCall({
 
       apiRef.current = api;
 
-      const handleJoined = () => !disposed && setConnecting(false);
+      timeoutId = setTimeout(() => {
+        if (disposed) return;
+        setConnecting(false);
+        setError(
+          "Couldn't connect. Check that your browser has camera and microphone access, then try again."
+        );
+      }, CONNECT_TIMEOUT_MS);
+
+      const handleJoined = () => {
+        if (disposed) return;
+        clearTimeout(timeoutId);
+        setConnecting(false);
+      };
       const handleLeft = () => onLeaveRef.current();
+
+      // The other person leaving ends the call for whoever is left, rather
+      // than stranding them alone in an empty room.
+      const handleParticipantLeft = () => onLeaveRef.current();
+      const handleFailure = () => {
+        if (disposed) return;
+        setConnecting(false);
+        setError("The connection dropped. Try calling again.");
+      };
 
       api.addListener("videoConferenceJoined", handleJoined);
       api.addListener("videoConferenceLeft", handleLeft);
       api.addListener("readyToClose", handleLeft);
+      api.addListener("participantLeft", handleParticipantLeft);
+      api.addListener("errorOccurred", handleFailure);
     })();
 
     return () => {
       disposed = true;
+      clearTimeout(timeoutId);
       apiRef.current?.dispose();
       apiRef.current = null;
     };
+  }, [callId]);
+
+  // Heartbeat. A call with nobody reporting in is treated as over by the
+  // server, so this is what stops an abandoned session wedging the
+  // conversation for the next call.
+  useEffect(() => {
+    const beat = () => {
+      touchCall(callId);
+    };
+    beat();
+    const interval = setInterval(beat, 15_000);
+    return () => clearInterval(interval);
   }, [callId]);
 
   if (error) {
