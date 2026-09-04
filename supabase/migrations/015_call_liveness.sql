@@ -81,6 +81,11 @@ end $$;
 
 -- ---------- 2. start_call: expire first, then reuse ----------
 
+-- Dropped rather than replaced: CREATE OR REPLACE cannot change every
+-- property of an existing function, and these two were defined in 014.
+-- Dropping also discards their grants, which are restored in section 4.
+drop function if exists public.start_call(uuid);
+
 create or replace function public.start_call(p_conversation_id uuid)
 returns uuid
 language plpgsql security definer set search_path = public as $$
@@ -136,6 +141,11 @@ end $$;
 
 -- ---------- 3. get_active_call: same staleness rule ----------
 
+-- Was STABLE in 014. It expires rows before reading them now, so it has to
+-- be volatile — a STABLE function cannot call a volatile one, and Postgres
+-- will not always let CREATE OR REPLACE make that switch.
+drop function if exists public.get_active_call(uuid);
+
 create or replace function public.get_active_call(p_conversation_id uuid)
 returns setof call_sessions
 language plpgsql security definer set search_path = public as $$
@@ -159,13 +169,18 @@ begin
      limit 1;
 end $$;
 
--- No longer stable: it expires rows before reading them.
--- (Recreated above without the stable marker for exactly that reason.)
-
 -- ---------- 4. Grants ----------
+
+-- Restored for the two dropped above; DROP FUNCTION discards privileges.
+grant execute on function public.start_call(uuid) to authenticated;
+grant execute on function public.get_active_call(uuid) to authenticated;
+revoke all on function public.start_call(uuid) from anon;
+revoke all on function public.get_active_call(uuid) from anon;
 
 grant execute on function public.touch_call(uuid) to authenticated;
 revoke all on function public.touch_call(uuid) from anon;
+
+-- Platform-internal: only the definer functions above ever call it.
 revoke all on function public.expire_stale_calls(uuid) from anon, authenticated, public;
 
 commit;
