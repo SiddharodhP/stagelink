@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Mail, Sparkles } from "lucide-react";
@@ -11,7 +12,12 @@ import { Label } from "@/components/ui/label";
 import { signInWithGoogle, signInWithMagicLink } from "@/lib/services/auth";
 import { APP_NAME } from "@/lib/constants";
 
-export default function LoginPage() {
+function LoginInner() {
+  const params = useSearchParams();
+  // Set by links that want you back somewhere specific — the homepage
+  // project boxes, for instance. Validated in lib/services/auth.ts.
+  const next = params.get("next");
+
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -23,7 +29,7 @@ export default function LoginPage() {
     }
 
     setIsLoading(true);
-    const { error } = await signInWithMagicLink(email);
+    const { error } = await signInWithMagicLink(email, next);
     setIsLoading(false);
 
     if (error) {
@@ -35,7 +41,7 @@ export default function LoginPage() {
   };
 
   const handleGoogleSignIn = async () => {
-    const { error } = await signInWithGoogle();
+    const { error } = await signInWithGoogle(next);
     if (error) {
       toast.error(error.message);
     }
@@ -140,5 +146,17 @@ export default function LoginPage() {
         </div>
       </motion.div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-background" />
+      }
+    >
+      <LoginInner />
+    </Suspense>
   );
 }

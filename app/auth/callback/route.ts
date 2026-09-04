@@ -17,9 +17,21 @@ export async function GET(request: Request) {
         .eq('id', data.user.id)
         .maybeSingle();
 
+      // Someone with no role has to pick one before anything else can make
+      // sense, so `next` is deliberately dropped here rather than deferred.
       if (!profile?.role) {
         return NextResponse.redirect(`${origin}/auth/role-select`);
-      } else if (profile.role === 'client') {
+      }
+
+      // Honour an explicit destination ahead of the role default. Without
+      // this, clicking a project on the homepage and signing in dumped you
+      // on a dashboard, having lost the thing you actually wanted to see.
+      // Same-site paths only — see safeNext() in lib/services/auth.ts.
+      if (next && next.startsWith('/') && !next.startsWith('//')) {
+        return NextResponse.redirect(`${origin}${next}`);
+      }
+
+      if (profile.role === 'client') {
         return NextResponse.redirect(`${origin}/client/dashboard`);
       } else if (profile.role === 'freelancer') {
         return NextResponse.redirect(`${origin}/freelancer/dashboard`);

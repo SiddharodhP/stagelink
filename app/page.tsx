@@ -12,14 +12,23 @@ import {
   ListChecks,
   Gavel,
   Check,
+  Camera,
+  Briefcase,
+  Wallet,
+  FileText,
+  RefreshCw,
+  Star,
+  Video,
+  MapPin,
+  Lock,
+  Layers,
 } from "lucide-react";
 
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { Button } from "@/components/ui/button";
-import { ProjectCard } from "@/components/shared/project-card";
-import { searchProjects, getCategories } from "@/lib/services/projects";
-import { Category, Project } from "@/types/marketplace";
+import { searchProjects } from "@/lib/services/projects";
+import { Project } from "@/types/marketplace";
 import { formatPrice } from "@/lib/utils";
 
 const fadeUp = {
@@ -29,19 +38,87 @@ const fadeUp = {
   transition: { duration: 0.55, ease: "easeOut" as const },
 };
 
+/** Parent/child pair so panel rows arrive one after another, not all at once. */
+const stagger = {
+  initial: {},
+  whileInView: {},
+  viewport: { once: true, margin: "-60px" },
+  transition: { staggerChildren: 0.07, delayChildren: 0.1 },
+};
+
+const staggerItem = {
+  initial: { opacity: 0, y: 16 },
+  whileInView: { opacity: 1, y: 0 },
+  transition: { duration: 0.45, ease: "easeOut" as const },
+};
+
+const FREELANCER_BENEFITS = [
+  {
+    icon: Wallet,
+    title: "Paid per milestone, funded upfront",
+    text: "Each stage is escrowed before you shoot. You never work on a promise.",
+  },
+  {
+    icon: ListChecks,
+    title: "You confirm the plan first",
+    text: "The milestone structure needs your explicit agreement — it isn't imposed on you.",
+  },
+  {
+    icon: FileText,
+    title: "Invoice in one click",
+    text: "Send an invoice with the PDF attached the moment a stage is delivered.",
+  },
+  {
+    icon: RefreshCw,
+    title: "Retainers, not just one-offs",
+    text: "Bill an ongoing client weekly or monthly, issued and chased automatically.",
+  },
+  {
+    icon: Star,
+    title: "A reputation you own",
+    text: "Every completed contract adds a public review from real, paid work.",
+  },
+];
+
+const CLIENT_BENEFITS = [
+  {
+    icon: Layers,
+    title: "See the whole plan before you pay",
+    text: "Every deliverable, deadline and price is agreed before a shutter clicks.",
+  },
+  {
+    icon: Lock,
+    title: "Money moves only on approval",
+    text: "Funds sit in escrow until you sign off. Nothing is released on trust.",
+  },
+  {
+    icon: MapPin,
+    title: "Browse by city and craft",
+    text: "Filter photographers, videographers and editors who can actually reach your shoot.",
+  },
+  {
+    icon: Video,
+    title: "Talk before you commit",
+    text: "Video call anyone from the message thread — no scheduling links, no third-party app.",
+  },
+  {
+    icon: FileText,
+    title: "One clean paper trail",
+    text: "Invoices, receipts and payments in one place, with tax fields built in.",
+  },
+];
+
 export default function Home() {
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [projects, setProjects] = useState<Project[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
   const [openCount, setOpenCount] = useState(0);
 
   useEffect(() => {
     searchProjects({ sortBy: "newest", page: 1 }).then(({ data, count }) => {
-      setProjects(data.slice(0, 3));
+      setProjects(data.slice(0, 6));
       setOpenCount(count);
     });
-    getCategories().then(({ data }) => setCategories(data));
   }, []);
 
   const goSearch = (q: string) => {
@@ -179,19 +256,152 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ============ Category strip ============ */}
-        <section className="border-y border-border bg-white py-4">
-          <div className="overflow-hidden whitespace-nowrap" aria-hidden>
-            <div className="animate-marquee inline-block">
-              {[...categories, ...categories].map((c, i) => (
-                <span
-                  key={`${c.id}-${i}`}
-                  className="mx-5 inline-flex items-center gap-5 text-sm font-medium uppercase tracking-[0.14em] text-foreground/50"
-                >
-                  {c.name}
-                  <span className="text-brand">✳</span>
-                </span>
-              ))}
+        {/* ============ Benefits, both sides ============ */}
+        {/* id kept from the old section so the footer's "Why Roster" link
+            still lands somewhere sensible — arguably more sensible now,
+            since this covers both sides rather than only freelancers. */}
+        <section
+          id="for-freelancers"
+          className="relative overflow-hidden border-y border-border bg-white py-20 md:py-28"
+        >
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -left-40 top-0 h-[28rem] w-[28rem] rounded-full bg-brand/[0.07] blur-3xl"
+          />
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -right-40 bottom-0 h-[28rem] w-[28rem] rounded-full bg-ink/[0.06] blur-3xl"
+          />
+
+          <div className="container relative mx-auto px-4 md:px-6">
+            <motion.div {...fadeUp} className="mx-auto mb-14 max-w-2xl text-center">
+              <p className="eyebrow mb-3">Why Roster</p>
+              <h2 className="font-display text-4xl font-semibold tracking-tight md:text-5xl">
+                One platform,{" "}
+                <span className="italic text-brand">two sides</span>
+              </h2>
+              <p className="mt-4 text-lg leading-relaxed text-muted-foreground">
+                Shoots run on agreed milestones and escrowed payments, so
+                neither side is working on trust alone.
+              </p>
+            </motion.div>
+
+            <div className="grid gap-6 lg:grid-cols-2 lg:gap-8">
+              {/* Freelancers — dark panel */}
+              <motion.div
+                {...stagger}
+                className="group/panel relative overflow-hidden rounded-3xl bg-ink p-8 text-paper shadow-[0_30px_60px_-40px_rgba(23,20,16,0.9)] md:p-10"
+              >
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-brand/20 blur-3xl transition-opacity duration-700 group-hover/panel:opacity-150"
+                />
+                <div className="relative">
+                  <div className="mb-8 flex items-center gap-3">
+                    <span className="flex h-11 w-11 items-center justify-center rounded-full bg-paper/10 ring-1 ring-inset ring-paper/20">
+                      <Camera className="h-5 w-5" />
+                    </span>
+                    <div>
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-paper/50">
+                        For freelancers
+                      </p>
+                      <p className="font-display text-2xl font-semibold">
+                        Shoot. Deliver. Get paid.
+                      </p>
+                    </div>
+                  </div>
+
+                  <ul className="space-y-1">
+                    {FREELANCER_BENEFITS.map(({ icon: Icon, title, text }) => (
+                      <motion.li
+                        key={title}
+                        variants={staggerItem}
+                        className="group/row flex gap-4 rounded-2xl p-3 transition-colors hover:bg-paper/[0.06]"
+                      >
+                        <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-paper/10 text-paper/70 transition-colors group-hover/row:bg-brand group-hover/row:text-white">
+                          <Icon className="h-4 w-4" />
+                        </span>
+                        <div>
+                          <p className="font-semibold leading-snug">{title}</p>
+                          <p className="mt-1 text-sm leading-relaxed text-paper/60">
+                            {text}
+                          </p>
+                        </div>
+                      </motion.li>
+                    ))}
+                  </ul>
+
+                  <motion.div variants={staggerItem} className="mt-8">
+                    <Button
+                      asChild
+                      size="lg"
+                      className="w-full rounded-full bg-paper px-8 text-base text-ink hover:bg-white sm:w-auto"
+                    >
+                      <Link href="/login">
+                        Start as a freelancer
+                        <ArrowRight className="ml-2 h-5 w-5" />
+                      </Link>
+                    </Button>
+                  </motion.div>
+                </div>
+              </motion.div>
+
+              {/* Clients — light panel */}
+              <motion.div
+                {...stagger}
+                className="group/panel relative overflow-hidden rounded-3xl border border-border bg-paper p-8 shadow-[0_30px_60px_-45px_rgba(23,20,16,0.45)] md:p-10"
+              >
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute -left-20 -bottom-20 h-64 w-64 rounded-full bg-brand/10 blur-3xl"
+                />
+                <div className="relative">
+                  <div className="mb-8 flex items-center gap-3">
+                    <span className="flex h-11 w-11 items-center justify-center rounded-full bg-ink text-paper">
+                      <Briefcase className="h-5 w-5" />
+                    </span>
+                    <div>
+                      <p className="eyebrow">For clients</p>
+                      <p className="font-display text-2xl font-semibold">
+                        Book with confidence.
+                      </p>
+                    </div>
+                  </div>
+
+                  <ul className="space-y-1">
+                    {CLIENT_BENEFITS.map(({ icon: Icon, title, text }) => (
+                      <motion.li
+                        key={title}
+                        variants={staggerItem}
+                        className="group/row flex gap-4 rounded-2xl p-3 transition-colors hover:bg-white"
+                      >
+                        <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-muted-foreground ring-1 ring-inset ring-border transition-colors group-hover/row:bg-ink group-hover/row:text-paper group-hover/row:ring-ink">
+                          <Icon className="h-4 w-4" />
+                        </span>
+                        <div>
+                          <p className="font-semibold leading-snug">{title}</p>
+                          <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                            {text}
+                          </p>
+                        </div>
+                      </motion.li>
+                    ))}
+                  </ul>
+
+                  <motion.div variants={staggerItem} className="mt-8">
+                    <Button
+                      asChild
+                      size="lg"
+                      className="w-full rounded-full bg-ink px-8 text-base text-paper hover:bg-ink-soft sm:w-auto"
+                    >
+                      <Link href="/login">
+                        Hire a creator
+                        <ArrowRight className="ml-2 h-5 w-5" />
+                      </Link>
+                    </Button>
+                  </motion.div>
+                </div>
+              </motion.div>
             </div>
           </div>
         </section>
@@ -199,13 +409,18 @@ export default function Home() {
         {/* ============ Live projects ============ */}
         <section className="py-20 md:py-28">
           <div className="container mx-auto px-4 md:px-6">
-            <motion.div {...fadeUp} className="mb-10 flex items-end justify-between">
+            <motion.div
+              {...fadeUp}
+              className="mb-10 flex flex-wrap items-end justify-between gap-4"
+            >
               <div>
                 <p className="eyebrow mb-3">
-                  {openCount > 0 ? `${openCount} open right now` : "Live on the marketplace"}
+                  {openCount > 0
+                    ? `${openCount} open right now`
+                    : "Live on the marketplace"}
                 </p>
                 <h2 className="font-display text-4xl font-semibold tracking-tight md:text-5xl">
-                  Latest projects
+                  Shoots looking for someone
                 </h2>
               </div>
               <Link
@@ -217,21 +432,75 @@ export default function Home() {
             </motion.div>
 
             {projects.length > 0 ? (
-              <div className="space-y-4">
+              <motion.div
+                {...stagger}
+                className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
+              >
                 {projects.map((p) => (
-                  <ProjectCard key={p.id} project={p} />
+                  <motion.div key={p.id} variants={staggerItem}>
+                    {/* Sends visitors to sign in, carrying the project so they
+                        land on it afterwards rather than a generic dashboard. */}
+                    <Link
+                      href={`/login?next=${encodeURIComponent(`/projects/${p.id}`)}`}
+                      className="group flex h-full flex-col rounded-2xl border border-border bg-white p-6 transition-all duration-300 hover:-translate-y-1 hover:border-ink/25 hover:shadow-[0_24px_48px_-32px_rgba(23,20,16,0.5)]"
+                    >
+                      <div className="mb-3 flex items-center justify-between gap-3">
+                        <span className="eyebrow">
+                          {p.category?.name || "Project"}
+                        </span>
+                        <span className="font-display text-lg font-semibold">
+                          {formatPrice(p.budget_total)}
+                        </span>
+                      </div>
+
+                      <h3 className="font-display mb-2 line-clamp-2 text-xl font-semibold leading-snug transition-colors group-hover:text-brand">
+                        {p.title}
+                      </h3>
+                      <p className="mb-4 line-clamp-3 text-sm leading-relaxed text-muted-foreground">
+                        {p.description}
+                      </p>
+
+                      {p.skills?.length > 0 && (
+                        <div className="mb-5 flex flex-wrap gap-1.5">
+                          {p.skills.slice(0, 3).map((sk) => (
+                            <span
+                              key={sk}
+                              className="rounded-full border border-border bg-secondary px-2.5 py-0.5 text-[11px] font-medium text-foreground/80"
+                            >
+                              {sk}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
+                      <div className="mt-auto flex items-center justify-between gap-3 border-t border-border pt-4 text-xs text-muted-foreground">
+                        <span>
+                          {p.bids_count} {p.bids_count === 1 ? "bid" : "bids"}
+                          {p.milestones?.length
+                            ? ` · ${p.milestones.length} milestones`
+                            : ""}
+                        </span>
+                        <span className="inline-flex items-center gap-1 font-medium text-foreground opacity-0 transition-opacity group-hover:opacity-100">
+                          Sign in to view <ArrowRight className="h-3.5 w-3.5" />
+                        </span>
+                      </div>
+                    </Link>
+                  </motion.div>
                 ))}
-              </div>
+              </motion.div>
             ) : (
-              <div className="rounded-xl border border-dashed border-border bg-white px-6 py-16 text-center">
+              <div className="rounded-2xl border border-dashed border-border bg-white px-6 py-16 text-center">
                 <p className="font-display mb-2 text-2xl font-semibold">
-                  The marketplace is just opening
+                  No open shoots right now
                 </p>
                 <p className="mx-auto mb-6 max-w-md text-muted-foreground">
-                  Be the first to post a project — or sign up as a freelancer to
-                  get in early.
+                  Post the first one, or create a freelancer profile so
+                  you&apos;re listed when clients start looking.
                 </p>
-                <Button asChild className="rounded-full bg-ink text-paper hover:bg-ink-soft">
+                <Button
+                  asChild
+                  className="rounded-full bg-ink text-paper hover:bg-ink-soft"
+                >
                   <Link href="/login">Get started</Link>
                 </Button>
               </div>
@@ -285,49 +554,6 @@ export default function Home() {
                 </div>
               ))}
             </motion.div>
-          </div>
-        </section>
-
-        {/* ============ For freelancers ============ */}
-        <section id="for-freelancers" className="py-20 md:py-28">
-          <div className="container mx-auto px-4 md:px-6">
-            <div className="grid items-center gap-12 lg:grid-cols-2">
-              <motion.div {...fadeUp}>
-                <p className="eyebrow mb-3">For freelancers</p>
-                <h2 className="font-display mb-6 text-4xl font-semibold tracking-tight md:text-5xl">
-                  Know what you&apos;re
-                  <br />
-                  agreeing to
-                </h2>
-                <p className="mb-8 max-w-lg text-lg leading-relaxed text-muted-foreground">
-                  Before you accept a project, you see every milestone: what to
-                  deliver, when it&apos;s due, and what it pays. If the structure
-                  doesn&apos;t work for you, you decline — no obligation.
-                </p>
-                <Button
-                  asChild
-                  size="lg"
-                  className="rounded-full bg-ink px-8 text-base text-paper hover:bg-ink-soft"
-                >
-                  <Link href="/projects">
-                    Browse open projects <ArrowRight className="ml-2 h-5 w-5" />
-                  </Link>
-                </Button>
-              </motion.div>
-
-              <motion.ul {...fadeUp} className="space-y-4">
-                {[
-                  ["You confirm the plan before starting", "The client's milestone structure needs your explicit agreement — it isn't imposed on you."],
-                  ["Money is escrowed before work begins", "Each milestone is funded upfront. You never build on a promise."],
-                  ["Reputation you actually own", "Every completed contract adds a public review from a real, paid engagement."],
-                ].map(([title, text]) => (
-                  <li key={title} className="rounded-xl border border-border bg-white p-6">
-                    <p className="mb-1 font-semibold">{title}</p>
-                    <p className="text-sm leading-relaxed text-muted-foreground">{text}</p>
-                  </li>
-                ))}
-              </motion.ul>
-            </div>
           </div>
         </section>
 
