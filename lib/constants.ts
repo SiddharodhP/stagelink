@@ -55,9 +55,8 @@ export const AVAILABILITY_OPTIONS = [
 
 /** Fallback list shown before the categories table loads. */
 export const CATEGORY_FALLBACK = [
-  'Web Development', 'Mobile Apps', 'Design & Creative', 'Writing & Translation',
-  'Digital Marketing', 'Video & Animation', 'Data & AI', 'Engineering & Architecture',
-  'Finance & Accounting', 'Admin & Support', 'Music & Audio', 'Legal',
+  'Photography', 'Videography', 'Video Editing & Post',
+  'Photo Editing & Retouching', 'Motion Graphics & Animation', 'Drone & Aerial',
 ] as const;
 
 export const MILESTONE_STATUS_LABELS: Record<string, string> = {

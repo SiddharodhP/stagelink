@@ -62,17 +62,19 @@ export default function Home() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, ease: "easeOut" }}
               >
-                <p className="eyebrow mb-5">The freelance marketplace</p>
+                <p className="eyebrow mb-5">
+                  For photographers, videographers &amp; editors
+                </p>
                 <h1 className="font-display mb-6 text-5xl font-semibold leading-[1.04] tracking-tight md:text-[4.25rem]">
-                  Work you can
+                  Book the shoot.
                   <br />
-                  trust. Paid in{" "}
+                  Paid in{" "}
                   <span className="italic text-brand">stages.</span>
                 </h1>
                 <p className="mb-8 max-w-xl text-lg leading-relaxed text-muted-foreground">
-                  Clients break projects into milestones with clear deliverables
-                  and prices. Freelancers see the whole plan before they bid — and
-                  get paid as each stage is approved.
+                  Hire photographers, videographers and editors for real work.
+                  Shoots are split into milestones with clear deliverables and
+                  prices, and every stage is funded in escrow before it starts.
                 </p>
 
                 <form
@@ -86,7 +88,7 @@ export default function Home() {
                   <input
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Try “Shopify store”, “logo design”, “data pipeline”…"
+                    placeholder="Try “wedding photographer”, “product video”, “colour grading”…"
                     className="w-full bg-transparent text-[15px] outline-none"
                   />
                   <Button

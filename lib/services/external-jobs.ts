@@ -2,7 +2,7 @@ import { ExternalJobsResponse } from "@/types/external-jobs";
 
 const EMPTY: ExternalJobsResponse = {
   jobs: [],
-  sources: [{ name: "Remotive", url: "https://remotive.com" }],
+  sources: [{ name: "ProductionHUB", url: "https://www.productionhub.com" }],
   fetchedAt: new Date().toISOString(),
 };
 

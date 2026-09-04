@@ -176,7 +176,7 @@ export default async function CategoryPage({ params }: Props) {
                 </p>
                 <p className="mx-auto mb-6 max-w-md text-sm text-muted-foreground">
                   New projects are posted regularly. Post one yourself, or browse
-                  every open project across all categories.
+                  every open shoot and edit on Roster.
                 </p>
                 <div className="flex flex-col justify-center gap-3 sm:flex-row">
                   <Button asChild className="rounded-full bg-ink text-paper hover:bg-ink-soft">

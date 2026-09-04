@@ -14,23 +14,29 @@ export const SITE_URL = (
 export const SITE_NAME = "Roster";
 
 export const DEFAULT_DESCRIPTION =
-  "Hire vetted freelancers or find freelance work. Projects are split into milestones with fixed prices, freelancers bid competitively, and every payment is protected by escrow until you approve the work.";
+  "Hire photographers, videographers and editors, or find paid photo and video work. Shoots are split into milestones with fixed prices, and every payment is held in escrow until you approve the work.";
 
 /**
- * Head terms are dominated by Upwork/Fiverr (domain authority in the 90s), so
- * a new domain cannot realistically rank for them. These are the long-tail,
- * lower-competition phrases we actually target, mapped to the pages that
- * serve that search intent.
+ * Narrowing the marketplace to photo and video also narrows what we can
+ * realistically rank for, in our favour. "Freelance marketplace" was never
+ * winnable against Upwork and Fiverr; "wedding videographer in Kochi" is,
+ * because the competition is individual studios rather than platforms with
+ * domain authority in the 90s.
+ *
+ * These are head terms for the niche, deliberately intent-led. The city
+ * and category pages carry the long tail.
  */
 export const PRIMARY_KEYWORDS = [
-  "milestone based freelance payments",
-  "escrow protected freelance work",
-  "hire freelancers with milestone payments",
-  "freelance marketplace with escrow",
-  "competitive bidding freelance platform",
-  "pay freelancers per milestone",
-  "safe freelance payment platform",
-  "freelance project bidding site",
+  "hire freelance photographer",
+  "hire freelance videographer",
+  "freelance video editor",
+  "wedding photographer booking",
+  "product photography freelancer",
+  "corporate video production freelance",
+  "drone videographer hire",
+  "photo retouching freelancer",
+  "book a photographer online",
+  "freelance photography jobs",
 ];
 
 /** Category-level intent, used on the programmatic /projects/category pages. */
@@ -38,7 +44,8 @@ export const CATEGORY_KEYWORD_TEMPLATES = [
   "hire {category} freelancers",
   "freelance {category} projects",
   "{category} freelance jobs",
-  "find {category} freelancer online",
+  "book {category} near me",
+  "{category} rates india",
 ];
 
 interface PageMetaInput {

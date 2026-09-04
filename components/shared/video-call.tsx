@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Loader2, VideoOff } from "lucide-react";
+import { Loader2, VideoOff, AlertTriangle } from "lucide-react";
 
 import { getCallToken, touchCall } from "@/lib/services/calls";
 import { Button } from "@/components/ui/button";
@@ -79,7 +79,11 @@ export function VideoCall({
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const apiRef = useRef<JitsiApi | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  // fatalError replaces the iframe (we never built one). slowWarning sits
+  // above it (the iframe exists and may be showing its own message —
+  // hiding it was what made the last failure undiagnosable).
+  const [fatalError, setFatalError] = useState<string | null>(null);
+  const [slowWarning, setSlowWarning] = useState<string | null>(null);
   const [connecting, setConnecting] = useState(true);
 
   // onLeave lives in a ref so a re-created callback in the parent doesn't
@@ -97,7 +101,7 @@ export function VideoCall({
       const { data, error: tokenError } = await getCallToken(callId);
       if (disposed) return;
       if (tokenError || !data) {
-        setError(tokenError?.message || "Could not join this call.");
+        setFatalError(tokenError?.message || "Could not join this call.");
         setConnecting(false);
         return;
       }
@@ -106,7 +110,7 @@ export function VideoCall({
         await loadJaasScript(data.appId);
       } catch {
         if (!disposed) {
-          setError("Could not reach the video service.");
+          setFatalError("Could not reach the video service.");
           setConnecting(false);
         }
         return;
@@ -141,11 +145,15 @@ export function VideoCall({
 
       apiRef.current = api;
 
+      // Drop the overlay and warn, but LEAVE THE IFRAME MOUNTED. Jitsi
+      // shows its own reason in there — a permission prompt, "membership
+      // required", an auth failure — and replacing it with our own message
+      // throws away the only real diagnostic.
       timeoutId = setTimeout(() => {
         if (disposed) return;
         setConnecting(false);
-        setError(
-          "Couldn't connect. Check that your browser has camera and microphone access, then try again."
+        setSlowWarning(
+          "Still connecting. If the call area shows an error or a permission prompt, that's the reason."
         );
       }, CONNECT_TIMEOUT_MS);
 
@@ -159,10 +167,15 @@ export function VideoCall({
       // The other person leaving ends the call for whoever is left, rather
       // than stranding them alone in an empty room.
       const handleParticipantLeft = () => onLeaveRef.current();
-      const handleFailure = () => {
+      // Surface what Jitsi actually said rather than a generic line.
+      const handleFailure = (...args: unknown[]) => {
         if (disposed) return;
+        const detail = args[0] as { error?: { message?: string; name?: string } };
+        const reason =
+          detail?.error?.message || detail?.error?.name || "unknown error";
+        console.error("Jitsi error:", detail);
         setConnecting(false);
-        setError("The connection dropped. Try calling again.");
+        setSlowWarning(`Video service reported: ${reason}`);
       };
 
       api.addListener("videoConferenceJoined", handleJoined);
@@ -192,7 +205,7 @@ export function VideoCall({
     return () => clearInterval(interval);
   }, [callId]);
 
-  if (error) {
+  if (fatalError) {
     return (
       <div className="flex flex-col items-center justify-center gap-4 rounded-xl border border-border bg-white px-6 py-14 text-center">
         <div className="flex h-12 w-12 items-center justify-center rounded-full bg-secondary">
@@ -200,7 +213,7 @@ export function VideoCall({
         </div>
         <div>
           <p className="font-semibold">Call couldn&apos;t start</p>
-          <p className="mt-1 text-sm text-muted-foreground">{error}</p>
+          <p className="mt-1 text-sm text-muted-foreground">{fatalError}</p>
         </div>
         <Button variant="outline" className="rounded-full" onClick={onLeave}>
           Back to messages
@@ -211,6 +224,12 @@ export function VideoCall({
 
   return (
     <div className={className}>
+      {slowWarning && (
+        <div className="mb-2 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">
+          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+          <span>{slowWarning}</span>
+        </div>
+      )}
       <div className="relative overflow-hidden rounded-xl border border-border bg-ink">
         {connecting && (
           <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-ink text-paper">

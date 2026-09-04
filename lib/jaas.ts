@@ -84,18 +84,18 @@ export async function mintJaasToken(room: string, user: JaasUser) {
         // JaaS expects these as strings, not booleans.
         moderator: user.moderator ? "true" : "false",
       },
+      // ONLY keys JaaS documents. An unrecognised key can get the whole
+      // token rejected, and "screen-sharing" — which was here — is not one
+      // of them; screen sharing is a toolbar button, not a licensed
+      // feature, so it needs no claim at all.
+      //
+      // Recording and livestreaming stay off deliberately: capturing a
+      // client call without both people understanding it is a consent
+      // problem, not a config default.
       features: {
-        // Both parties can share a screen — reviewing a cut or a contact
-        // sheet is most of the point of a call on this platform.
-        "screen-sharing": true,
-        // Off deliberately. Recording a call without both parties
-        // understanding it is a consent problem, not a feature flag, and
-        // livestreaming has no place in a private client conversation.
         livestreaming: false,
         recording: false,
         transcription: false,
-        "sip-inbound-call": false,
-        "sip-outbound-call": false,
         "outbound-call": false,
       },
     },

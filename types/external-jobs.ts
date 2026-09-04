@@ -1,4 +1,4 @@
-export type ExternalSource = "Remotive" | "ProductionHUB";
+export type ExternalSource = "ProductionHUB";
 
 /**
  * A freelance/contract listing pulled live from an external board and shown
