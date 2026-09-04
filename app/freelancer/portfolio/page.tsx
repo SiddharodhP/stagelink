@@ -185,7 +185,7 @@ function PortfolioPage({ profile }: { profile: Profile }) {
                 className={inputClass}
                 value={form.title}
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
-                placeholder="e.g. Headless storefront for a D2C skincare brand"
+                placeholder="e.g. Product shoot for a D2C skincare brand"
               />
             </Field>
 
@@ -194,7 +194,7 @@ function PortfolioPage({ profile }: { profile: Profile }) {
                 className={textareaClass}
                 value={form.description}
                 onChange={(e) => setForm({ ...form, description: e.target.value })}
-                placeholder="What you built, your role, and the result."
+                placeholder="What you shot or edited, your role, and how it was used."
               />
             </Field>
 

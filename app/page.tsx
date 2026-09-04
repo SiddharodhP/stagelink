@@ -125,7 +125,7 @@ export default function Home() {
                     <div>
                       <p className="eyebrow mb-1">Sample project</p>
                       <p className="font-display text-lg font-semibold">
-                        E-commerce site rebuild
+                        Two-day brand campaign shoot
                       </p>
                     </div>
                     <span className="font-display text-xl font-semibold">
@@ -135,10 +135,10 @@ export default function Home() {
 
                   <ol className="space-y-0">
                     {[
-                      { n: 1, t: "UI design in Figma", a: 10000, s: "paid" },
-                      { n: 2, t: "Frontend implementation", a: 20000, s: "paid" },
-                      { n: 3, t: "Backend & integrations", a: 25000, s: "active" },
-                      { n: 4, t: "Testing & deployment", a: 10000, s: "pending" },
+                      { n: 1, t: "Pre-production & shot list", a: 10000, s: "paid" },
+                      { n: 2, t: "Two-day studio shoot", a: 25000, s: "paid" },
+                      { n: 3, t: "Selects & retouching", a: 20000, s: "active" },
+                      { n: 4, t: "Final delivery & usage rights", a: 10000, s: "pending" },
                     ].map((m, i, arr) => (
                       <li key={m.n} className="flex gap-3">
                         <div className="flex flex-col items-center">

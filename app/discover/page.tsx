@@ -14,13 +14,19 @@ import { useDebounce } from "@/hooks/use-debounce";
 import { ExternalJob, ExternalSource } from "@/types/external-jobs";
 import { timeAgo } from "@/lib/utils";
 
+/**
+ * Only terms the feed can actually return. The old list carried design,
+ * software development, writing and marketing from when this aggregated
+ * general job boards — on a photo/video feed those chips are guaranteed
+ * dead ends, which reads as a broken filter rather than an empty niche.
+ */
 const FEATURED_TAGS = [
   "video",
   "photo",
-  "design",
-  "software development",
-  "writing",
-  "marketing",
+  "camera",
+  "editing",
+  "drone",
+  "broadcast",
 ];
 
 export default function DiscoverPage() {
@@ -52,12 +58,12 @@ export default function DiscoverPage() {
       <main className="flex-1 pb-24 pt-28 md:pt-32">
         <div className="container mx-auto px-4 md:px-6">
           <div className="mb-6">
-            <p className="eyebrow mb-2">Freelance work from around the web</p>
+            <p className="eyebrow mb-2">Photo &amp; video work from around the web</p>
             <h1 className="font-display mb-3 text-4xl font-semibold tracking-tight md:text-5xl">
-              More contract work
+              More shoots and edits
             </h1>
             <p className="max-w-2xl text-lg text-muted-foreground">
-              Live freelance and contract listings aggregated from{" "}
+              Live camera, edit and post-production listings from{" "}
               {sources.map((s, i) => (
                 <span key={s.name}>
                   {i > 0 && i === sources.length - 1 ? " and " : i > 0 ? ", " : ""}
@@ -96,7 +102,7 @@ export default function DiscoverPage() {
             <input
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              placeholder="Search title, company, or skill…"
+              placeholder="Search by role, company or craft…"
               className="h-11 w-full bg-transparent text-sm outline-none"
             />
           </div>
@@ -183,7 +189,7 @@ export default function DiscoverPage() {
           ) : (
             <EmptyCard
               icon={Briefcase}
-              title="No freelance listings match that search"
+              title="No listings match that search"
               description="Only contract and freelance roles are shown here — full-time listings are filtered out, so results are intentionally narrow. Try a broader term."
               actionLabel="Clear filters"
               onAction={() => {

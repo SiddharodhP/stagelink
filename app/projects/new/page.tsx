@@ -289,7 +289,7 @@ function Wizard({ profile }: { profile: Profile }) {
                 className={inputClass}
                 value={form.title}
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
-                placeholder="e.g. Build a Shopify storefront for a skincare brand"
+                placeholder="e.g. Two-day product shoot for a skincare brand"
                 maxLength={140}
               />
             </Field>
@@ -487,7 +487,7 @@ function Wizard({ profile }: { profile: Profile }) {
                             ms.map((x) => (x.key === m.key ? { ...x, title: e.target.value } : x))
                           )
                         }
-                        placeholder="e.g. UI design in Figma"
+                        placeholder="e.g. Half-day studio shoot"
                       />
                     </Field>
 
@@ -517,7 +517,7 @@ function Wizard({ profile }: { profile: Profile }) {
                             )
                           )
                         }
-                        placeholder="e.g. Figma file with 6 screens, desktop + mobile"
+                        placeholder="e.g. 40 edited hi-res images, delivered via gallery link"
                       />
                     </Field>
 

@@ -322,7 +322,7 @@ function ProfileSettingsInner() {
                   className={inputClass}
                   value={form.headline}
                   onChange={(e) => setForm({ ...form, headline: e.target.value })}
-                  placeholder="e.g. Full-stack developer specialising in Next.js commerce builds"
+                  placeholder="e.g. Wedding & event photographer, candid and documentary style"
                 />
               </Field>
             </div>
