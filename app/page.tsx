@@ -130,179 +130,86 @@ export default function Home() {
       <Navbar />
 
       <main className="flex-1">
-        {/* ============ Hero ============ */}
-        <section className="relative overflow-hidden pb-16 pt-36 md:pb-24 md:pt-44">
-          <div className="container mx-auto px-4 md:px-6">
-            <div className="grid items-start gap-14 lg:grid-cols-[1.1fr_0.9fr]">
-              <motion.div
-                initial={{ opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, ease: "easeOut" }}
-              >
-                <p className="eyebrow mb-5">
-                  For photographers, videographers &amp; editors
-                </p>
-                <h1 className="font-display mb-6 text-5xl font-semibold leading-[1.04] tracking-tight md:text-[4.25rem]">
-                  Book the shoot.
-                  <br />
-                  Paid in{" "}
-                  <span className="italic text-brand">stages.</span>
-                </h1>
-                <p className="mb-8 max-w-xl text-lg leading-relaxed text-muted-foreground">
-                  Hire photographers, videographers and editors for real work.
-                  Shoots are split into milestones with clear deliverables and
-                  prices, and every stage is funded in escrow before it starts.
-                </p>
-
-                <form
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    goSearch(query);
-                  }}
-                  className="mb-4 flex max-w-xl items-center gap-2 rounded-full border border-ink/20 bg-white p-2 pl-5 shadow-[0_10px_30px_-18px_rgba(26,23,19,0.35)] focus-within:border-ink/50"
-                >
-                  <Search className="h-5 w-5 shrink-0 text-muted-foreground" />
-                  <input
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Try “wedding photographer”, “product video”, “colour grading”…"
-                    className="w-full bg-transparent text-[15px] outline-none"
-                  />
-                  <Button
-                    type="submit"
-                    className="h-11 shrink-0 rounded-full bg-ink px-6 text-paper hover:bg-ink-soft"
-                  >
-                    Find work
-                  </Button>
-                </form>
-
-                <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
-                  <span className="flex items-center gap-1.5">
-                    <Check className="h-4 w-4 text-brand" /> Escrow on every milestone
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <Check className="h-4 w-4 text-brand" /> No agency middlemen
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <Check className="h-4 w-4 text-brand" /> Two-way reviews
-                  </span>
-                </div>
-              </motion.div>
-
-              {/* Milestone illustration — the product's actual mechanic */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.97 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.7, delay: 0.15, ease: "easeOut" }}
-                className="hidden lg:block"
-                aria-hidden
-              >
-                <div className="rounded-2xl border border-border bg-white p-6 shadow-[0_24px_60px_-30px_rgba(26,23,19,0.3)]">
-                  <div className="mb-5 flex items-center justify-between border-b border-border pb-4">
-                    <div>
-                      <p className="eyebrow mb-1">Sample project</p>
-                      <p className="font-display text-lg font-semibold">
-                        Two-day brand campaign shoot
-                      </p>
-                    </div>
-                    <span className="font-display text-xl font-semibold">
-                      {formatPrice(65000)}
-                    </span>
-                  </div>
-
-                  <ol className="space-y-0">
-                    {[
-                      { n: 1, t: "Pre-production & shot list", a: 10000, s: "paid" },
-                      { n: 2, t: "Two-day studio shoot", a: 25000, s: "paid" },
-                      { n: 3, t: "Selects & retouching", a: 20000, s: "active" },
-                      { n: 4, t: "Final delivery & usage rights", a: 10000, s: "pending" },
-                    ].map((m, i, arr) => (
-                      <li key={m.n} className="flex gap-3">
-                        <div className="flex flex-col items-center">
-                          <span
-                            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-xs font-semibold ${
-                              m.s === "paid"
-                                ? "border-ink bg-ink text-paper"
-                                : m.s === "active"
-                                  ? "border-brand bg-brand-soft text-brand-deep"
-                                  : "border-border bg-white text-muted-foreground"
-                            }`}
-                          >
-                            {m.s === "paid" ? <Check className="h-3.5 w-3.5" /> : m.n}
-                          </span>
-                          {i < arr.length - 1 && <span className="w-px flex-1 bg-border" />}
-                        </div>
-                        <div className="flex-1 pb-5">
-                          <div className="flex items-baseline justify-between gap-3">
-                            <p className="text-sm font-medium">{m.t}</p>
-                            <span className="font-display text-sm font-semibold">
-                              {formatPrice(m.a)}
-                            </span>
-                          </div>
-                          <p className="mt-0.5 text-xs text-muted-foreground">
-                            {m.s === "paid"
-                              ? "Approved · payment released"
-                              : m.s === "active"
-                                ? "In progress · funded in escrow"
-                                : "Awaiting funding"}
-                          </p>
-                        </div>
-                      </li>
-                    ))}
-                  </ol>
-                </div>
-              </motion.div>
-            </div>
-          </div>
-        </section>
-
         {/* ============ Benefits, both sides ============ */}
-        {/* id kept from the old section so the footer's "Why Roster" link
-            still lands somewhere sensible — arguably more sensible now,
-            since this covers both sides rather than only freelancers. */}
+        {/* First thing on the page now. The hero this replaced made the same
+            argument more slowly, and behind a mockup. id kept so the footer
+            link still lands here. */}
         <section
           id="for-freelancers"
-          className="relative overflow-hidden border-y border-border bg-white py-20 md:py-28"
+          className="relative overflow-hidden pb-20 pt-32 md:pb-28 md:pt-40"
         >
+          {/* Washes in the two panel colours, so the split is felt before
+              it is read. */}
           <div
             aria-hidden
-            className="pointer-events-none absolute -left-40 top-0 h-[28rem] w-[28rem] rounded-full bg-brand/[0.07] blur-3xl"
+            className="pointer-events-none absolute -left-56 -top-40 h-[36rem] w-[36rem] rounded-full bg-[#0C2F2A]/[0.08] blur-3xl"
           />
           <div
             aria-hidden
-            className="pointer-events-none absolute -right-40 bottom-0 h-[28rem] w-[28rem] rounded-full bg-ink/[0.06] blur-3xl"
+            className="pointer-events-none absolute -right-56 top-24 h-[36rem] w-[36rem] rounded-full bg-brand/[0.10] blur-3xl"
           />
 
           <div className="container relative mx-auto px-4 md:px-6">
-            <motion.div {...fadeUp} className="mx-auto mb-14 max-w-2xl text-center">
-              <p className="eyebrow mb-3">Why Roster</p>
-              <h2 className="font-display text-4xl font-semibold tracking-tight md:text-5xl">
-                One platform,{" "}
-                <span className="italic text-brand">two sides</span>
-              </h2>
-              <p className="mt-4 text-lg leading-relaxed text-muted-foreground">
-                Shoots run on agreed milestones and escrowed payments, so
-                neither side is working on trust alone.
+            <motion.div {...fadeUp} className="mx-auto mb-12 max-w-3xl text-center">
+              <p className="eyebrow mb-4">
+                For photographers, videographers &amp; editors
               </p>
+              <h1 className="font-display text-5xl font-semibold leading-[1.03] tracking-tight md:text-[4.5rem]">
+                Book the shoot.
+                <br />
+                Paid in <span className="italic text-brand">stages.</span>
+              </h1>
+              <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
+                Shoots are split into milestones with clear deliverables and
+                prices, and every stage is funded in escrow before it starts —
+                so neither side is working on trust alone.
+              </p>
+
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  goSearch(query);
+                }}
+                className="mx-auto mt-8 flex max-w-xl items-center gap-2 rounded-full border border-ink/15 bg-white p-2 pl-5 shadow-[0_10px_30px_-18px_rgba(26,23,19,0.35)] focus-within:border-ink/50"
+              >
+                <Search className="h-5 w-5 shrink-0 text-muted-foreground" />
+                <input
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Try “wedding photographer”, “product video”…"
+                  className="w-full bg-transparent text-[15px] outline-none"
+                />
+                <Button
+                  type="submit"
+                  className="h-11 shrink-0 rounded-full bg-ink px-6 text-paper hover:bg-ink-soft"
+                >
+                  Find work
+                </Button>
+              </form>
             </motion.div>
 
-            <div className="grid gap-6 lg:grid-cols-2 lg:gap-8">
-              {/* Freelancers — dark panel */}
+            <div className="grid gap-5 lg:grid-cols-2 lg:gap-6">
+              {/* ---- Freelancers: deep teal, amber accents ---- */}
               <motion.div
                 {...stagger}
-                className="group/panel relative overflow-hidden rounded-3xl bg-ink p-8 text-paper shadow-[0_30px_60px_-40px_rgba(23,20,16,0.9)] md:p-10"
+                className="group/panel relative overflow-hidden rounded-[1.75rem] bg-gradient-to-br from-[#0C2F2A] via-[#0A2622] to-[#061A17] p-8 text-[#F4EFE6] shadow-[0_40px_80px_-50px_rgba(6,26,23,0.95)] md:p-10"
               >
                 <div
                   aria-hidden
-                  className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-brand/20 blur-3xl transition-opacity duration-700 group-hover/panel:opacity-150"
+                  className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[#F0A868]/20 blur-3xl"
                 />
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#F0A868]/50 to-transparent"
+                />
+
                 <div className="relative">
-                  <div className="mb-8 flex items-center gap-3">
-                    <span className="flex h-11 w-11 items-center justify-center rounded-full bg-paper/10 ring-1 ring-inset ring-paper/20">
+                  <div className="mb-8 flex items-center gap-3.5">
+                    <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#F0A868]/15 text-[#F0A868] ring-1 ring-inset ring-[#F0A868]/25">
                       <Camera className="h-5 w-5" />
                     </span>
                     <div>
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-paper/50">
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#F0A868]">
                         For freelancers
                       </p>
                       <p className="font-display text-2xl font-semibold">
@@ -311,19 +218,19 @@ export default function Home() {
                     </div>
                   </div>
 
-                  <ul className="space-y-1">
+                  <ul className="space-y-0.5">
                     {FREELANCER_BENEFITS.map(({ icon: Icon, title, text }) => (
                       <motion.li
                         key={title}
                         variants={staggerItem}
-                        className="group/row flex gap-4 rounded-2xl p-3 transition-colors hover:bg-paper/[0.06]"
+                        className="group/row flex gap-4 rounded-2xl p-3.5 transition-colors duration-300 hover:bg-white/[0.05]"
                       >
-                        <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-paper/10 text-paper/70 transition-colors group-hover/row:bg-brand group-hover/row:text-white">
+                        <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/[0.07] text-[#F0A868] ring-1 ring-inset ring-white/10 transition-all duration-300 group-hover/row:bg-[#F0A868] group-hover/row:text-[#0A2622] group-hover/row:ring-[#F0A868]">
                           <Icon className="h-4 w-4" />
                         </span>
                         <div>
                           <p className="font-semibold leading-snug">{title}</p>
-                          <p className="mt-1 text-sm leading-relaxed text-paper/60">
+                          <p className="mt-1 text-sm leading-relaxed text-[#F4EFE6]/55">
                             {text}
                           </p>
                         </div>
@@ -335,7 +242,7 @@ export default function Home() {
                     <Button
                       asChild
                       size="lg"
-                      className="w-full rounded-full bg-paper px-8 text-base text-ink hover:bg-white sm:w-auto"
+                      className="w-full rounded-full bg-[#F0A868] px-8 text-base font-semibold text-[#0A2622] hover:bg-[#F5BC88] sm:w-auto"
                     >
                       <Link href="/login">
                         Start as a freelancer
@@ -346,41 +253,48 @@ export default function Home() {
                 </div>
               </motion.div>
 
-              {/* Clients — light panel */}
+              {/* ---- Clients: persimmon, the complement of that teal ---- */}
               <motion.div
                 {...stagger}
-                className="group/panel relative overflow-hidden rounded-3xl border border-border bg-paper p-8 shadow-[0_30px_60px_-45px_rgba(23,20,16,0.45)] md:p-10"
+                className="group/panel relative overflow-hidden rounded-[1.75rem] bg-gradient-to-br from-[#D6440F] via-[#C03A0B] to-[#8F2A06] p-8 text-[#FDF3EC] shadow-[0_40px_80px_-50px_rgba(143,42,6,0.85)] md:p-10"
               >
                 <div
                   aria-hidden
-                  className="pointer-events-none absolute -left-20 -bottom-20 h-64 w-64 rounded-full bg-brand/10 blur-3xl"
+                  className="pointer-events-none absolute -left-24 -bottom-24 h-72 w-72 rounded-full bg-[#FFD9A0]/25 blur-3xl"
                 />
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent"
+                />
+
                 <div className="relative">
-                  <div className="mb-8 flex items-center gap-3">
-                    <span className="flex h-11 w-11 items-center justify-center rounded-full bg-ink text-paper">
+                  <div className="mb-8 flex items-center gap-3.5">
+                    <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/15 text-white ring-1 ring-inset ring-white/25">
                       <Briefcase className="h-5 w-5" />
                     </span>
                     <div>
-                      <p className="eyebrow">For clients</p>
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#FFD9A0]">
+                        For clients
+                      </p>
                       <p className="font-display text-2xl font-semibold">
                         Book with confidence.
                       </p>
                     </div>
                   </div>
 
-                  <ul className="space-y-1">
+                  <ul className="space-y-0.5">
                     {CLIENT_BENEFITS.map(({ icon: Icon, title, text }) => (
                       <motion.li
                         key={title}
                         variants={staggerItem}
-                        className="group/row flex gap-4 rounded-2xl p-3 transition-colors hover:bg-white"
+                        className="group/row flex gap-4 rounded-2xl p-3.5 transition-colors duration-300 hover:bg-white/[0.10]"
                       >
-                        <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-muted-foreground ring-1 ring-inset ring-border transition-colors group-hover/row:bg-ink group-hover/row:text-paper group-hover/row:ring-ink">
+                        <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/15 text-white ring-1 ring-inset ring-white/20 transition-all duration-300 group-hover/row:bg-white group-hover/row:text-[#C03A0B]">
                           <Icon className="h-4 w-4" />
                         </span>
                         <div>
                           <p className="font-semibold leading-snug">{title}</p>
-                          <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                          <p className="mt-1 text-sm leading-relaxed text-[#FDF3EC]/70">
                             {text}
                           </p>
                         </div>
@@ -392,7 +306,7 @@ export default function Home() {
                     <Button
                       asChild
                       size="lg"
-                      className="w-full rounded-full bg-ink px-8 text-base text-paper hover:bg-ink-soft sm:w-auto"
+                      className="w-full rounded-full bg-[#FDF3EC] px-8 text-base font-semibold text-[#8F2A06] hover:bg-white sm:w-auto"
                     >
                       <Link href="/login">
                         Hire a creator
@@ -403,6 +317,22 @@ export default function Home() {
                 </div>
               </motion.div>
             </div>
+
+            <motion.div
+              {...fadeUp}
+              className="mt-8 flex flex-wrap items-center justify-center gap-x-7 gap-y-2 text-sm text-muted-foreground"
+            >
+              {[
+                "Escrow on every milestone",
+                "No agency middlemen",
+                "Two-way reviews",
+              ].map((t) => (
+                <span key={t} className="inline-flex items-center gap-2">
+                  <Check className="h-4 w-4 text-brand" />
+                  {t}
+                </span>
+              ))}
+            </motion.div>
           </div>
         </section>
 
