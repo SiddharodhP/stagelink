@@ -8,7 +8,7 @@ import { Loader2, Gavel, Pencil, Undo2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Field, inputClass, textareaClass } from "@/components/shared/dashboard-ui";
 import { BidStatusPill } from "@/components/shared/marketplace-ui";
-import { submitBid, updateBid } from "@/lib/services/bids";
+import { submitBid, reviseBid, withdrawBid } from "@/lib/services/bids";
 import { Bid, Profile, Project } from "@/types/marketplace";
 import { formatPrice } from "@/lib/utils";
 
@@ -34,6 +34,7 @@ export function BidPanel({
   );
   const [days, setDays] = useState(existingBid ? String(existingBid.delivery_days) : "");
   const [proposal, setProposal] = useState(existingBid?.proposal || "");
+  const [publicNote, setPublicNote] = useState(existingBid?.public_note || "");
 
   const isLive = existingBid && ["submitted", "shortlisted"].includes(existingBid.status);
   const canBid = project.status === "open";
@@ -43,39 +44,43 @@ export function BidPanel({
     if (!Number(days) || Number(days) <= 0) return toast.error("Enter your delivery time in days");
     if (proposal.trim().length < 40)
       return toast.error("Write at least a few sentences explaining your approach");
+    if (!publicNote.trim())
+      return toast.error("Add a public note — other freelancers will see it");
 
     setIsSaving(true);
     const payload = {
       amount: Number(amount),
       delivery_days: Number(days),
       proposal: proposal.trim(),
+      public_note: publicNote.trim(),
     };
 
-    const res = existingBid
-      ? await updateBid(existingBid.id, {
-          ...payload,
-          ...(existingBid.status === "withdrawn" ? { status: "submitted" as const } : {}),
-        })
-      : await submitBid({ project_id: project.id, freelancer_id: profile.id, ...payload });
+    const { error } = existingBid
+      ? await reviseBid(existingBid.id, payload)
+      : await submitBid({ project_id: project.id, ...payload });
 
     setIsSaving(false);
-    if (res.error) {
-      toast.error(res.error.message || "Could not submit your bid");
+    if (error) {
+      toast.error(error.message || "Could not submit your bid");
       return;
     }
-    toast.success(existingBid ? "Bid updated" : "Bid submitted — the client has been notified");
-    onChange(res.data);
+    toast.success(
+      existingBid ? "Bid updated" : "Bid submitted — the client has been notified"
+    );
+    // The bid and its comment are written server-side, so refetch rather
+    // than reconstructing the row here and risking a stale view.
+    onChange(null);
     setEditing(false);
   };
 
   const withdraw = async () => {
     if (!existingBid) return;
     setIsSaving(true);
-    const { data, error } = await updateBid(existingBid.id, { status: "withdrawn" });
+    const { error } = await withdrawBid(existingBid.id);
     setIsSaving(false);
     if (error) return toast.error(error.message || "Could not withdraw");
     toast.success("Bid withdrawn");
-    onChange(data);
+    onChange(null);
   };
 
   if (!canBid) {
@@ -201,6 +206,24 @@ export function BidPanel({
             onChange={(e) => setProposal(e.target.value)}
             placeholder="Explain your approach and why you're the right fit…"
           />
+        </Field>
+
+        <Field
+          label="Public note"
+          required
+          hint="Shown on the project for everyone to read — including other freelancers. Your price and proposal above stay private."
+        >
+          <textarea
+            className={textareaClass}
+            rows={3}
+            maxLength={1000}
+            value={publicNote}
+            onChange={(e) => setPublicNote(e.target.value)}
+            placeholder="e.g. Six years shooting weddings across Karnataka. Available on those dates and happy to travel."
+          />
+          <p className="mt-1.5 text-xs text-muted-foreground">
+            {publicNote.trim().length}/1000
+          </p>
         </Field>
       </div>
 

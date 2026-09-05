@@ -143,6 +143,8 @@ export interface Bid {
   freelancer_id: string;
   amount: number;
   proposal: string;
+  /** Shown publicly on the project. Distinct from the private proposal. */
+  public_note?: string | null;
   delivery_days: number;
   status: BidStatus;
   created_at: string;
@@ -275,6 +277,25 @@ export interface ProjectFilters {
   maxBids: number | null;
   sortBy: "newest" | "budget_desc" | "budget_asc" | "deadline" | "fewest_bids";
   page: number;
+}
+
+/**
+ * A public note on a project, written by a freelancer when they bid.
+ *
+ * The bid's amount and proposal stay private — this is a separate line the
+ * freelancer knowingly writes for everyone to read.
+ */
+export interface ProjectComment {
+  id: string;
+  project_id: string;
+  author_id: string;
+  bid_id: string | null;
+  body: string;
+  is_withdrawn: boolean;
+  created_at: string;
+  updated_at: string;
+  // joins
+  author?: Profile;
 }
 
 export type CallStatus = "ringing" | "active" | "ended" | "declined" | "missed";

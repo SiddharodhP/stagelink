@@ -368,10 +368,12 @@ export default function Home() {
               >
                 {projects.map((p) => (
                   <motion.div key={p.id} variants={staggerItem}>
-                    {/* Sends visitors to sign in, carrying the project so they
-                        land on it afterwards rather than a generic dashboard. */}
+                    {/* Opens the public project page: the brief, who is
+                        already bidding, and a sign-in-to-bid button. Jumping
+                        straight to login asked people to commit before they
+                        had seen anything. */}
                     <Link
-                      href={`/login?next=${encodeURIComponent(`/projects/${p.id}`)}`}
+                      href={`/projects/${p.id}`}
                       className="group flex h-full flex-col rounded-2xl border border-border bg-white p-6 transition-all duration-300 hover:-translate-y-1 hover:border-ink/25 hover:shadow-[0_24px_48px_-32px_rgba(23,20,16,0.5)]"
                     >
                       <div className="mb-3 flex items-center justify-between gap-3">

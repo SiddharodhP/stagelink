@@ -23,6 +23,7 @@ import { Button } from "@/components/ui/button";
 import { MilestoneList } from "@/components/shared/milestone-list";
 import { BidPanel } from "@/components/shared/bid-panel";
 import { BidComparison } from "@/components/shared/bid-comparison";
+import { ProjectComments } from "@/components/shared/project-comments";
 import {
   ProjectStatusPill,
   SkillTags,
@@ -265,6 +266,22 @@ export default function ProjectDetailPage() {
                   </p>
                 )}
               </section>
+
+              {/* Public thread. Visible to everyone, signed in or not —
+                  a visitor deciding whether to join should be able to see
+                  how much competition a project already has. */}
+              <ProjectComments
+                className="mt-12"
+                projectId={project.id}
+                viewer={profile}
+                bidHref={
+                  isOwner
+                    ? undefined
+                    : profile
+                      ? undefined
+                      : `/login?next=${encodeURIComponent(`/projects/${project.id}`)}`
+                }
+              />
 
               {/* Owner: bid comparison */}
               {isOwner && (

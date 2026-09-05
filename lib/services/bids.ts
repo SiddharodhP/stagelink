@@ -3,15 +3,54 @@ import { Bid } from "@/types/marketplace";
 
 const supabase = createBrowserClient();
 
+/**
+ * Places a bid and publishes its public note in one operation.
+ *
+ * An RPC rather than a direct insert because the bid and its comment have
+ * to be written together — a half-failed request would otherwise leave a
+ * project showing five bids and four comments.
+ */
 export async function submitBid(fields: {
   project_id: string;
-  freelancer_id: string;
   amount: number;
   proposal: string;
   delivery_days: number;
+  public_note: string;
 }) {
-  const { data, error } = await supabase.from("bids").insert(fields).select().single();
-  return { data: data as Bid | null, error };
+  const { data, error } = await supabase.rpc("place_bid", {
+    p_project_id: fields.project_id,
+    p_amount: fields.amount,
+    p_proposal: fields.proposal,
+    p_delivery_days: fields.delivery_days,
+    p_public_note: fields.public_note,
+  });
+  return { bidId: (data as string | null) ?? null, error };
+}
+
+/** Edits a bid and the comment it published, together. */
+export async function reviseBid(
+  bidId: string,
+  fields: {
+    amount: number;
+    proposal: string;
+    delivery_days: number;
+    public_note: string;
+  }
+) {
+  const { error } = await supabase.rpc("update_bid_note", {
+    p_bid_id: bidId,
+    p_amount: fields.amount,
+    p_proposal: fields.proposal,
+    p_delivery_days: fields.delivery_days,
+    p_public_note: fields.public_note,
+  });
+  return { error };
+}
+
+/** Marks the bid withdrawn; its comment stays but is flagged. */
+export async function withdrawBid(bidId: string) {
+  const { error } = await supabase.rpc("withdraw_bid", { p_bid_id: bidId });
+  return { error };
 }
 
 export async function updateBid(
