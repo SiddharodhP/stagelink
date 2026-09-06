@@ -9,9 +9,7 @@ import {
   Check,
   Loader2,
   Plus,
-  Trash2,
   X,
-  GripVertical,
   Send,
 } from "lucide-react";
 
@@ -24,44 +22,21 @@ import {
   selectClass,
   textareaClass,
 } from "@/components/shared/dashboard-ui";
-import { MilestoneList } from "@/components/shared/milestone-list";
 import {
   getCategories,
   getSkillsList,
   createDraftProject,
-
-  upsertMilestones,
   publishProject,
 } from "@/lib/services/projects";
-import { Category, Milestone, Profile } from "@/types/marketplace";
+import { Category, Profile } from "@/types/marketplace";
 import {
   EXPERIENCE_LEVELS,
   LOCATION_PREFS,
   DURATION_OPTIONS,
 } from "@/lib/constants";
-import { formatPrice, cn } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
-interface DraftMilestone {
-  key: string;
-  title: string;
-  description: string;
-  deliverables: string;
-  amount: string;
-  due_date: string;
-}
-
-const STEPS = ["Basics", "Skills & scope", "Milestones", "Review"] as const;
-
-function newMilestone(): DraftMilestone {
-  return {
-    key: crypto.randomUUID(),
-    title: "",
-    description: "",
-    deliverables: "",
-    amount: "",
-    due_date: "",
-  };
-}
+const STEPS = ["Basics", "Skills & scope", "Review"] as const;
 
 function Wizard({ profile }: { profile: Profile }) {
   const router = useRouter();
@@ -79,17 +54,16 @@ function Wizard({ profile }: { profile: Profile }) {
     location_pref: "remote",
     expected_duration: "",
     deadline: "",
+    budget_stated: "",
     skills: [] as string[],
   });
 
-  const [milestones, setMilestones] = useState<DraftMilestone[]>([newMilestone()]);
 
   useEffect(() => {
     getCategories().then(({ data }) => setCategories(data));
     getSkillsList().then(({ data }) => setSkillOptions(data));
   }, []);
 
-  const total = milestones.reduce((s, m) => s + (Number(m.amount) || 0), 0);
 
   const toggleSkill = (s: string) =>
     setForm((f) => ({
@@ -114,15 +88,9 @@ function Wizard({ profile }: { profile: Profile }) {
       if (!form.category_id) return "Pick a category";
     }
     if (step === 1) {
+      const budget = Number(form.budget_stated);
+      if (!budget || budget <= 0) return "Add the budget you have in mind";
       if (form.skills.length === 0) return "Add at least one required skill";
-    }
-    if (step === 2) {
-      if (milestones.length === 0) return "Add at least one milestone";
-      for (const m of milestones) {
-        if (!m.title.trim()) return "Every milestone needs a title";
-        if (!Number(m.amount) || Number(m.amount) <= 0)
-          return "Every milestone needs a payment amount above zero";
-      }
     }
     return null;
   };
@@ -153,21 +121,12 @@ function Wizard({ profile }: { profile: Profile }) {
         location_pref: form.location_pref as any,
         expected_duration: form.expected_duration || null,
         deadline: form.deadline || null,
+        budget_stated: Number(form.budget_stated),
       });
       if (error || !project) throw error || new Error("Could not create project");
 
-      const { error: msError } = await upsertMilestones(
-        project.id,
-        milestones.map((m) => ({
-          title: m.title.trim(),
-          description: m.description.trim() || null,
-          deliverables: m.deliverables.trim() || null,
-          amount: Number(m.amount),
-          due_date: m.due_date || null,
-        }))
-      );
-      if (msError) throw msError;
-
+      // No milestones here any more. They are drafted on the contract once
+      // a freelancer is chosen and the two have talked — see migration 018.
       const { error: pubError } = await publishProject(project.id);
       if (pubError) throw pubError;
 
@@ -194,21 +153,9 @@ function Wizard({ profile }: { profile: Profile }) {
       location_pref: form.location_pref as any,
       expected_duration: form.expected_duration || null,
       deadline: form.deadline || null,
+      budget_stated: Number(form.budget_stated) || 0,
     });
     if (!error && project) {
-      const valid = milestones.filter((m) => m.title.trim() && Number(m.amount) > 0);
-      if (valid.length > 0) {
-        await upsertMilestones(
-          project.id,
-          valid.map((m) => ({
-            title: m.title.trim(),
-            description: m.description.trim() || null,
-            deliverables: m.deliverables.trim() || null,
-            amount: Number(m.amount),
-            due_date: m.due_date || null,
-          }))
-        );
-      }
       toast.success("Saved as draft");
       router.push("/client/projects");
     } else {
@@ -217,22 +164,6 @@ function Wizard({ profile }: { profile: Profile }) {
     }
   };
 
-  const previewMilestones: Milestone[] = milestones.map((m, i) => ({
-    id: m.key,
-    project_id: "",
-    seq: i + 1,
-    title: m.title || `Milestone ${i + 1}`,
-    description: m.description || null,
-    deliverables: m.deliverables || null,
-    amount: Number(m.amount) || 0,
-    due_date: m.due_date || null,
-    status: "pending",
-    escrow_funded: false,
-    revision_note: null,
-    submitted_at: null,
-    approved_at: null,
-    auto_release_at: null,
-  }));
 
   return (
     <div className="mx-auto max-w-3xl pb-10">
@@ -433,6 +364,25 @@ function Wizard({ profile }: { profile: Profile }) {
                 </select>
               </Field>
 
+              <Field
+                label="Your budget (₹)"
+                htmlFor="budget_stated"
+                required
+                hint="What you expect to spend overall. Freelancers bid against this — the milestone breakdown comes later, once you have picked someone."
+              >
+                <input
+                  id="budget_stated"
+                  type="number"
+                  min={1}
+                  className={inputClass}
+                  value={form.budget_stated}
+                  onChange={(e) =>
+                    setForm({ ...form, budget_stated: e.target.value })
+                  }
+                  placeholder="e.g. 45000"
+                />
+              </Field>
+
               <Field label="Overall deadline" htmlFor="deadline" hint="Optional — the date the whole project should be done.">
                 <input
                   id="deadline"
@@ -446,134 +396,8 @@ function Wizard({ profile }: { profile: Profile }) {
           </div>
         )}
 
-        {/* ---------- Step 2: Milestones ---------- */}
+        {/* ---------- Step 2: Review ---------- */}
         {step === 2 && (
-          <div>
-            <div className="mb-6 rounded-lg border border-border bg-brand-soft p-4 text-sm leading-relaxed text-foreground/80">
-              <p className="mb-1 font-semibold text-foreground">How milestone payments work</p>
-              Split the project into stages. You fund each milestone into escrow
-              before work starts on it, and release payment only after you
-              approve the deliverable. Freelancers see this structure before they
-              bid — clear milestones get better bids.
-            </div>
-
-            <div className="space-y-4">
-              {milestones.map((m, i) => (
-                <div key={m.key} className="rounded-xl border border-border p-5">
-                  <div className="mb-4 flex items-center justify-between">
-                    <span className="flex items-center gap-2 text-sm font-semibold">
-                      <GripVertical className="h-4 w-4 text-muted-foreground" />
-                      Milestone {i + 1}
-                    </span>
-                    {milestones.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => setMilestones((ms) => ms.filter((x) => x.key !== m.key))}
-                        className="text-muted-foreground transition-colors hover:text-red-600"
-                        aria-label="Remove milestone"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    )}
-                  </div>
-
-                  <div className="space-y-4">
-                    <Field label="Title" required>
-                      <input
-                        className={inputClass}
-                        value={m.title}
-                        onChange={(e) =>
-                          setMilestones((ms) =>
-                            ms.map((x) => (x.key === m.key ? { ...x, title: e.target.value } : x))
-                          )
-                        }
-                        placeholder="e.g. Half-day studio shoot"
-                      />
-                    </Field>
-
-                    <Field label="What's included">
-                      <textarea
-                        className={cn(textareaClass, "min-h-[80px]")}
-                        value={m.description}
-                        onChange={(e) =>
-                          setMilestones((ms) =>
-                            ms.map((x) =>
-                              x.key === m.key ? { ...x, description: e.target.value } : x
-                            )
-                          )
-                        }
-                        placeholder="Scope of this stage…"
-                      />
-                    </Field>
-
-                    <Field label="Deliverables" hint="Exactly what the freelancer hands over to close this milestone.">
-                      <input
-                        className={inputClass}
-                        value={m.deliverables}
-                        onChange={(e) =>
-                          setMilestones((ms) =>
-                            ms.map((x) =>
-                              x.key === m.key ? { ...x, deliverables: e.target.value } : x
-                            )
-                          )
-                        }
-                        placeholder="e.g. 40 edited hi-res images, delivered via gallery link"
-                      />
-                    </Field>
-
-                    <div className="grid gap-4 sm:grid-cols-2">
-                      <Field label="Payment amount (₹)" required>
-                        <input
-                          type="number"
-                          min="1"
-                          className={inputClass}
-                          value={m.amount}
-                          onChange={(e) =>
-                            setMilestones((ms) =>
-                              ms.map((x) => (x.key === m.key ? { ...x, amount: e.target.value } : x))
-                            )
-                          }
-                          placeholder="10000"
-                        />
-                      </Field>
-                      <Field label="Due date">
-                        <input
-                          type="date"
-                          className={inputClass}
-                          value={m.due_date}
-                          onChange={(e) =>
-                            setMilestones((ms) =>
-                              ms.map((x) => (x.key === m.key ? { ...x, due_date: e.target.value } : x))
-                            )
-                          }
-                        />
-                      </Field>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <Button
-              type="button"
-              variant="outline"
-              className="mt-4 w-full rounded-lg border-dashed"
-              onClick={() => setMilestones((ms) => [...ms, newMilestone()])}
-            >
-              <Plus className="mr-2 h-4 w-4" /> Add another milestone
-            </Button>
-
-            <div className="mt-6 flex items-center justify-between rounded-lg bg-secondary px-5 py-4">
-              <span className="text-sm font-medium text-foreground/70">
-                Total project budget
-              </span>
-              <span className="font-display text-2xl font-semibold">{formatPrice(total)}</span>
-            </div>
-          </div>
-        )}
-
-        {/* ---------- Step 3: Review ---------- */}
-        {step === 3 && (
           <div className="space-y-8">
             <div>
               <p className="eyebrow mb-2">Preview</p>
@@ -611,13 +435,19 @@ function Wizard({ profile }: { profile: Profile }) {
 
             <div>
               <p className="eyebrow mb-4">Milestone structure</p>
-              <MilestoneList milestones={previewMilestones} />
-            </div>
-
-            <div className="rounded-lg border border-border bg-secondary p-4 text-sm leading-relaxed text-muted-foreground">
-              Publishing makes this project visible to freelancers immediately.
-              You can still edit milestones until you award the project to
-              someone.
+              <div className="rounded-xl border border-border bg-white p-6">
+                <p className="eyebrow mb-1">Budget</p>
+                <p className="font-display text-3xl font-semibold">
+                  {form.budget_stated
+                    ? `₹${Number(form.budget_stated).toLocaleString("en-IN")}`
+                    : "—"}
+                </p>
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                  You will break this into milestones after choosing a
+                  freelancer, once you have discussed the work with them. They
+                  confirm the plan before anything starts.
+                </p>
+              </div>
             </div>
           </div>
         )}

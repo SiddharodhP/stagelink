@@ -71,6 +71,19 @@ export async function respondContract(contractId: string, accept: boolean) {
   return { error };
 }
 
+/**
+ * Client sends the drafted milestone plan to the freelancer to confirm.
+ *
+ * Locks the structure: once sent, milestones can no longer be edited, or
+ * the freelancer would be agreeing to something that can change under them.
+ */
+export async function submitMilestonePlan(contractId: string) {
+  const { error } = await supabase.rpc("submit_milestone_plan", {
+    p_contract_id: contractId,
+  });
+  return { error };
+}
+
 export async function fundMilestone(milestoneId: string) {
   const { error } = await supabase.rpc("fund_milestone", { p_milestone_id: milestoneId });
   return { error };

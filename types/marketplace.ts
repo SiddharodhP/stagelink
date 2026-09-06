@@ -101,6 +101,9 @@ export interface Project {
   location_pref: LocationPref;
   expected_duration: string | null;
   deadline: string | null;
+  /** What the client advertised when posting. Freelancers bid against this. */
+  budget_stated?: number;
+  /** Sum of agreed milestones — 0 until a plan exists (migration 018). */
   budget_total: number;
   status: ProjectStatus;
   bids_count: number;
@@ -160,6 +163,8 @@ export interface Contract {
   client_id: string;
   freelancer_id: string;
   agreed_amount: number;
+  /** Null while the client is still drafting the plan (migration 018). */
+  plan_sent_at?: string | null;
   status: ContractStatus;
   started_at: string | null;
   completed_at: string | null;

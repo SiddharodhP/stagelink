@@ -37,6 +37,7 @@ import {
   textareaClass,
 } from "@/components/shared/dashboard-ui";
 import { MilestoneList } from "@/components/shared/milestone-list";
+import { MilestonePlanner } from "@/components/shared/milestone-planner";
 import {
   ContractStatusPill,
   MilestoneStatusPill,
@@ -113,6 +114,8 @@ function Workspace({ profile }: { profile: Profile }) {
   const [milestones, setMilestones] = useState<Milestone[]>([]);
   const [submissions, setSubmissions] = useState<MilestoneSubmission[]>([]);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
+  // accept_bid opens this thread, so planning has somewhere to happen.
+  const [conversationId, setConversationId] = useState<string | null>(null);
   const [hasReviewed, setHasReviewed] = useState(false);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -142,6 +145,16 @@ function Workspace({ profile }: { profile: Profile }) {
     setSubmissions(subs);
     setInvoices(invs);
     setHasReviewed(revs.some((r: any) => r.reviewer_id === profile.id));
+
+    const other =
+      data.client_id === profile.id ? data.freelancer_id : data.client_id;
+    const { data: conv } = await getOrCreateConversation(
+      profile.id,
+      other,
+      data.project_id
+    );
+    setConversationId(conv?.id ?? null);
+
     setLoading(false);
   }, [id, profile.id]);
 
@@ -197,6 +210,9 @@ function Workspace({ profile }: { profile: Profile }) {
   const other = isClient ? contract.freelancer : contract.client;
   const isActive = contract.status === "active";
   const isPending = contract.status === "pending_acceptance";
+  // pending_acceptance covers two different situations now: the client
+  // still drafting, and the freelancer reviewing what was sent.
+  const planSent = Boolean(contract.plan_sent_at);
   const isOver = ["completed", "cancelled"].includes(contract.status);
 
   const paidTotal = milestones
@@ -467,7 +483,53 @@ function Workspace({ profile }: { profile: Profile }) {
       <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
         {/* Milestone workspace */}
         <div className="min-w-0 space-y-6">
-          {isPending && !isClient && (
+          {/* ---- Planning: client drafts, after talking it through ---- */}
+          {isPending && !planSent && isClient && (
+            <SectionCard
+              title="Agree the plan"
+              description="You have picked a freelancer. Discuss the work with them, then break it into milestones — each one funded and approved separately."
+            >
+              <MilestonePlanner
+                contract={contract}
+                existing={milestones}
+                conversationId={conversationId}
+                onSent={load}
+              />
+            </SectionCard>
+          )}
+
+          {isPending && !planSent && !isClient && (
+            <SectionCard
+              title="Agreeing the plan"
+              description="You have been selected. The client will send a milestone plan for you to confirm — talk the work through with them first so the plan reflects what you actually agreed."
+            >
+              {milestones.length > 0 ? (
+                <>
+                  <p className="mb-4 text-sm text-muted-foreground">
+                    A draft exists, but it has not been sent yet. It can still
+                    change.
+                  </p>
+                  <MilestoneList milestones={milestones} />
+                </>
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  Nothing drafted yet.
+                </p>
+              )}
+              {conversationId && (
+                <div className="mt-5">
+                  <Button asChild variant="outline" className="rounded-full">
+                    <Link href={`/messages?c=${conversationId}`}>
+                      <MessageSquare className="mr-2 h-4 w-4" /> Open chat
+                    </Link>
+                  </Button>
+                </div>
+              )}
+            </SectionCard>
+          )}
+
+          {/* ---- Sent: the freelancer's turn ---- */}
+          {isPending && planSent && !isClient && (
             <SectionCard
               title="Confirm the milestone structure"
               description="Read every milestone carefully. Once you accept, this becomes the agreed plan of work."
@@ -478,29 +540,36 @@ function Workspace({ profile }: { profile: Profile }) {
                   className="rounded-full bg-ink px-8 text-paper hover:bg-ink-soft"
                   disabled={busy}
                   onClick={() =>
-                    run(() => respondContract(contract.id, true), "Contract accepted — work can begin")
+                    run(() => respondContract(contract.id, true), "Milestones confirmed — work can begin")
                   }
                 >
                   <Check className="mr-2 h-4 w-4" /> I agree — start the project
                 </Button>
                 <Button
                   variant="outline"
-                  className="rounded-full text-red-600 hover:bg-red-50"
+                  className="rounded-full"
                   disabled={busy}
                   onClick={() =>
-                    run(() => respondContract(contract.id, false), "Contract declined")
+                    run(
+                      () => respondContract(contract.id, false),
+                      "Sent back for changes"
+                    )
                   }
                 >
-                  Decline
+                  Ask for changes
                 </Button>
               </div>
+              <p className="mt-4 text-xs text-muted-foreground">
+                Asking for changes returns the plan to the client to revise —
+                it does not cancel the project.
+              </p>
             </SectionCard>
           )}
 
-          {isPending && isClient && (
+          {isPending && planSent && isClient && (
             <SectionCard
               title="Awaiting confirmation"
-              description="The freelancer is reviewing your milestone structure."
+              description="The freelancer is reviewing the plan you sent. It is locked until they respond."
             >
               <MilestoneList milestones={milestones} />
             </SectionCard>
