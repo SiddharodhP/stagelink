@@ -110,7 +110,9 @@ export async function updateProject(id: string, fields: Partial<Project>) {
 }
 
 export async function publishProject(id: string) {
-  // draft -> open is validated DB-side (requires >= 1 milestone)
+  // draft -> open is validated DB-side. Since migration 019 the
+  // requirement is a budget, not milestones — those are agreed with the
+  // freelancer after the award.
   const { data, error } = await supabase
     .from("projects")
     .update({ status: "open" })

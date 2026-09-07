@@ -181,10 +181,14 @@ export default function ProjectDetailPage() {
                     {formatPrice(project.budget_total)}
                   </dd>
                 </div>
-                <div>
-                  <dt className="eyebrow mb-1">Milestones</dt>
-                  <dd className="font-display text-xl font-semibold">{milestones.length}</dd>
-                </div>
+                {milestones.length > 0 && (
+                  <div>
+                    <dt className="eyebrow mb-1">Milestones</dt>
+                    <dd className="font-display text-xl font-semibold">
+                      {milestones.length}
+                    </dd>
+                  </div>
+                )}
                 <div>
                   <dt className="eyebrow mb-1">Bids</dt>
                   <dd className="font-display text-xl font-semibold">{project.bids_count}</dd>
@@ -261,8 +265,12 @@ export default function ProjectDetailPage() {
                 {milestones.length > 0 ? (
                   <MilestoneList milestones={milestones} />
                 ) : (
-                  <p className="rounded-xl border border-dashed border-border bg-white p-6 text-sm text-muted-foreground">
-                    No milestones defined yet.
+                  <p className="rounded-xl border border-dashed border-border bg-white p-6 text-sm leading-relaxed text-muted-foreground">
+                    Milestones aren&apos;t set yet. Once the client picks a
+                    freelancer, the two of them talk the work through and the
+                    client breaks it into stages — each funded in escrow and
+                    paid on approval. The freelancer confirms that plan before
+                    anything starts.
                   </p>
                 )}
               </section>

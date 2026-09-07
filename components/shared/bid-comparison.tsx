@@ -338,7 +338,11 @@ export function BidComparison({
               </div>
               <div className="flex justify-between">
                 <dt className="text-muted-foreground">Milestones</dt>
-                <dd className="font-medium">{project.milestones?.length ?? 0}</dd>
+                <dd className="font-medium">
+                  {(project.milestones?.length ?? 0) > 0
+                    ? project.milestones?.length
+                    : "Set after award"}
+                </dd>
               </div>
             </dl>
           )}

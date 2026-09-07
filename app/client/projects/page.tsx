@@ -61,7 +61,7 @@ function ProjectsPage({ profile }: { profile: Profile }) {
   const handlePublish = async (p: Project) => {
     const { error } = await publishProject(p.id);
     if (error) {
-      toast.error(error.message || "Could not publish — add at least one milestone first");
+      toast.error(error.message || "Could not publish — add a budget first");
       return;
     }
     toast.success("Project published");
@@ -146,7 +146,10 @@ function ProjectsPage({ profile }: { profile: Profile }) {
                     )}
                   </h3>
                   <p className="text-sm text-muted-foreground">
-                    {formatPrice(p.budget_total)} · {p.milestones?.length ?? 0} milestones
+                    {formatPrice(p.budget_total)}
+                    {(p.milestones?.length ?? 0) > 0
+                      ? ` · ${p.milestones?.length} milestones`
+                      : ""}
                     {p.status !== "draft" && ` · ${p.bids_count} bid${p.bids_count === 1 ? "" : "s"}`}
                   </p>
                 </div>

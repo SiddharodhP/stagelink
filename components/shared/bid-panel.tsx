@@ -169,8 +169,10 @@ export function BidPanel({
         {existingBid ? "Update your bid" : "Place your bid"}
       </h2>
       <p className="mb-5 text-sm text-muted-foreground">
-        Client budget: <strong className="text-foreground">{formatPrice(project.budget_total)}</strong>{" "}
-        across {project.milestones?.length ?? 0} milestones
+        Client budget:{" "}
+        <strong className="text-foreground">{formatPrice(project.budget_total)}</strong>
+        {". "}
+        Milestones are agreed with the client after they pick someone.
       </p>
 
       <div className="space-y-4">
@@ -198,7 +200,7 @@ export function BidPanel({
         <Field
           label="Your proposal"
           required
-          hint="How you'd approach it, relevant experience, and anything you'd change about the milestones."
+          hint="How you'd approach it, relevant experience, and how you'd stage the work. Only the client sees this."
         >
           <textarea
             className={textareaClass}
