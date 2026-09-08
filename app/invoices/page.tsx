@@ -55,7 +55,7 @@ import {
   RecurringInvoice,
   RecurrenceCadence,
 } from "@/types/marketplace";
-import { formatPrice, formatDate, cn } from "@/lib/utils";
+import { formatPrice, formatDate, cn, displayName, partyName } from "@/lib/utils";
 
 const TABS = [
   { key: "open", label: "Open" },
@@ -284,7 +284,7 @@ function InvoicesList({ profile }: { profile: Profile }) {
                 >
                   <div className="flex min-w-0 items-center gap-3">
                     <UserAvatar
-                      name={other?.full_name || "User"}
+                      name={displayName(other)}
                       src={other?.avatar_url}
                       size={36}
                     />
@@ -338,7 +338,7 @@ function InvoicesList({ profile }: { profile: Profile }) {
               >
                 <div className="flex min-w-0 items-center gap-3">
                   <UserAvatar
-                    name={other?.full_name || "User"}
+                    name={displayName(other)}
                     src={other?.avatar_url}
                     size={36}
                   />
@@ -416,7 +416,7 @@ function InvoicesList({ profile }: { profile: Profile }) {
                   {contracts.map((c) => (
                     <option key={c.id} value={c.id}>
                       {c.project?.title || "Project"} —{" "}
-                      {c.client?.company_name || c.client?.full_name || "Client"}
+                      {partyName(c.client)}
                     </option>
                   ))}
                 </select>

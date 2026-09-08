@@ -11,7 +11,7 @@ import { PageHeader, EmptyCard, SkeletonRows } from "@/components/shared/dashboa
 import { UserAvatar } from "@/components/shared/marketplace-ui";
 import { getAllUsers, setUserFlags } from "@/lib/services/admin";
 import { Profile } from "@/types/marketplace";
-import { formatDate, cn } from "@/lib/utils";
+import { formatDate, cn, displayName } from "@/lib/utils";
 
 function AdminUsers() {
   const [users, setUsers] = useState<Profile[]>([]);
@@ -99,9 +99,9 @@ function AdminUsers() {
                 <tr key={u.id} className="transition-colors hover:bg-secondary/50">
                   <td className="px-5 py-4">
                     <Link href={`/u/${u.id}`} className="flex items-center gap-3 hover:text-brand">
-                      <UserAvatar name={u.full_name || "?"} src={u.avatar_url} size={32} />
+                      <UserAvatar name={displayName(u)} src={u.avatar_url} size={32} />
                       <div className="min-w-0">
-                        <p className="truncate font-medium">{u.full_name || "Unnamed"}</p>
+                        <p className="truncate font-medium">{displayName(u)}</p>
                         {u.company_name && (
                           <p className="truncate text-xs text-muted-foreground">{u.company_name}</p>
                         )}

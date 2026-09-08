@@ -49,7 +49,7 @@ import {
   CADENCE_NOUN,
 } from "@/lib/services/recurring-invoices";
 import { Invoice, Profile, RecurringInvoice } from "@/types/marketplace";
-import { formatPrice, formatDate } from "@/lib/utils";
+import { formatPrice, formatDate, displayName, partyName } from "@/lib/utils";
 
 function Detail({ label, value }: { label: string; value: React.ReactNode }) {
   return (
@@ -328,7 +328,7 @@ function RetainerDetail({ profile }: { profile: Profile }) {
         <div className="flex flex-wrap items-center gap-6 border-b border-border px-6 py-5">
           <div className="flex items-center gap-3">
             <UserAvatar
-              name={other?.full_name || "User"}
+              name={displayName(other)}
               src={other?.avatar_url}
               size={40}
             />
@@ -336,9 +336,7 @@ function RetainerDetail({ profile }: { profile: Profile }) {
               <p className="eyebrow mb-0.5">{isClient ? "Freelancer" : "Client"}</p>
               <NameWithBadge
                 name={
-                  (isClient
-                    ? other?.full_name
-                    : other?.company_name || other?.full_name) || "User"
+                  isClient ? displayName(other) : partyName(other)
                 }
                 verified={other?.is_verified}
               />

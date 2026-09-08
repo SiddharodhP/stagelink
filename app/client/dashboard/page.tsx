@@ -30,7 +30,7 @@ import {
 import { getClientProjects } from "@/lib/services/projects";
 import { getMyContracts, getMyTransactions } from "@/lib/services/contracts";
 import { Contract, Profile, Project, Transaction } from "@/types/marketplace";
-import { formatPrice, timeAgo } from "@/lib/utils";
+import { formatPrice, timeAgo, displayName } from "@/lib/utils";
 
 function Dashboard({ profile }: { profile: Profile }) {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -265,14 +265,14 @@ function Dashboard({ profile }: { profile: Profile }) {
                   >
                     <div className="flex min-w-0 items-center gap-3">
                       <UserAvatar
-                        name={c.freelancer?.full_name || "Freelancer"}
+                        name={displayName(c.freelancer)}
                         src={c.freelancer?.avatar_url}
                         size={32}
                       />
                       <div className="min-w-0">
                         <p className="truncate text-sm font-semibold">{c.project?.title}</p>
                         <p className="truncate text-xs text-muted-foreground">
-                          {c.freelancer?.full_name} · {formatPrice(c.agreed_amount)}
+                          {displayName(c.freelancer)} · {formatPrice(c.agreed_amount)}
                         </p>
                       </div>
                     </div>

@@ -36,7 +36,7 @@ import {
   emailInvoice,
 } from "@/lib/services/invoices";
 import { Invoice, Profile } from "@/types/marketplace";
-import { formatPrice, formatDate, cn } from "@/lib/utils";
+import { formatPrice, formatDate, cn, displayName, partyName } from "@/lib/utils";
 import { APP_NAME } from "@/lib/constants";
 
 function InvoiceDetail({ profile }: { profile: Profile }) {
@@ -296,14 +296,14 @@ function InvoiceDetail({ profile }: { profile: Profile }) {
             <p className="eyebrow mb-3">From</p>
             <div className="flex items-center gap-3">
               <UserAvatar
-                name={invoice.freelancer?.full_name || "Freelancer"}
+                name={displayName(invoice.freelancer)}
                 src={invoice.freelancer?.avatar_url}
                 size={40}
               />
               <div className="min-w-0">
                 <p className="font-semibold">
                   <NameWithBadge
-                    name={invoice.freelancer?.full_name || "Freelancer"}
+                    name={displayName(invoice.freelancer)}
                     verified={invoice.freelancer?.is_verified}
                   />
                 </p>
@@ -320,14 +320,14 @@ function InvoiceDetail({ profile }: { profile: Profile }) {
             <p className="eyebrow mb-3">Billed to</p>
             <div className="flex items-center gap-3">
               <UserAvatar
-                name={invoice.client?.full_name || "Client"}
+                name={displayName(invoice.client)}
                 src={invoice.client?.avatar_url}
                 size={40}
               />
               <div className="min-w-0">
                 <p className="font-semibold">
                   <NameWithBadge
-                    name={invoice.client?.company_name || invoice.client?.full_name || "Client"}
+                    name={partyName(invoice.client)}
                     verified={invoice.client?.is_verified}
                   />
                 </p>

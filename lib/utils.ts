@@ -25,6 +25,44 @@ export function getInitials(name: string): string {
   return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
 }
 
+/** Shown wherever someone has no name of their own to show. */
+export const UNNAMED = 'Unnamed member';
+
+/**
+ * The name to display for a person.
+ *
+ * profiles.full_name is `not null default ''` — a row exists from the
+ * moment someone signs up, before onboarding asks for a name — so an empty
+ * string is a state the UI has to handle rather than an edge case. Every
+ * display site used to carry its own `|| "..."` fallback, and there were
+ * twenty different ones: the same nameless account read as "User" in
+ * messages, "Freelancer" in the directory, "Client" on a project card and
+ * "Unnamed" in admin. One incomplete profile looked like four people.
+ *
+ * Trims as well, so a name of only spaces falls through instead of
+ * rendering as blank.
+ */
+export function displayName(
+  person: { full_name?: string | null } | null | undefined,
+  fallback: string = UNNAMED
+): string {
+  return person?.full_name?.trim() || fallback;
+}
+
+/**
+ * Same, for surfaces that address a contracting or billing party rather
+ * than a person — a company name wins there when one is set.
+ */
+export function partyName(
+  person:
+    | { full_name?: string | null; company_name?: string | null }
+    | null
+    | undefined,
+  fallback: string = UNNAMED
+): string {
+  return person?.company_name?.trim() || person?.full_name?.trim() || fallback;
+}
+
 export function truncateText(text: string, maxLength: number): string {
   if (text.length <= maxLength) return text;
   return text.slice(0, maxLength) + '...';

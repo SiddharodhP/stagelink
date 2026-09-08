@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Heart, Clock, ListChecks, Users } from "lucide-react";
 import { Project } from "@/types/marketplace";
-import { formatPrice, timeAgo, cn } from "@/lib/utils";
+import { formatPrice, timeAgo, cn, displayName, partyName } from "@/lib/utils";
 import {
   NameWithBadge,
   SkillTags,
@@ -55,13 +55,13 @@ export function ProjectCard({ project, saved, onToggleSave, showSave }: ProjectC
       <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
         <div className="flex min-w-0 items-center gap-2.5">
           <UserAvatar
-            name={project.client?.full_name || "Client"}
+            name={displayName(project.client)}
             src={project.client?.avatar_url}
             size={28}
           />
           <span className="truncate text-sm text-foreground/80">
             <NameWithBadge
-              name={project.client?.company_name || project.client?.full_name || "Client"}
+              name={partyName(project.client)}
               verified={project.client?.is_verified}
             />
             {project.client?.location && (

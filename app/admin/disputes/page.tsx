@@ -24,7 +24,7 @@ import {
 } from "@/components/shared/dashboard-ui";
 import { getDisputes, resolveDispute, markDisputeUnderReview } from "@/lib/services/admin";
 import { Dispute } from "@/types/marketplace";
-import { formatPrice, formatDate, cn } from "@/lib/utils";
+import { formatPrice, formatDate, cn, displayName } from "@/lib/utils";
 
 const STATUS_TONE: Record<string, string> = {
   open: "border-red-200 bg-red-50 text-red-700",
@@ -132,11 +132,11 @@ function AdminDisputes() {
                 <dl className="mb-4 grid grid-cols-2 gap-4 border-y border-border py-3 text-sm">
                   <div>
                     <dt className="eyebrow mb-0.5">Client</dt>
-                    <dd className="font-medium">{c?.client?.full_name || "—"}</dd>
+                    <dd className="font-medium">{displayName(c?.client)}</dd>
                   </div>
                   <div>
                     <dt className="eyebrow mb-0.5">Freelancer</dt>
-                    <dd className="font-medium">{c?.freelancer?.full_name || "—"}</dd>
+                    <dd className="font-medium">{displayName(c?.freelancer)}</dd>
                   </div>
                 </dl>
 

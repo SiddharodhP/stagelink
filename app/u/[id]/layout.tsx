@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { buildMetadata, personJsonLd, breadcrumbJsonLd } from "@/lib/seo";
 import { getProfileForSeo } from "@/lib/seo-data";
 import { JsonLd } from "@/components/shared/json-ld";
+import { displayName } from "@/lib/utils";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -22,7 +23,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   const isFreelancer = profile.role === "freelancer";
-  const name = profile.full_name || "Member";
+  const name = displayName(profile);
   const skills = profile.skills.slice(0, 5).join(", ");
 
   const title = isFreelancer

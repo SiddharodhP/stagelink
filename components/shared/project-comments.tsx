@@ -11,7 +11,7 @@ import {
   subscribeToProjectComments,
 } from "@/lib/services/comments";
 import { ProjectComment, Profile } from "@/types/marketplace";
-import { cn, timeAgo } from "@/lib/utils";
+import { cn, timeAgo, displayName } from "@/lib/utils";
 
 /**
  * The public thread on a project.
@@ -127,7 +127,7 @@ export function ProjectComments({
               >
                 <div className="flex items-start gap-3.5">
                   <UserAvatar
-                    name={a?.full_name || "Freelancer"}
+                    name={displayName(a)}
                     src={a?.avatar_url}
                     size={40}
                   />
@@ -138,7 +138,7 @@ export function ProjectComments({
                           href={`/u/${a.id}`}
                           className="font-semibold transition-colors hover:text-brand"
                         >
-                          {a.full_name || "Freelancer"}
+                          {displayName(a)}
                         </Link>
                       ) : (
                         <span className="font-semibold">Freelancer</span>

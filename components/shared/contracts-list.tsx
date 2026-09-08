@@ -17,7 +17,7 @@ import {
 } from "@/components/shared/marketplace-ui";
 import { getMyContracts } from "@/lib/services/contracts";
 import { Contract, Profile } from "@/types/marketplace";
-import { formatPrice, cn } from "@/lib/utils";
+import { formatPrice, cn, displayName, partyName } from "@/lib/utils";
 
 const TABS = [
   { key: "active", label: "Active" },
@@ -126,13 +126,13 @@ export function ContractsList({
                     </h3>
                     <div className="flex items-center gap-2">
                       <UserAvatar
-                        name={other?.full_name || "User"}
+                        name={displayName(other)}
                         src={other?.avatar_url}
                         size={22}
                       />
                       <span className="text-sm text-muted-foreground">
                         <NameWithBadge
-                          name={other?.company_name || other?.full_name || "User"}
+                          name={partyName(other)}
                           verified={other?.is_verified}
                         />
                       </span>

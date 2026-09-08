@@ -43,7 +43,7 @@ import {
 import { getMyProfile } from "@/lib/services/auth";
 import { getOrCreateConversation } from "@/lib/services/messaging";
 import { PortfolioItem, Profile, Review } from "@/types/marketplace";
-import { formatPrice, formatDate, cn } from "@/lib/utils";
+import { formatPrice, formatDate, cn, displayName, partyName } from "@/lib/utils";
 import { AVAILABILITY_OPTIONS } from "@/lib/constants";
 
 export default function PublicProfilePage() {
@@ -146,7 +146,7 @@ export default function PublicProfilePage() {
             <div className="min-w-0">
               <div className="mb-8 flex flex-col gap-5 sm:flex-row sm:items-start">
                 <UserAvatar
-                  name={profile.full_name || "User"}
+                  name={displayName(profile)}
                   src={profile.avatar_url}
                   size={96}
                   className="shrink-0"
@@ -155,7 +155,7 @@ export default function PublicProfilePage() {
                   <div className="mb-1 flex flex-wrap items-center gap-3">
                     <h1 className="font-display text-3xl font-semibold tracking-tight md:text-4xl">
                       <NameWithBadge
-                        name={profile.full_name || "Unnamed user"}
+                        name={displayName(profile)}
                         verified={profile.is_verified}
                       />
                     </h1>
@@ -271,13 +271,13 @@ export default function PublicProfilePage() {
                         <div className="mb-2 flex items-start justify-between gap-3">
                           <div className="flex items-center gap-2.5">
                             <UserAvatar
-                              name={r.reviewer?.full_name || "User"}
+                              name={displayName(r.reviewer)}
                               src={r.reviewer?.avatar_url}
                               size={32}
                             />
                             <div>
                               <p className="text-sm font-semibold">
-                                {r.reviewer?.company_name || r.reviewer?.full_name || "User"}
+                                {partyName(r.reviewer)}
                               </p>
                               <p className="text-xs capitalize text-muted-foreground">
                                 {r.reviewer?.role} · {formatDate(r.created_at)}

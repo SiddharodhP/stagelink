@@ -37,7 +37,7 @@ import { getMyProfile } from "@/lib/services/auth";
 import { getPublicProfile } from "@/lib/services/profiles";
 import { getOrCreateConversation } from "@/lib/services/messaging";
 import { Bid, Profile, Project } from "@/types/marketplace";
-import { formatPrice, formatDate, timeAgo, cn } from "@/lib/utils";
+import { formatPrice, formatDate, timeAgo, cn, displayName, partyName } from "@/lib/utils";
 import { EXPERIENCE_LEVELS, LOCATION_PREFS } from "@/lib/constants";
 
 export default function ProjectDetailPage() {
@@ -337,14 +337,14 @@ export default function ProjectDetailPage() {
                   className="mb-4 flex items-center gap-3 transition-opacity hover:opacity-80"
                 >
                   <UserAvatar
-                    name={clientProfile?.full_name || "Client"}
+                    name={displayName(clientProfile)}
                     src={clientProfile?.avatar_url}
                     size={48}
                   />
                   <div className="min-w-0">
                     <p className="truncate font-semibold">
                       <NameWithBadge
-                        name={clientProfile?.company_name || clientProfile?.full_name || "Client"}
+                        name={partyName(clientProfile)}
                         verified={clientProfile?.is_verified}
                       />
                     </p>

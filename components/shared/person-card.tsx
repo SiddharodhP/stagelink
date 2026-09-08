@@ -5,7 +5,7 @@ import { MapPin, Globe, Star, Briefcase } from "lucide-react";
 
 import { UserAvatar, NameWithBadge, SkillTags } from "@/components/shared/marketplace-ui";
 import { Profile } from "@/types/marketplace";
-import { formatPrice, cn } from "@/lib/utils";
+import { formatPrice, cn, displayName, partyName } from "@/lib/utils";
 
 const AVAILABILITY_TONE: Record<string, string> = {
   available: "bg-emerald-50 text-emerald-800 border-emerald-200",
@@ -39,13 +39,13 @@ export function FreelancerCard({ profile }: { profile: Profile }) {
     >
       <div className="flex items-start gap-3.5">
         <UserAvatar
-          name={profile.full_name || "Freelancer"}
+          name={displayName(profile)}
           src={profile.avatar_url}
           size={52}
         />
         <div className="min-w-0 flex-1">
           <NameWithBadge
-            name={profile.full_name || "Freelancer"}
+            name={displayName(profile)}
             verified={profile.is_verified}
           />
           {profile.headline && (
@@ -125,7 +125,7 @@ export function ClientCard({
   const reviews = profile.total_reviews || 0;
   const spent = profile.total_spent || 0;
   const place = [profile.city, profile.state].filter(Boolean).join(", ");
-  const name = profile.company_name || profile.full_name || "Client";
+  const name = partyName(profile);
 
   return (
     <Link

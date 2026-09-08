@@ -70,7 +70,7 @@ import {
   MilestoneSubmission,
   Profile,
 } from "@/types/marketplace";
-import { formatPrice, formatDate, cn } from "@/lib/utils";
+import { formatPrice, formatDate, cn, displayName, partyName } from "@/lib/utils";
 
 type DialogKind =
   | { kind: "submit"; milestone: Milestone }
@@ -666,11 +666,11 @@ function Workspace({ profile }: { profile: Profile }) {
               href={`/u/${other?.id}`}
               className="flex items-center gap-3 transition-opacity hover:opacity-80"
             >
-              <UserAvatar name={other?.full_name || "User"} src={other?.avatar_url} size={44} />
+              <UserAvatar name={displayName(other)} src={other?.avatar_url} size={44} />
               <div className="min-w-0">
                 <p className="truncate font-semibold">
                   <NameWithBadge
-                    name={other?.company_name || other?.full_name || "User"}
+                    name={partyName(other)}
                     verified={other?.is_verified}
                   />
                 </p>
@@ -849,7 +849,7 @@ function Workspace({ profile }: { profile: Profile }) {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="font-display text-2xl">
-              Rate {other?.full_name}
+              Rate {displayName(other)}
             </DialogTitle>
             <DialogDescription>
               Public on their profile and part of their marketplace reputation.

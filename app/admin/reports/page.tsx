@@ -9,7 +9,7 @@ import { WorkspaceShell } from "@/components/layout/workspace-shell";
 import { Button } from "@/components/ui/button";
 import { PageHeader, EmptyCard, SkeletonRows } from "@/components/shared/dashboard-ui";
 import { getReports, closeReport, setUserFlags } from "@/lib/services/admin";
-import { formatDate, cn } from "@/lib/utils";
+import { formatDate, cn, displayName } from "@/lib/utils";
 
 function AdminReports() {
   const [reports, setReports] = useState<any[]>([]);
@@ -73,9 +73,9 @@ function AdminReports() {
                   <h3 className="font-display text-lg font-semibold leading-snug">{r.reason}</h3>
                   <p className="mt-1 text-sm text-muted-foreground">
                     <Link href={`/u/${r.reported?.id}`} className="font-medium hover:text-brand">
-                      {r.reported?.full_name || "User"}
+                      {displayName(r.reported)}
                     </Link>{" "}
-                    ({r.reported?.role}) · reported by {r.reporter?.full_name || "a member"}
+                    ({r.reported?.role}) · reported by {displayName(r.reporter)}
                   </p>
                 </div>
                 {r.reported?.is_suspended && (

@@ -33,7 +33,7 @@ import {
   subscribeToCalls,
 } from "@/lib/services/calls";
 import { CallSession, Conversation, Message, Profile } from "@/types/marketplace";
-import { cn, timeAgo } from "@/lib/utils";
+import { cn, timeAgo, displayName, partyName } from "@/lib/utils";
 
 function MessagesInner({ profile }: { profile: Profile }) {
   const params = useSearchParams();
@@ -234,14 +234,14 @@ function MessagesInner({ profile }: { profile: Profile }) {
                   )}
                 >
                   <UserAvatar
-                    name={c.other?.full_name || "User"}
+                    name={displayName(c.other)}
                     src={c.other?.avatar_url}
                     size={40}
                   />
                   <div className="min-w-0 flex-1">
                     <div className="mb-0.5 flex items-baseline justify-between gap-2">
                       <span className="truncate text-sm font-semibold">
-                        {c.other?.company_name || c.other?.full_name || "User"}
+                        {partyName(c.other)}
                       </span>
                       {c.last_message && (
                         <span
@@ -309,13 +309,13 @@ function MessagesInner({ profile }: { profile: Profile }) {
                 className="flex min-w-0 items-center gap-3 transition-opacity hover:opacity-80"
               >
                 <UserAvatar
-                  name={active.other?.full_name || "User"}
+                  name={displayName(active.other)}
                   src={active.other?.avatar_url}
                   size={40}
                 />
                 <div className="min-w-0">
                   <h3 className="truncate font-semibold">
-                    {active.other?.company_name || active.other?.full_name}
+                    {partyName(active.other)}
                   </h3>
                   <p className="truncate text-xs capitalize text-muted-foreground">
                     {active.other?.role}

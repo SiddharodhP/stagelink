@@ -36,7 +36,7 @@ import { getProjectBids, acceptBid, updateBid } from "@/lib/services/bids";
 import { getOrCreateConversation } from "@/lib/services/messaging";
 import { getMyProfile } from "@/lib/services/auth";
 import { Bid, Project } from "@/types/marketplace";
-import { formatPrice, timeAgo, cn } from "@/lib/utils";
+import { formatPrice, timeAgo, cn, displayName } from "@/lib/utils";
 
 type SortKey = "recommended" | "price_asc" | "price_desc" | "rating" | "fastest";
 
@@ -206,14 +206,14 @@ export function BidComparison({
                 {/* Freelancer identity */}
                 <div className="flex min-w-0 gap-3 md:w-64 md:shrink-0 md:flex-col md:border-r md:border-border md:pr-6">
                   <div className="flex items-start gap-3">
-                    <UserAvatar name={f?.full_name || "Freelancer"} src={f?.avatar_url} size={48} />
+                    <UserAvatar name={displayName(f)} src={f?.avatar_url} size={48} />
                     <div className="min-w-0">
                       <Link
                         href={`/u/${bid.freelancer_id}`}
                         className="font-semibold hover:text-brand"
                       >
                         <NameWithBadge
-                          name={f?.full_name || "Freelancer"}
+                          name={displayName(f)}
                           verified={f?.is_verified}
                         />
                       </Link>

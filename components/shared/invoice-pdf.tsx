@@ -6,7 +6,7 @@ import {
   StyleSheet,
 } from "@react-pdf/renderer";
 import { Invoice } from "@/types/marketplace";
-import { amountInWords } from "@/lib/utils";
+import { amountInWords, displayName, partyName } from "@/lib/utils";
 
 /**
  * Vector PDF invoice — real selectable text, not a screenshot.
@@ -230,12 +230,8 @@ export function InvoicePdf({ invoice }: { invoice: Invoice }) {
   const currency = invoice.currency || "USD";
   const isReceipt = invoice.status === "paid";
 
-  const fromName = invoice.from_name || invoice.freelancer?.full_name || "Freelancer";
-  const toName =
-    invoice.to_name ||
-    invoice.client?.company_name ||
-    invoice.client?.full_name ||
-    "Client";
+  const fromName = invoice.from_name?.trim() || displayName(invoice.freelancer);
+  const toName = invoice.to_name?.trim() || partyName(invoice.client);
 
   const milestoneLabel =
     invoice.milestone_seq && invoice.milestone_count

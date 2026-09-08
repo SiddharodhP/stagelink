@@ -14,7 +14,7 @@ import {
   getFreelancersForCity,
   SeoFreelancer,
 } from "@/lib/seo-data";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, displayName } from "@/lib/utils";
 
 // Refresh hourly — new freelancers appear without a redeploy.
 export const revalidate = 3600;
@@ -78,7 +78,7 @@ function PersonRow({ p }: { p: SeoFreelancer }) {
     >
       <div className="min-w-0">
         <p className="flex flex-wrap items-center gap-2 font-semibold">
-          {p.full_name || "Freelancer"}
+          {displayName(p)}
           {p.is_verified && (
             <ShieldCheck className="h-4 w-4 text-emerald-600" aria-label="Verified" />
           )}
@@ -153,7 +153,7 @@ export default async function CityPage({ params }: Props) {
               "@type": "ListItem",
               position: i + 1,
               url: `${SITE_URL}/u/${p.id}`,
-              name: p.full_name || "Freelancer",
+              name: displayName(p),
             })),
           }}
         />
