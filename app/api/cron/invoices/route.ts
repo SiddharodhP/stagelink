@@ -110,8 +110,20 @@ export async function GET(request: NextRequest) {
         "upsert_exchange_rates",
         { p_rates: body.rates }
       );
-      if (rateError) errors.push(`rates: ${rateError.message}`);
-      else ratesUpdated = (n as number) ?? 0;
+      if (rateError) {
+        errors.push(`rates: ${rateError.message}`);
+      } else {
+        ratesUpdated = (n as number) ?? 0;
+        // Transactions written before a rate existed have a null USD value
+        // and are excluded from profile totals until this fills them in.
+        const { data: repaired, error: repairError } = await admin.rpc(
+          "repair_transaction_usd"
+        );
+        if (repairError) errors.push(`repair: ${repairError.message}`);
+        else if ((repaired as number) > 0) {
+          console.log(`Priced ${repaired} previously unpriced transactions`);
+        }
+      }
     } else {
       errors.push("rates: feed returned no rates");
     }

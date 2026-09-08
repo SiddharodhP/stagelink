@@ -231,3 +231,78 @@ export function amountInWords(amount: number, code: string = DEFAULT_CURRENCY): 
   const name = meta.code === resolved ? meta.name : resolved;
   return `${name} ${words} Only`;
 }
+
+/* ------------------------------ Aggregates ------------------------------ */
+
+export interface MoneySum {
+  /** Converted to the viewer's currency. */
+  total: number;
+  currency: string;
+  /** True when the inputs spanned more than one currency. */
+  mixed: boolean;
+  /** True when something had to be dropped for want of a rate. */
+  incomplete: boolean;
+  /** Untouched per-currency totals, for a breakdown tooltip. */
+  breakdown: Record<string, number>;
+}
+
+/**
+ * Adds up amounts that may be in different currencies.
+ *
+ * Plain reduce() over `amount` was silently adding rupees to dollars. This
+ * converts each amount into the viewer's currency before summing, and
+ * reports whether it mixed currencies so the UI can mark the result
+ * approximate — because it is.
+ *
+ * Anything with no available rate is EXCLUDED and flagged rather than
+ * added raw. Undercounting that says so beats a confident wrong total.
+ */
+export function sumMoney<T>(
+  items: T[],
+  amountOf: (item: T) => number,
+  currencyOf: (item: T) => string | null | undefined,
+  viewerCurrency: string = DEFAULT_CURRENCY,
+  rates?: RateTable | null
+): MoneySum {
+  const breakdown: Record<string, number> = {};
+  let total = 0;
+  let incomplete = false;
+
+  for (const item of items) {
+    const amount = amountOf(item) || 0;
+    const code = (currencyOf(item) || viewerCurrency).toUpperCase();
+    breakdown[code] = (breakdown[code] || 0) + amount;
+
+    if (code === viewerCurrency.toUpperCase()) {
+      total += amount;
+      continue;
+    }
+    const converted = convertApprox(amount, code, viewerCurrency, rates);
+    if (converted == null) {
+      incomplete = true;
+      continue;
+    }
+    total += converted;
+  }
+
+  const codes = Object.keys(breakdown);
+  return {
+    total,
+    currency: viewerCurrency,
+    mixed: codes.length > 1,
+    incomplete,
+    breakdown,
+  };
+}
+
+/**
+ * Renders a MoneySum, prefixed with ≈ when it involved conversion.
+ *
+ * The prefix is the whole point: a total spanning currencies is an
+ * estimate that moves with the exchange rate, and showing it as an exact
+ * figure would be a quiet lie.
+ */
+export function formatMoneySum(sum: MoneySum): string {
+  const formatted = formatMoney(sum.total, sum.currency);
+  return sum.mixed || sum.incomplete ? `≈ ${formatted}` : formatted;
+}

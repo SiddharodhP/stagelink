@@ -25,7 +25,8 @@ export const PUBLIC_PROFILE_COLUMNS = `
   city, state, country, works_remotely, travel_radius_km, completeness,
   preferred_currency,
   is_verified, is_suspended, created_at,
-  avg_rating, total_reviews, total_earned, total_spent
+  avg_rating, total_reviews, total_earned, total_spent,
+  total_earned_usd, total_spent_usd
 `;
 
 export async function updateProfile(id: string, patch: Partial<Profile>) {

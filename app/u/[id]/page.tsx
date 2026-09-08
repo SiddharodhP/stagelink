@@ -44,6 +44,8 @@ import { getMyProfile } from "@/lib/services/auth";
 import { getOrCreateConversation } from "@/lib/services/messaging";
 import { PortfolioItem, Profile, Review } from "@/types/marketplace";
 import { formatPrice, formatDate, cn } from "@/lib/utils";
+import { convertApprox, DEFAULT_CURRENCY, RateTable } from "@/lib/currency";
+import { getExchangeRates } from "@/lib/services/rates";
 import { AVAILABILITY_OPTIONS } from "@/lib/constants";
 
 export default function PublicProfilePage() {
@@ -53,6 +55,7 @@ export default function PublicProfilePage() {
 
   const [profile, setProfile] = useState<Profile | null>(null);
   const [viewer, setViewer] = useState<Profile | null>(null);
+  const [rates, setRates] = useState<RateTable | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [portfolio, setPortfolio] = useState<PortfolioItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -126,6 +129,9 @@ export default function PublicProfilePage() {
 
   const isFreelancer = profile.role === "freelancer";
   const isSelf = viewer?.id === profile.id;
+  // A signed-out visitor has no preference, so fall back to the platform
+  // default rather than showing a bare number.
+  const viewerCurrency = viewer?.preferred_currency || DEFAULT_CURRENCY;
   const availability = AVAILABILITY_OPTIONS.find((a) => a.value === profile.availability);
 
   return (
@@ -327,7 +333,7 @@ export default function PublicProfilePage() {
                       <div className="flex items-center justify-between">
                         <dt className="text-muted-foreground">Total earned</dt>
                         <dd className="font-display text-base font-semibold">
-                          {formatPrice(profile.total_earned || 0)}
+                          {formatPrice(convertApprox(profile.total_earned_usd || 0, 'USD', viewerCurrency, rates) ?? 0, viewerCurrency)}
                         </dd>
                       </div>
                       {profile.hourly_rate ? (
@@ -358,7 +364,7 @@ export default function PublicProfilePage() {
                     <div className="flex items-center justify-between">
                       <dt className="text-muted-foreground">Total spent</dt>
                       <dd className="font-display text-base font-semibold">
-                        {formatPrice(profile.total_spent || 0)}
+                        {formatPrice(convertApprox(profile.total_spent_usd || 0, 'USD', viewerCurrency, rates) ?? 0, viewerCurrency)}
                       </dd>
                     </div>
                   )}

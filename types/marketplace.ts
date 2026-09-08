@@ -84,6 +84,10 @@ export interface Profile {
   total_reviews?: number;
   total_earned?: number;
   total_spent?: number;
+  /** Normalised at transaction time so historical totals don't drift
+   *  as rates move. Converted to the viewer's currency for display. */
+  total_earned_usd?: number;
+  total_spent_usd?: number;
 }
 
 export interface Category {

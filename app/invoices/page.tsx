@@ -56,6 +56,9 @@ import {
   RecurrenceCadence,
 } from "@/types/marketplace";
 import { formatPrice, formatDate, cn } from "@/lib/utils";
+import { sumMoney, formatMoneySum, DEFAULT_CURRENCY } from "@/lib/currency";
+import { getExchangeRates } from "@/lib/services/rates";
+import { RateTable } from "@/lib/currency";
 
 const TABS = [
   { key: "open", label: "Open" },
@@ -75,6 +78,7 @@ function InvoicesList({ profile }: { profile: Profile }) {
   const [retainers, setRetainers] = useState<RecurringInvoice[]>([]);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<TabKey>("open");
+  const [rates, setRates] = useState<RateTable | null>(null);
 
   const isClient = profile.role === "client";
 
@@ -108,6 +112,17 @@ function InvoicesList({ profile }: { profile: Profile }) {
   useEffect(() => {
     load();
   }, [load]);
+
+  // Needed to total invoices that may be in different currencies.
+  useEffect(() => {
+    let cancelled = false;
+    getExchangeRates().then((r) => {
+      if (!cancelled) setRates(r);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const openSetup = async () => {
     setSetupOpen(true);
@@ -181,24 +196,40 @@ function InvoicesList({ profile }: { profile: Profile }) {
     all: invoices.length,
   };
 
-  const outstanding = invoices
-    .filter((i) => ["sent", "acknowledged"].includes(i.status))
-    .reduce((s, i) => s + i.total_amount, 0);
-  const settled = invoices
-    .filter((i) => i.status === "paid")
-    .reduce((s, i) => s + i.total_amount, 0);
-  const overdueTotal = overdueInvoices.reduce((s, i) => s + i.total_amount, 0);
+  // Invoices can be in different currencies, so these are converted into
+  // the viewer's own before summing. sumMoney marks the result approximate
+  // when it had to convert — a plain reduce() here was adding rupees to
+  // dollars and presenting the result as a fact.
+  const viewerCurrency = profile.preferred_currency || DEFAULT_CURRENCY;
+  const amountOf = (i: Invoice) => i.total_amount;
+  const currencyOf = (i: Invoice) => i.currency;
+
+  const outstanding = sumMoney(
+    invoices.filter((i) => ["sent", "acknowledged"].includes(i.status)),
+    amountOf, currencyOf, viewerCurrency, rates
+  );
+  const settled = sumMoney(
+    invoices.filter((i) => i.status === "paid"),
+    amountOf, currencyOf, viewerCurrency, rates
+  );
+  const overdueTotal = sumMoney(
+    overdueInvoices, amountOf, currencyOf, viewerCurrency, rates
+  );
 
   // What the active retainers commit to per month, roughly — weekly and
   // fortnightly are normalised so the number is comparable.
-  const perMonth = retainers
-    .filter((r) => r.status === "active")
-    .reduce((s, r) => {
+  const perMonth = sumMoney(
+    retainers.filter((r) => r.status === "active"),
+    (r) => {
       const gross = r.amount + Math.round((r.amount * r.tax_percent) / 100);
       const factor =
         r.cadence === "weekly" ? 52 / 12 : r.cadence === "fortnightly" ? 26 / 12 : 1;
-      return s + gross * factor;
-    }, 0);
+      return gross * factor;
+    },
+    (r) => r.currency,
+    viewerCurrency,
+    rates
+  );
 
   return (
     <div className="mx-auto max-w-4xl">
@@ -222,28 +253,28 @@ function InvoicesList({ profile }: { profile: Profile }) {
       <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
         <StatTile
           label={isClient ? "Awaiting payment" : "Outstanding"}
-          value={formatPrice(outstanding)}
+          value={formatMoneySum(outstanding)}
           icon={FileText}
           hint={`${counts.open} invoice${counts.open === 1 ? "" : "s"}`}
         />
         {counts.overdue > 0 ? (
           <StatTile
             label="Overdue"
-            value={formatPrice(overdueTotal)}
+            value={formatMoneySum(overdueTotal)}
             icon={AlertTriangle}
             hint={`${counts.overdue} past due`}
           />
         ) : (
           <StatTile
             label={isClient ? "Total paid" : "Total received"}
-            value={formatPrice(settled)}
+            value={formatMoneySum(settled)}
             icon={ArrowUpRight}
             hint={`${counts.paid} settled`}
           />
         )}
         <StatTile
           label="Recurring"
-          value={perMonth > 0 ? `${formatPrice(Math.round(perMonth))}/mo` : "—"}
+          value={perMonth.total > 0 ? `${formatMoneySum(perMonth)}/mo` : "—"}
           icon={RefreshCw}
           hint={`${liveRetainers.length} live retainer${liveRetainers.length === 1 ? "" : "s"}`}
         />
