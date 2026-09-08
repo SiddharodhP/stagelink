@@ -385,10 +385,10 @@ export default function Home() {
                         </span>
                       </div>
 
-                      <h3 className="font-display mb-2 line-clamp-2 text-xl font-semibold leading-snug transition-colors group-hover:text-brand">
+                      <h3 className="font-display mb-2 line-clamp-2 break-words text-xl font-semibold leading-snug transition-colors group-hover:text-brand">
                         {p.title}
                       </h3>
-                      <p className="mb-4 line-clamp-3 text-sm leading-relaxed text-muted-foreground">
+                      <p className="mb-4 line-clamp-3 break-words text-sm leading-relaxed text-muted-foreground">
                         {p.description}
                       </p>
 

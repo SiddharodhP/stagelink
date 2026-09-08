@@ -35,10 +35,10 @@ export function ProjectCard({ project, saved, onToggleSave, showSave }: ProjectC
             {project.category?.name && <> · {project.category.name}</>}
             {exp && <> · {exp.label}</>}
           </p>
-          <h3 className="font-display mb-2 text-xl font-semibold leading-snug tracking-tight">
+          <h3 className="font-display mb-2 break-words text-xl font-semibold leading-snug tracking-tight">
             {project.title}
           </h3>
-          <p className="mb-3 line-clamp-2 max-w-3xl text-sm leading-relaxed text-muted-foreground">
+          <p className="mb-3 line-clamp-2 max-w-3xl break-words text-sm leading-relaxed text-muted-foreground">
             {project.description}
           </p>
           <SkillTags skills={project.skills} max={5} />

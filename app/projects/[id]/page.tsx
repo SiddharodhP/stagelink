@@ -169,7 +169,7 @@ export default function ProjectDetailPage() {
                 )}
               </div>
 
-              <h1 className="font-display mb-5 text-3xl font-semibold leading-tight tracking-tight md:text-4xl">
+              <h1 className="font-display mb-5 break-words text-3xl font-semibold leading-tight tracking-tight md:text-4xl">
                 {project.title}
               </h1>
 
@@ -203,7 +203,7 @@ export default function ProjectDetailPage() {
 
               <section className="mb-8">
                 <h2 className="eyebrow mb-3">Project description</h2>
-                <p className="whitespace-pre-wrap text-[15px] leading-relaxed text-foreground/85">
+                <p className="whitespace-pre-wrap break-words text-[15px] leading-relaxed text-foreground/85">
                   {project.description}
                 </p>
               </section>

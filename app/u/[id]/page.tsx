@@ -202,7 +202,7 @@ export default function PublicProfilePage() {
               {profile.bio && (
                 <section className="mb-8">
                   <h2 className="eyebrow mb-3">About</h2>
-                  <p className="whitespace-pre-wrap text-[15px] leading-relaxed text-foreground/85">
+                  <p className="whitespace-pre-wrap break-words text-[15px] leading-relaxed text-foreground/85">
                     {profile.bio}
                   </p>
                 </section>
@@ -290,7 +290,7 @@ export default function PublicProfilePage() {
                           </span>
                         </div>
                         {r.review_text && (
-                          <p className="text-[15px] leading-relaxed text-foreground/85">
+                          <p className="break-words text-[15px] leading-relaxed text-foreground/85">
                             “{r.review_text}”
                           </p>
                         )}

@@ -171,7 +171,7 @@ export function ProjectComments({
                       </p>
                     )}
 
-                    <p className="mt-2.5 whitespace-pre-line text-sm leading-relaxed text-foreground/85">
+                    <p className="mt-2.5 whitespace-pre-line break-words text-sm leading-relaxed text-foreground/85">
                       {c.body}
                     </p>
                   </div>
