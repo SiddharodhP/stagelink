@@ -17,12 +17,12 @@ import { amountInWords } from "@/lib/utils";
  * avoids shipping a webfont for one character.
  */
 function money(amount: number, currency: string) {
-  return `${currency} ${amount.toLocaleString("en-IN")}`;
+  return `${currency} ${amount.toLocaleString("en-AU")}`;
 }
 
 function formatDay(value: string | null | undefined) {
   if (!value) return "—";
-  return new Date(value).toLocaleDateString("en-IN", {
+  return new Date(value).toLocaleDateString("en-AU", {
     day: "numeric",
     month: "short",
     year: "numeric",
@@ -226,7 +226,7 @@ function Party({
 
 export function InvoicePdf({ invoice }: { invoice: Invoice }) {
   const status = STATUS[invoice.status] ?? STATUS.sent;
-  const currency = invoice.currency || "INR";
+  const currency = invoice.currency || "AUD";
   const isReceipt = invoice.status === "paid";
 
   const fromName = invoice.from_name || invoice.freelancer?.full_name || "Freelancer";

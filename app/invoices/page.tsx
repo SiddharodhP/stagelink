@@ -359,7 +359,7 @@ function InvoicesList({ profile }: { profile: Profile }) {
                   </div>
                 </div>
                 <span className="font-display shrink-0 text-lg font-semibold">
-                  {formatPrice(inv.total_amount)}
+                  {formatPrice(inv.total_amount, inv.currency)}
                 </span>
               </Link>
             );

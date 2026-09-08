@@ -244,7 +244,7 @@ function DirectoryInner() {
           )}
 
           {isFreelancerView && (
-          <Field label="Max rate (₹/hr)" htmlFor="f_rate">
+          <Field label="Max rate (A$/hr)" htmlFor="f_rate">
             <input
               id="f_rate"
               type="number"

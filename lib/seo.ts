@@ -190,7 +190,7 @@ export function jobPostingJsonLd(p: JobPostingInput) {
     baseSalary: p.budget
       ? {
           "@type": "MonetaryAmount",
-          currency: "INR",
+          currency: "AUD",
           value: { "@type": "QuantitativeValue", value: p.budget, unitText: "PROJECT" },
         }
       : undefined,

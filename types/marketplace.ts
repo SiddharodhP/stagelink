@@ -64,6 +64,8 @@ export interface Profile {
   country?: string | null;
   works_remotely?: boolean;
   travel_radius_km?: number | null;
+  /** ISO 4217. Defaults new projects this person posts. */
+  preferred_currency?: string;
   /** 0-100, maintained by DB trigger. See compute_profile_completeness. */
   completeness?: number;
   // Billing fields are NOT selectable by anon/authenticated (migration 011).
@@ -101,6 +103,8 @@ export interface Project {
   location_pref: LocationPref;
   expected_duration: string | null;
   deadline: string | null;
+  /** ISO 4217. Everything downstream of this project settles in it. */
+  currency?: string;
   /** What the client advertised when posting. Freelancers bid against this. */
   budget_stated?: number;
   /** Sum of agreed milestones — 0 until a plan exists (migration 018). */

@@ -34,7 +34,8 @@ import {
   LOCATION_PREFS,
   DURATION_OPTIONS,
 } from "@/lib/constants";
-import { cn } from "@/lib/utils";
+import { cn, formatPrice } from "@/lib/utils";
+import { CURRENCIES, DEFAULT_CURRENCY } from "@/lib/currency";
 
 const STEPS = ["Basics", "Skills & scope", "Review"] as const;
 
@@ -55,6 +56,7 @@ function Wizard({ profile }: { profile: Profile }) {
     expected_duration: "",
     deadline: "",
     budget_stated: "",
+    currency: DEFAULT_CURRENCY,
     skills: [] as string[],
   });
 
@@ -122,6 +124,7 @@ function Wizard({ profile }: { profile: Profile }) {
         expected_duration: form.expected_duration || null,
         deadline: form.deadline || null,
         budget_stated: Number(form.budget_stated),
+        currency: form.currency,
       });
       if (error || !project) throw error || new Error("Could not create project");
 
@@ -154,6 +157,7 @@ function Wizard({ profile }: { profile: Profile }) {
       expected_duration: form.expected_duration || null,
       deadline: form.deadline || null,
       budget_stated: Number(form.budget_stated) || 0,
+      currency: form.currency,
     });
     if (!error && project) {
       toast.success("Saved as draft");
@@ -365,22 +369,36 @@ function Wizard({ profile }: { profile: Profile }) {
               </Field>
 
               <Field
-                label="Your budget (₹)"
+                label="Your budget"
                 htmlFor="budget_stated"
                 required
-                hint="What you expect to spend overall. Freelancers bid against this — the milestone breakdown comes later, once you have picked someone."
+                hint="What you expect to spend overall. Freelancers bid against this, and everything downstream — milestones, escrow, invoices — settles in the currency you pick here."
               >
-                <input
-                  id="budget_stated"
-                  type="number"
-                  min={1}
-                  className={inputClass}
-                  value={form.budget_stated}
-                  onChange={(e) =>
-                    setForm({ ...form, budget_stated: e.target.value })
-                  }
-                  placeholder="e.g. 45000"
-                />
+                <div className="flex gap-2">
+                  <select
+                    aria-label="Currency"
+                    className={`${selectClass} w-32 shrink-0`}
+                    value={form.currency}
+                    onChange={(e) => setForm({ ...form, currency: e.target.value })}
+                  >
+                    {CURRENCIES.map((c) => (
+                      <option key={c.code} value={c.code}>
+                        {c.code} {c.symbol}
+                      </option>
+                    ))}
+                  </select>
+                  <input
+                    id="budget_stated"
+                    type="number"
+                    min={1}
+                    className={inputClass}
+                    value={form.budget_stated}
+                    onChange={(e) =>
+                      setForm({ ...form, budget_stated: e.target.value })
+                    }
+                    placeholder="e.g. 1200"
+                  />
+                </div>
               </Field>
 
               <Field label="Overall deadline" htmlFor="deadline" hint="Optional — the date the whole project should be done.">
@@ -439,7 +457,7 @@ function Wizard({ profile }: { profile: Profile }) {
                 <p className="eyebrow mb-1">Budget</p>
                 <p className="font-display text-3xl font-semibold">
                   {form.budget_stated
-                    ? `₹${Number(form.budget_stated).toLocaleString("en-IN")}`
+                    ? formatPrice(Number(form.budget_stated), form.currency)
                     : "—"}
                 </p>
                 <p className="mt-3 text-sm leading-relaxed text-muted-foreground">

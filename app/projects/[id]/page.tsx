@@ -178,7 +178,7 @@ export default function ProjectDetailPage() {
                 <div>
                   <dt className="eyebrow mb-1">Budget</dt>
                   <dd className="font-display text-xl font-semibold">
-                    {formatPrice(project.budget_total)}
+                    {formatPrice(project.budget_total, project.currency)}
                   </dd>
                 </div>
                 {milestones.length > 0 && (

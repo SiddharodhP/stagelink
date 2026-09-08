@@ -1,13 +1,13 @@
 import { Invoice } from "@/types/marketplace";
 import { SITE_URL } from "@/lib/seo";
 
-function money(amount: number, currency = "INR") {
-  return `${currency} ${amount.toLocaleString("en-IN")}`;
+function money(amount: number, currency = "AUD") {
+  return `${currency} ${amount.toLocaleString("en-AU")}`;
 }
 
 function formatDay(value: string | null | undefined) {
   if (!value) return "—";
-  return new Date(value).toLocaleDateString("en-IN", {
+  return new Date(value).toLocaleDateString("en-AU", {
     day: "numeric",
     month: "short",
     year: "numeric",
@@ -44,7 +44,7 @@ export function daysOverdue(invoice: Invoice) {
  */
 export function buildOverdueEmail(invoice: Invoice) {
   const days = daysOverdue(invoice);
-  const currency = invoice.currency || "INR";
+  const currency = invoice.currency || "AUD";
   const fromName = esc(invoice.from_name || "Your freelancer");
   const toName = esc(invoice.to_name || "there");
   const url = `${SITE_URL}/invoices/${invoice.id}`;

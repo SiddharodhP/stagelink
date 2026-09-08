@@ -1,3 +1,5 @@
+import { formatMoney, DEFAULT_CURRENCY } from "@/lib/currency";
+
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -5,16 +7,19 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function formatPrice(price: number): string {
-  return new Intl.NumberFormat('en-IN', {
-    style: 'currency',
-    currency: 'INR',
-    maximumFractionDigits: 0,
-  }).format(price);
+/**
+ * Formats an amount in its own currency.
+ *
+ * `currency` is optional so the 70-odd existing call sites keep compiling,
+ * but every one that has a real currency to hand should pass it — an INR
+ * amount rendered with a dollar sign is a lie, not a rounding error.
+ */
+export function formatPrice(price: number, currency?: string | null): string {
+  return formatMoney(price, currency || DEFAULT_CURRENCY);
 }
 
 export function formatDate(date: string | Date): string {
-  return new Intl.DateTimeFormat('en-IN', {
+  return new Intl.DateTimeFormat('en-AU', {
     day: 'numeric',
     month: 'short',
     year: 'numeric',
@@ -78,23 +83,5 @@ function twoDigits(n: number): string {
  * Standard on Indian invoices, where the total is customarily spelled out
  * alongside the figure.
  */
-export function amountInWords(amount: number, currency = 'INR'): string {
-  const n = Math.floor(Math.abs(amount));
-  if (n === 0) return `${currency === 'INR' ? 'Rupees' : currency} Zero Only`;
 
-  const crore = Math.floor(n / 10000000);
-  const lakh = Math.floor((n % 10000000) / 100000);
-  const thousand = Math.floor((n % 100000) / 1000);
-  const hundred = Math.floor((n % 1000) / 100);
-  const rest = n % 100;
-
-  const parts: string[] = [];
-  if (crore) parts.push(`${twoDigits(crore)} Crore`);
-  if (lakh) parts.push(`${twoDigits(lakh)} Lakh`);
-  if (thousand) parts.push(`${twoDigits(thousand)} Thousand`);
-  if (hundred) parts.push(`${ONES[hundred]} Hundred`);
-  if (rest) parts.push(twoDigits(rest));
-
-  const unit = currency === 'INR' ? 'Rupees' : currency;
-  return `${unit} ${parts.join(' ')} Only`;
-}
+export { amountInWords } from "@/lib/currency";
