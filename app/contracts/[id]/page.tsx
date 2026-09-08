@@ -91,12 +91,16 @@ function StarPicker({ value, onChange }: { value: number; onChange: (v: number) 
           aria-label={`${n} star${n === 1 ? "" : "s"}`}
           onMouseEnter={() => setHover(n)}
           onClick={() => onChange(n)}
-          className="p-0.5"
+          className="rounded p-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           <Star
             className={cn(
               "h-7 w-7 transition-colors",
-              (hover || value) >= n ? "fill-amber-500 text-amber-500" : "text-border"
+              (hover || value) >= n
+                ? "fill-amber-500 text-amber-500"
+                : // border is a 12%-opacity hairline colour: fine for rules,
+                  // far too faint for the only control on a required field.
+                  "fill-foreground/[0.04] text-foreground/30"
             )}
           />
         </button>
