@@ -9,19 +9,22 @@ export async function getPlatformStats() {
     supabase.from("profiles").select("id", { count: "exact", head: true }),
     supabase.from("projects").select("id", { count: "exact", head: true }).neq("status", "draft"),
     supabase.from("contracts").select("id", { count: "exact", head: true }),
-    supabase.from("transactions").select("amount_usd, type").eq("type", "release").eq("status", "completed"),
+    supabase.from("transactions").select("amount, currency, type").eq("type", "release").eq("status", "completed"),
     supabase.from("disputes").select("id", { count: "exact", head: true }).neq("status", "resolved"),
   ]);
   return {
     users: users.count || 0,
     projects: projects.count || 0,
     contracts: contracts.count || 0,
-    // Summed in USD, the only unit comparable across every project's
-    // currency. Rows with no rate yet are excluded rather than added raw;
-    // the cron prices them once rates land.
-    volumeReleasedUsd: (volume.data || []).reduce(
-      (s: number, t: { amount_usd: number | null }) => s + (t.amount_usd || 0),
-      0
+    // Per currency, because there is no rate feed to collapse them and a
+    // single number across currencies would be a guess.
+    volumeByCurrency: (volume.data || []).reduce(
+      (acc: Record<string, number>, t: { amount: number; currency: string }) => {
+        const code = t.currency || "AUD";
+        acc[code] = (acc[code] || 0) + t.amount;
+        return acc;
+      },
+      {} as Record<string, number>
     ),
     openDisputes: disputes.count || 0,
   };

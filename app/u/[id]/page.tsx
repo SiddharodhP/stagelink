@@ -44,8 +44,7 @@ import { getMyProfile } from "@/lib/services/auth";
 import { getOrCreateConversation } from "@/lib/services/messaging";
 import { PortfolioItem, Profile, Review } from "@/types/marketplace";
 import { formatPrice, formatDate, cn } from "@/lib/utils";
-import { convertApprox, DEFAULT_CURRENCY, RateTable } from "@/lib/currency";
-import { getExchangeRates } from "@/lib/services/rates";
+import { formatCurrencyMap, DEFAULT_CURRENCY } from "@/lib/currency";
 import { AVAILABILITY_OPTIONS } from "@/lib/constants";
 
 export default function PublicProfilePage() {
@@ -55,7 +54,6 @@ export default function PublicProfilePage() {
 
   const [profile, setProfile] = useState<Profile | null>(null);
   const [viewer, setViewer] = useState<Profile | null>(null);
-  const [rates, setRates] = useState<RateTable | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [portfolio, setPortfolio] = useState<PortfolioItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -333,7 +331,7 @@ export default function PublicProfilePage() {
                       <div className="flex items-center justify-between">
                         <dt className="text-muted-foreground">Total earned</dt>
                         <dd className="font-display text-base font-semibold">
-                          {formatPrice(convertApprox(profile.total_earned_usd || 0, 'USD', viewerCurrency, rates) ?? 0, viewerCurrency)}
+                          {formatCurrencyMap(profile.earnings_by_currency, viewerCurrency)}
                         </dd>
                       </div>
                       {profile.hourly_rate ? (
@@ -364,7 +362,7 @@ export default function PublicProfilePage() {
                     <div className="flex items-center justify-between">
                       <dt className="text-muted-foreground">Total spent</dt>
                       <dd className="font-display text-base font-semibold">
-                        {formatPrice(convertApprox(profile.total_spent_usd || 0, 'USD', viewerCurrency, rates) ?? 0, viewerCurrency)}
+                        {formatCurrencyMap(profile.spending_by_currency, viewerCurrency)}
                       </dd>
                     </div>
                   )}

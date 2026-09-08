@@ -95,44 +95,6 @@ export async function GET(request: NextRequest) {
   const reminded: string[] = [];
   const errors: string[] = [];
 
-  // ---------- 0. Refresh exchange rates ----------
-  // Display-only conversion on browse pages depends on these. The feed
-  // updates once a day, which is why this rides the daily cron rather
-  // than having a schedule of its own.
-  let ratesUpdated = 0;
-  try {
-    const res = await fetch("https://open.er-api.com/v6/latest/USD", {
-      headers: { "User-Agent": "Roster-Marketplace (+https://jayree.io)" },
-    });
-    const body = await res.json();
-    if (body?.result === "success" && body?.rates) {
-      const { data: n, error: rateError } = await admin.rpc(
-        "upsert_exchange_rates",
-        { p_rates: body.rates }
-      );
-      if (rateError) {
-        errors.push(`rates: ${rateError.message}`);
-      } else {
-        ratesUpdated = (n as number) ?? 0;
-        // Transactions written before a rate existed have a null USD value
-        // and are excluded from profile totals until this fills them in.
-        const { data: repaired, error: repairError } = await admin.rpc(
-          "repair_transaction_usd"
-        );
-        if (repairError) errors.push(`repair: ${repairError.message}`);
-        else if ((repaired as number) > 0) {
-          console.log(`Priced ${repaired} previously unpriced transactions`);
-        }
-      }
-    } else {
-      errors.push("rates: feed returned no rates");
-    }
-  } catch (err: unknown) {
-    // A stale rate table degrades to showing amounts without a conversion
-    // hint, so this must never stop the invoice run.
-    errors.push(`rates: ${(err as Error)?.message || "fetch failed"}`);
-  }
-
   // ---------- 1. Issue what's due ----------
   const { data: generated, error: genError } = await admin.rpc(
     "generate_due_recurring_invoices"
@@ -221,7 +183,6 @@ export async function GET(request: NextRequest) {
     ok: errors.length === 0,
     ranAt: new Date().toISOString(),
     mailConfigured: mailReady,
-    ratesUpdated,
     issued,
     reminded,
     errors,

@@ -37,9 +37,7 @@ import {
   sumMoney,
   formatMoneySum,
   DEFAULT_CURRENCY,
-  RateTable,
 } from "@/lib/currency";
-import { getExchangeRates } from "@/lib/services/rates";
 import { ExternalJob } from "@/types/external-jobs";
 import { formatPrice, timeAgo, cn } from "@/lib/utils";
 
@@ -47,7 +45,6 @@ function Dashboard({ profile }: { profile: Profile }) {
   const [bids, setBids] = useState<Bid[]>([]);
   const [contracts, setContracts] = useState<Contract[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [rates, setRates] = useState<RateTable | null>(null);
   const [recommended, setRecommended] = useState<Project[]>([]);
   const [stats, setStats] = useState({ rating: 0, reviews: 0 });
   const [loading, setLoading] = useState(true);
@@ -91,23 +88,12 @@ function Dashboard({ profile }: { profile: Profile }) {
   const activeContracts = contracts.filter((c) => c.status === "active");
   const pendingAcceptance = contracts.filter((c) => c.status === "pending_acceptance");
 
-  // Dashboard figures can span projects in different currencies.
-  useEffect(() => {
-    let cancelled = false;
-    getExchangeRates().then((r) => {
-      if (!cancelled) setRates(r);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   // Earnings can come from projects in different currencies.
   const viewerCurrency = profile.preferred_currency || DEFAULT_CURRENCY;
   const earned = sumMoney(
     transactions.filter((t) => t.type === "release" && t.payee_id === profile.id),
-    (t) => t.amount, (t) => t.currency, viewerCurrency, rates
-  );
+    (t) => t.amount, (t) => t.currency, viewerCurrency);
 
   // Milestones this freelancer needs to deliver
   const toDeliver = activeContracts.flatMap((c) =>

@@ -26,7 +26,7 @@ export const PUBLIC_PROFILE_COLUMNS = `
   preferred_currency,
   is_verified, is_suspended, created_at,
   avg_rating, total_reviews, total_earned, total_spent,
-  total_earned_usd, total_spent_usd
+  earnings_by_currency, spending_by_currency
 `;
 
 export async function updateProfile(id: string, patch: Partial<Profile>) {

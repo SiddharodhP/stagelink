@@ -56,9 +56,12 @@ import {
   RecurrenceCadence,
 } from "@/types/marketplace";
 import { formatPrice, formatDate, cn } from "@/lib/utils";
-import { sumMoney, formatMoneySum, DEFAULT_CURRENCY } from "@/lib/currency";
-import { getExchangeRates } from "@/lib/services/rates";
-import { RateTable } from "@/lib/currency";
+import {
+  sumMoney,
+  formatMoneySum,
+  hasMoney,
+  DEFAULT_CURRENCY,
+} from "@/lib/currency";
 
 const TABS = [
   { key: "open", label: "Open" },
@@ -78,7 +81,6 @@ function InvoicesList({ profile }: { profile: Profile }) {
   const [retainers, setRetainers] = useState<RecurringInvoice[]>([]);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<TabKey>("open");
-  const [rates, setRates] = useState<RateTable | null>(null);
 
   const isClient = profile.role === "client";
 
@@ -113,16 +115,6 @@ function InvoicesList({ profile }: { profile: Profile }) {
     load();
   }, [load]);
 
-  // Needed to total invoices that may be in different currencies.
-  useEffect(() => {
-    let cancelled = false;
-    getExchangeRates().then((r) => {
-      if (!cancelled) setRates(r);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   const openSetup = async () => {
     setSetupOpen(true);
@@ -206,15 +198,12 @@ function InvoicesList({ profile }: { profile: Profile }) {
 
   const outstanding = sumMoney(
     invoices.filter((i) => ["sent", "acknowledged"].includes(i.status)),
-    amountOf, currencyOf, viewerCurrency, rates
-  );
+    amountOf, currencyOf, viewerCurrency);
   const settled = sumMoney(
     invoices.filter((i) => i.status === "paid"),
-    amountOf, currencyOf, viewerCurrency, rates
-  );
+    amountOf, currencyOf, viewerCurrency);
   const overdueTotal = sumMoney(
-    overdueInvoices, amountOf, currencyOf, viewerCurrency, rates
-  );
+    overdueInvoices, amountOf, currencyOf, viewerCurrency);
 
   // What the active retainers commit to per month, roughly — weekly and
   // fortnightly are normalised so the number is comparable.
@@ -227,8 +216,7 @@ function InvoicesList({ profile }: { profile: Profile }) {
       return gross * factor;
     },
     (r) => r.currency,
-    viewerCurrency,
-    rates
+    viewerCurrency
   );
 
   return (
@@ -274,7 +262,7 @@ function InvoicesList({ profile }: { profile: Profile }) {
         )}
         <StatTile
           label="Recurring"
-          value={perMonth.total > 0 ? `${formatMoneySum(perMonth)}/mo` : "—"}
+          value={hasMoney(perMonth) ? `${formatMoneySum(perMonth, viewerCurrency)}/mo` : "—"}
           icon={RefreshCw}
           hint={`${liveRetainers.length} live retainer${liveRetainers.length === 1 ? "" : "s"}`}
         />

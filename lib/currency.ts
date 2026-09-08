@@ -11,9 +11,14 @@
  * getting paid — an FX position neither side asked for. Upwork, Fiverr and
  * every payment processor work the same way.
  *
- * Conversion exists only to help someone browsing: "A$1,200 ≈ ₹66,000" is
- * a hint, never a price. convertApprox() is named to make that hard to
- * forget at a call site.
+ * Nothing converts, anywhere — not even for display. An amount is shown in
+ * the currency it was posted in, and a total spanning currencies is shown
+ * as a breakdown rather than a single number: "₹15,000 · A$1,200".
+ *
+ * That is exact where a converted figure would only ever be approximate,
+ * and it removes the daily exchange-rate refresh the previous approach
+ * depended on. A conversion that silently goes stale is worse than no
+ * conversion at all.
  */
 
 export interface CurrencyMeta {
@@ -106,58 +111,6 @@ export function formatMoney(
   }
 }
 
-/** Rates keyed by ISO code, all expressed per 1 USD. */
-export type RateTable = Record<string, number>;
-
-/**
- * Converts for DISPLAY ONLY.
- *
- * Named "approx" on purpose: the result is a browsing aid, never a price.
- * Contracts, invoices and payouts always use the original currency, and
- * nothing derived from this should ever be written to the database.
- *
- * Returns null when a rate is missing rather than guessing — a wrong
- * number is worse than no number when it is about money.
- */
-export function convertApprox(
-  amount: number,
-  from: string,
-  to: string,
-  rates: RateTable | null | undefined
-): number | null {
-  if (!rates) return null;
-  const f = (from || "").toUpperCase();
-  const t = (to || "").toUpperCase();
-  if (f === t) return amount;
-
-  const fromRate = f === "USD" ? 1 : rates[f];
-  const toRate = t === "USD" ? 1 : rates[t];
-  if (!fromRate || !toRate) return null;
-
-  return (amount / fromRate) * toRate;
-}
-
-/**
- * "A$1,200 ≈ ₹66,000" — the original first, the hint second.
- *
- * Returns just the original when the currencies match or no rate is
- * available, so a missing rate degrades to something still correct.
- */
-export function formatWithApprox(
-  amount: number,
-  from: string,
-  viewerCurrency: string | null | undefined,
-  rates: RateTable | null | undefined
-): string {
-  const original = formatMoney(amount, from);
-  if (!viewerCurrency || viewerCurrency.toUpperCase() === (from || "").toUpperCase()) {
-    return original;
-  }
-  const converted = convertApprox(amount, from, viewerCurrency, rates);
-  if (converted == null) return original;
-  return `${original} ≈ ${formatMoney(converted, viewerCurrency)}`;
-}
-
 /**
  * Amount in words for the invoice PDF.
  *
@@ -235,74 +188,117 @@ export function amountInWords(amount: number, code: string = DEFAULT_CURRENCY): 
 /* ------------------------------ Aggregates ------------------------------ */
 
 export interface MoneySum {
-  /** Converted to the viewer's currency. */
-  total: number;
-  currency: string;
-  /** True when the inputs spanned more than one currency. */
-  mixed: boolean;
-  /** True when something had to be dropped for want of a rate. */
-  incomplete: boolean;
-  /** Untouched per-currency totals, for a breakdown tooltip. */
+  /** Exact per-currency totals. Nothing is converted or merged. */
   breakdown: Record<string, number>;
+  /** Codes present, ordered by size so the biggest reads first. */
+  currencies: string[];
+  isEmpty: boolean;
 }
 
 /**
- * Adds up amounts that may be in different currencies.
+ * Totals amounts, keeping each currency separate.
  *
- * Plain reduce() over `amount` was silently adding rupees to dollars. This
- * converts each amount into the viewer's currency before summing, and
- * reports whether it mixed currencies so the UI can mark the result
- * approximate — because it is.
- *
- * Anything with no available rate is EXCLUDED and flagged rather than
- * added raw. Undercounting that says so beats a confident wrong total.
+ * A plain reduce() over `amount` was adding rupees to dollars. Rather than
+ * convert — which needs a rate feed, goes stale, and is approximate by
+ * nature — this keeps the currencies apart and lets the UI show them side
+ * by side. "₹15,000 · A$1,200" is both shorter to compute and exactly true.
  */
 export function sumMoney<T>(
   items: T[],
   amountOf: (item: T) => number,
   currencyOf: (item: T) => string | null | undefined,
-  viewerCurrency: string = DEFAULT_CURRENCY,
-  rates?: RateTable | null
+  fallbackCurrency: string = DEFAULT_CURRENCY
 ): MoneySum {
   const breakdown: Record<string, number> = {};
-  let total = 0;
-  let incomplete = false;
 
   for (const item of items) {
-    const amount = amountOf(item) || 0;
-    const code = (currencyOf(item) || viewerCurrency).toUpperCase();
-    breakdown[code] = (breakdown[code] || 0) + amount;
-
-    if (code === viewerCurrency.toUpperCase()) {
-      total += amount;
-      continue;
-    }
-    const converted = convertApprox(amount, code, viewerCurrency, rates);
-    if (converted == null) {
-      incomplete = true;
-      continue;
-    }
-    total += converted;
+    const code = (currencyOf(item) || fallbackCurrency).toUpperCase();
+    breakdown[code] = (breakdown[code] || 0) + (amountOf(item) || 0);
   }
 
-  const codes = Object.keys(breakdown);
-  return {
-    total,
-    currency: viewerCurrency,
-    mixed: codes.length > 1,
-    incomplete,
-    breakdown,
-  };
+  const currencies = Object.keys(breakdown).sort(
+    (a, b) => breakdown[b] - breakdown[a]
+  );
+  return { breakdown, currencies, isEmpty: currencies.length === 0 };
 }
 
 /**
- * Renders a MoneySum, prefixed with ≈ when it involved conversion.
+ * "₹15,000 · A$1,200", or just "₹15,000" when there is only one.
  *
- * The prefix is the whole point: a total spanning currencies is an
- * estimate that moves with the exchange rate, and showing it as an exact
- * figure would be a quiet lie.
+ * An empty sum still needs a currency to render zero in, which is what
+ * fallbackCurrency is for.
  */
-export function formatMoneySum(sum: MoneySum): string {
-  const formatted = formatMoney(sum.total, sum.currency);
-  return sum.mixed || sum.incomplete ? `≈ ${formatted}` : formatted;
+export function formatMoneySum(
+  sum: MoneySum,
+  fallbackCurrency: string = DEFAULT_CURRENCY
+): string {
+  if (sum.isEmpty) return formatMoney(0, fallbackCurrency);
+  return sum.currencies
+    .map((code) => formatMoney(sum.breakdown[code], code))
+    .join(" · ");
+}
+
+/** Same, from a stored {"INR": 15000, "AUD": 1200} map. */
+export function formatCurrencyMap(
+  map: Record<string, number> | null | undefined,
+  fallbackCurrency: string = DEFAULT_CURRENCY
+): string {
+  const entries = Object.entries(map || {}).filter(([, v]) => Number(v) > 0);
+  if (entries.length === 0) return formatMoney(0, fallbackCurrency);
+  return entries
+    .sort((a, b) => Number(b[1]) - Number(a[1]))
+    .map(([code, v]) => formatMoney(Number(v), code))
+    .join(" · ");
+}
+
+/**
+ * Adds and subtracts sums per currency.
+ *
+ * "Held in escrow" is funded minus released minus refunded, and each of
+ * those may span currencies. Doing it per currency keeps the result exact;
+ * collapsing to one number first would need a rate and reintroduce the
+ * approximation this design removed.
+ */
+export function netMoney(add: MoneySum[], subtract: MoneySum[] = []): MoneySum {
+  const breakdown: Record<string, number> = {};
+
+  for (const sum of add) {
+    for (const [code, value] of Object.entries(sum.breakdown)) {
+      breakdown[code] = (breakdown[code] || 0) + value;
+    }
+  }
+  for (const sum of subtract) {
+    for (const [code, value] of Object.entries(sum.breakdown)) {
+      breakdown[code] = (breakdown[code] || 0) - value;
+    }
+  }
+
+  // A negative balance here means more went out than came in, which for
+  // escrow is a bug rather than a number worth showing.
+  for (const code of Object.keys(breakdown)) {
+    if (breakdown[code] <= 0) delete breakdown[code];
+  }
+
+  const currencies = Object.keys(breakdown).sort(
+    (a, b) => breakdown[b] - breakdown[a]
+  );
+  return { breakdown, currencies, isEmpty: currencies.length === 0 };
+}
+
+/** Divides each currency by the same factor — for per-milestone averages. */
+export function scaleMoney(sum: MoneySum, factor: number): MoneySum {
+  if (!factor) return { breakdown: {}, currencies: [], isEmpty: true };
+  const breakdown: Record<string, number> = {};
+  for (const [code, value] of Object.entries(sum.breakdown)) {
+    breakdown[code] = Math.round(value * factor);
+  }
+  const currencies = Object.keys(breakdown).sort(
+    (a, b) => breakdown[b] - breakdown[a]
+  );
+  return { breakdown, currencies, isEmpty: currencies.length === 0 };
+}
+
+/** True when any currency in the sum carries a non-zero amount. */
+export function hasMoney(sum: MoneySum): boolean {
+  return sum.currencies.some((c) => sum.breakdown[c] > 0);
 }

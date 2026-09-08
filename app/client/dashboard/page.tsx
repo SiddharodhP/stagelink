@@ -9,7 +9,6 @@ import {
   FileSignature,
   PlusCircle,
   ArrowUpRight,
-  AlertTriangle,
   Clock,
 } from "lucide-react";
 
@@ -24,11 +23,10 @@ import {
 import { CompletenessMeter } from "@/components/shared/completeness-meter";
 import {
   sumMoney,
-  formatMoney,
+  formatMoneySum,
+  netMoney,
   DEFAULT_CURRENCY,
-  RateTable,
 } from "@/lib/currency";
-import { getExchangeRates } from "@/lib/services/rates";
 import {
   ProjectStatusPill,
   ContractStatusPill,
@@ -43,7 +41,6 @@ function Dashboard({ profile }: { profile: Profile }) {
   const [projects, setProjects] = useState<Project[]>([]);
   const [contracts, setContracts] = useState<Contract[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [rates, setRates] = useState<RateTable | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -73,25 +70,13 @@ function Dashboard({ profile }: { profile: Profile }) {
   // be posted in different ones and a raw sum would mix them.
   const viewerCurrency = profile.preferred_currency || DEFAULT_CURRENCY;
 
-  // Dashboard figures can span projects in different currencies.
-  useEffect(() => {
-    let cancelled = false;
-    getExchangeRates().then((r) => {
-      if (!cancelled) setRates(r);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   const spent = sumMoney(
     transactions.filter((t) => t.type === "escrow_fund" && t.status === "completed"),
-    (t) => t.amount, (t) => t.currency, viewerCurrency, rates
-  );
+    (t) => t.amount, (t) => t.currency, viewerCurrency);
   const refunded = sumMoney(
     transactions.filter((t) => t.type === "refund" && t.status === "completed"),
-    (t) => t.amount, (t) => t.currency, viewerCurrency, rates
-  );
+    (t) => t.amount, (t) => t.currency, viewerCurrency);
 
   // Milestones waiting on this client's review across all active contracts
   const awaitingReview = activeContracts.filter((c) =>
@@ -144,7 +129,7 @@ function Dashboard({ profile }: { profile: Profile }) {
         />
         <StatTile
           label="Total spent"
-          value={formatMoney(Math.max(0, spent.total - refunded.total), viewerCurrency)}
+          value={formatMoneySum(netMoney([spent], [refunded]), viewerCurrency)}
           icon={Wallet}
           hint="Escrow funded, net of refunds"
           href="/client/payments"

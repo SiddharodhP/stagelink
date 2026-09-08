@@ -15,11 +15,10 @@ import { formatPrice, formatDate, cn } from "@/lib/utils";
 import {
   sumMoney,
   formatMoneySum,
-  formatMoney,
+  netMoney,
+  scaleMoney,
   DEFAULT_CURRENCY,
-  RateTable,
 } from "@/lib/currency";
-import { getExchangeRates } from "@/lib/services/rates";
 
 const TYPE_META: Record<
   string,
@@ -34,7 +33,6 @@ const TYPE_META: Record<
 export function TransactionsList({ profile }: { profile: Profile }) {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
-  const [rates, setRates] = useState<RateTable | null>(null);
 
   const isClient = profile.role === "client";
 
@@ -46,22 +44,12 @@ export function TransactionsList({ profile }: { profile: Profile }) {
   }, [profile.id]);
 
   // The ledger can span projects in different currencies, so the totals
-  // below need a rate table to add them up honestly.
-  useEffect(() => {
-    let cancelled = false;
-    getExchangeRates().then((r) => {
-      if (!cancelled) setRates(r);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   // Converted into the viewer's currency before adding. A plain reduce()
   // here was summing whatever currencies happened to be in the ledger.
   const viewerCurrency = profile.preferred_currency || DEFAULT_CURRENCY;
   const total = (rows: Transaction[]) =>
-    sumMoney(rows, (t) => t.amount, (t) => t.currency, viewerCurrency, rates);
+    sumMoney(rows, (t) => t.amount, (t) => t.currency, viewerCurrency);
 
   const earned = total(
     transactions.filter((t) => t.type === "release" && t.payee_id === profile.id)
@@ -75,7 +63,7 @@ export function TransactionsList({ profile }: { profile: Profile }) {
   const released = total(
     transactions.filter((t) => t.type === "release" && t.payer_id === profile.id)
   );
-  const inEscrow = Math.max(0, funded.total - released.total - refunded.total);
+  const inEscrow = netMoney([funded], [released, refunded]);
 
   return (
     <div className="mx-auto max-w-4xl">
@@ -95,7 +83,7 @@ export function TransactionsList({ profile }: { profile: Profile }) {
             <StatTile label="Total funded" value={formatMoneySum(funded)} icon={Wallet} />
             <StatTile
               label="Held in escrow"
-              value={formatMoney(inEscrow, viewerCurrency)}
+              value={formatMoneySum(inEscrow, viewerCurrency)}
               icon={ArrowUpRight}
               hint="Awaiting milestone approval"
             />
@@ -111,12 +99,15 @@ export function TransactionsList({ profile }: { profile: Profile }) {
             />
             <StatTile
               label="Average per milestone"
-              value={formatMoney(
-                Math.round(
-                  earned.total /
+              value={formatMoneySum(
+                scaleMoney(
+                  earned,
+                  1 /
                     Math.max(
                       1,
-                      transactions.filter((t) => t.type === "release" && t.payee_id === profile.id).length
+                      transactions.filter(
+                        (t) => t.type === "release" && t.payee_id === profile.id
+                      ).length
                     )
                 ),
                 viewerCurrency

@@ -84,10 +84,10 @@ export interface Profile {
   total_reviews?: number;
   total_earned?: number;
   total_spent?: number;
-  /** Normalised at transaction time so historical totals don't drift
-   *  as rates move. Converted to the viewer's currency for display. */
-  total_earned_usd?: number;
-  total_spent_usd?: number;
+  /** Exact lifetime totals, kept per currency: {"INR": 15000, "AUD": 1200}.
+   *  Replaced a USD-normalised figure that needed a daily rate refresh. */
+  earnings_by_currency?: Record<string, number>;
+  spending_by_currency?: Record<string, number>;
 }
 
 export interface Category {
