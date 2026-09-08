@@ -34,8 +34,8 @@ export const DURATION_OPTIONS = [
 export const BUDGET_PRESETS = [
   { label: 'Any budget', min: null, max: null },
   { label: 'Under $500', min: null, max: 500 },
-  { label: '$500 – $2,000', min: 500, max: 2_000 },
-  { label: '$2,000 – $10,000', min: 2_000, max: 10_000 },
+  { label: '$500 – $2,500', min: 500, max: 2_500 },
+  { label: '$2,500 – $10,000', min: 2_500, max: 10_000 },
   { label: '$10,000+', min: 10_000, max: null },
 ] as const;
 

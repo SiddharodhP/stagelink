@@ -12,13 +12,6 @@ import {
 import { getMyTransactions } from "@/lib/services/contracts";
 import { Profile, Transaction } from "@/types/marketplace";
 import { formatPrice, formatDate, cn } from "@/lib/utils";
-import {
-  sumMoney,
-  formatMoneySum,
-  netMoney,
-  scaleMoney,
-  DEFAULT_CURRENCY,
-} from "@/lib/currency";
 
 const TYPE_META: Record<
   string,
@@ -43,27 +36,19 @@ export function TransactionsList({ profile }: { profile: Profile }) {
     });
   }, [profile.id]);
 
-  // The ledger can span projects in different currencies, so the totals
-
-  // Converted into the viewer's currency before adding. A plain reduce()
-  // here was summing whatever currencies happened to be in the ledger.
-  const viewerCurrency = profile.preferred_currency || DEFAULT_CURRENCY;
-  const total = (rows: Transaction[]) =>
-    sumMoney(rows, (t) => t.amount, (t) => t.currency, viewerCurrency);
-
-  const earned = total(
-    transactions.filter((t) => t.type === "release" && t.payee_id === profile.id)
-  );
-  const funded = total(
-    transactions.filter((t) => t.type === "escrow_fund" && t.payer_id === profile.id)
-  );
-  const refunded = total(
-    transactions.filter((t) => t.type === "refund" && t.payee_id === profile.id)
-  );
-  const released = total(
-    transactions.filter((t) => t.type === "release" && t.payer_id === profile.id)
-  );
-  const inEscrow = netMoney([funded], [released, refunded]);
+  const earned = transactions
+    .filter((t) => t.type === "release" && t.payee_id === profile.id)
+    .reduce((s, t) => s + t.amount, 0);
+  const funded = transactions
+    .filter((t) => t.type === "escrow_fund" && t.payer_id === profile.id)
+    .reduce((s, t) => s + t.amount, 0);
+  const refunded = transactions
+    .filter((t) => t.type === "refund" && t.payee_id === profile.id)
+    .reduce((s, t) => s + t.amount, 0);
+  const released = transactions
+    .filter((t) => t.type === "release" && t.payer_id === profile.id)
+    .reduce((s, t) => s + t.amount, 0);
+  const inEscrow = Math.max(0, funded - released - refunded);
 
   return (
     <div className="mx-auto max-w-4xl">
@@ -80,18 +65,18 @@ export function TransactionsList({ profile }: { profile: Profile }) {
       <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
         {isClient ? (
           <>
-            <StatTile label="Total funded" value={formatMoneySum(funded)} icon={Wallet} />
+            <StatTile label="Total funded" value={formatPrice(funded)} icon={Wallet} />
             <StatTile
               label="Held in escrow"
-              value={formatMoneySum(inEscrow, viewerCurrency)}
+              value={formatPrice(inEscrow)}
               icon={ArrowUpRight}
               hint="Awaiting milestone approval"
             />
-            <StatTile label="Refunded to you" value={formatMoneySum(refunded)} icon={RotateCcw} />
+            <StatTile label="Refunded to you" value={formatPrice(refunded)} icon={RotateCcw} />
           </>
         ) : (
           <>
-            <StatTile label="Total earned" value={formatMoneySum(earned)} icon={Wallet} />
+            <StatTile label="Total earned" value={formatPrice(earned)} icon={Wallet} />
             <StatTile
               label="Payments received"
               value={transactions.filter((t) => t.type === "release" && t.payee_id === profile.id).length}
@@ -99,18 +84,14 @@ export function TransactionsList({ profile }: { profile: Profile }) {
             />
             <StatTile
               label="Average per milestone"
-              value={formatMoneySum(
-                scaleMoney(
-                  earned,
-                  1 /
+              value={formatPrice(
+                Math.round(
+                  earned /
                     Math.max(
                       1,
-                      transactions.filter(
-                        (t) => t.type === "release" && t.payee_id === profile.id
-                      ).length
+                      transactions.filter((t) => t.type === "release" && t.payee_id === profile.id).length
                     )
-                ),
-                viewerCurrency
+                )
               )}
               icon={ArrowUpRight}
             />

@@ -33,11 +33,6 @@ import { searchProjects } from "@/lib/services/projects";
 import { getPublicProfile } from "@/lib/services/profiles";
 import { getExternalJobs } from "@/lib/services/external-jobs";
 import { Bid, Contract, Profile, Project, Transaction } from "@/types/marketplace";
-import {
-  sumMoney,
-  formatMoneySum,
-  DEFAULT_CURRENCY,
-} from "@/lib/currency";
 import { ExternalJob } from "@/types/external-jobs";
 import { formatPrice, timeAgo, cn } from "@/lib/utils";
 
@@ -87,13 +82,9 @@ function Dashboard({ profile }: { profile: Profile }) {
   const shortlisted = bids.filter((b) => b.status === "shortlisted");
   const activeContracts = contracts.filter((c) => c.status === "active");
   const pendingAcceptance = contracts.filter((c) => c.status === "pending_acceptance");
-
-
-  // Earnings can come from projects in different currencies.
-  const viewerCurrency = profile.preferred_currency || DEFAULT_CURRENCY;
-  const earned = sumMoney(
-    transactions.filter((t) => t.type === "release" && t.payee_id === profile.id),
-    (t) => t.amount, (t) => t.currency, viewerCurrency);
+  const earned = transactions
+    .filter((t) => t.type === "release" && t.payee_id === profile.id)
+    .reduce((s, t) => s + t.amount, 0);
 
   // Milestones this freelancer needs to deliver
   const toDeliver = activeContracts.flatMap((c) =>
@@ -182,7 +173,7 @@ function Dashboard({ profile }: { profile: Profile }) {
         />
         <StatTile
           label="Total earned"
-          value={formatMoneySum(earned)}
+          value={formatPrice(earned)}
           icon={Wallet}
           hint="Released from escrow"
           href="/freelancer/earnings"

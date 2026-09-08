@@ -223,7 +223,7 @@ function InvoiceDetail({ profile }: { profile: Profile }) {
               onClick={() =>
                 run(
                   () => payInvoice(invoice.id),
-                  `${formatPrice(invoice.total_amount, invoice.currency)} released from escrow`
+                  `${formatPrice(invoice.total_amount)} released from escrow`
                 )
               }
             >
@@ -232,7 +232,7 @@ function InvoiceDetail({ profile }: { profile: Profile }) {
               ) : (
                 <ShieldCheck className="mr-2 h-4 w-4" />
               )}
-              Pay {formatPrice(invoice.total_amount, invoice.currency)}
+              Pay {formatPrice(invoice.total_amount)}
             </Button>
           )}
 
@@ -357,7 +357,7 @@ function InvoiceDetail({ profile }: { profile: Profile }) {
                   </p>
                 </td>
                 <td className="px-5 py-4 text-right font-medium">
-                  {formatPrice(invoice.amount, invoice.currency)}
+                  {formatPrice(invoice.amount)}
                 </td>
               </tr>
             </tbody>
@@ -369,18 +369,18 @@ function InvoiceDetail({ profile }: { profile: Profile }) {
           <dl className="w-full max-w-xs space-y-2 text-sm">
             <div className="flex justify-between">
               <dt className="text-muted-foreground">Subtotal</dt>
-              <dd className="font-medium">{formatPrice(invoice.amount, invoice.currency)}</dd>
+              <dd className="font-medium">{formatPrice(invoice.amount)}</dd>
             </div>
             {invoice.tax_percent > 0 && (
               <div className="flex justify-between">
                 <dt className="text-muted-foreground">Tax ({invoice.tax_percent}%)</dt>
-                <dd className="font-medium">{formatPrice(invoice.tax_amount, invoice.currency)}</dd>
+                <dd className="font-medium">{formatPrice(invoice.tax_amount)}</dd>
               </div>
             )}
             <div className="flex items-baseline justify-between border-t border-border pt-2">
               <dt className="font-semibold">Total due</dt>
               <dd className="font-display text-2xl font-semibold">
-                {formatPrice(invoice.total_amount, invoice.currency)}
+                {formatPrice(invoice.total_amount)}
               </dd>
             </div>
           </dl>

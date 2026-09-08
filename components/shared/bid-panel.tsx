@@ -170,13 +170,13 @@ export function BidPanel({
       </h2>
       <p className="mb-5 text-sm text-muted-foreground">
         Client budget:{" "}
-        <strong className="text-foreground">{formatPrice(project.budget_total, project.currency)}</strong>
+        <strong className="text-foreground">{formatPrice(project.budget_total)}</strong>
         {". "}
         Milestones are agreed with the client after they pick someone.
       </p>
 
       <div className="space-y-4">
-        <Field label={`Your total price (${project.currency || "AUD"})`} required hint="You can bid above or below the client's budget.">
+        <Field label="Your total price ($)" required hint="You can bid above or below the client's budget.">
           <input
             type="number"
             min="1"

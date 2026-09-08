@@ -20,7 +20,6 @@ import { UserAvatar } from "@/components/shared/marketplace-ui";
 import { getMyProfile } from "@/lib/services/auth";
 import { updateProfile, getMyBilling } from "@/lib/services/profiles";
 import { CityCombobox } from "@/components/shared/city-combobox";
-import { CURRENCIES, DEFAULT_CURRENCY } from "@/lib/currency";
 import { getSkillsList } from "@/lib/services/projects";
 import { uploadFile } from "@/lib/services/storage";
 import { Profile } from "@/types/marketplace";
@@ -56,8 +55,7 @@ function ProfileSettingsInner() {
     billing_email: "",
     phone: "",
     tax_id: "",
-    tax_id_label: "ABN",
-    preferred_currency: DEFAULT_CURRENCY,
+    tax_id_label: "GSTIN",
   });
 
   useEffect(() => {
@@ -75,7 +73,6 @@ function ProfileSettingsInner() {
         city: data.city || "",
         state: data.state || "",
         works_remotely: Boolean(data.works_remotely),
-        preferred_currency: data.preferred_currency || DEFAULT_CURRENCY,
         travel_radius_km: data.travel_radius_km ? String(data.travel_radius_km) : "",
         company_name: data.company_name || "",
         website: data.website || "",
@@ -89,7 +86,7 @@ function ProfileSettingsInner() {
         billing_email: "",
         phone: "",
         tax_id: "",
-        tax_id_label: "ABN",
+        tax_id_label: "GSTIN",
       });
     });
 
@@ -103,7 +100,7 @@ function ProfileSettingsInner() {
         billing_email: data.billing_email || "",
         phone: data.phone || "",
         tax_id: data.tax_id || "",
-        tax_id_label: data.tax_id_label || "ABN",
+        tax_id_label: data.tax_id_label || "GSTIN",
       }));
     });
 
@@ -144,7 +141,6 @@ function ProfileSettingsInner() {
       city: form.city || null,
       state: form.state || null,
       works_remotely: form.works_remotely,
-      preferred_currency: form.preferred_currency,
       travel_radius_km: form.travel_radius_km
         ? Number(form.travel_radius_km)
         : null,
@@ -240,27 +236,6 @@ function ProfileSettingsInner() {
                 placeholder={isFreelancer ? "e.g. Priya Sharma" : "e.g. Rahul Mehta"}
                 required
               />
-            </Field>
-
-            <Field
-              label="Default currency"
-              htmlFor="preferred_currency"
-              hint="Pre-selected when you post a project. You can still change it per project, and existing work keeps the currency it was agreed in."
-            >
-              <select
-                id="preferred_currency"
-                className={selectClass}
-                value={form.preferred_currency}
-                onChange={(e) =>
-                  setForm({ ...form, preferred_currency: e.target.value })
-                }
-              >
-                {CURRENCIES.map((c) => (
-                  <option key={c.code} value={c.code}>
-                    {c.code} — {c.name} ({c.symbol})
-                  </option>
-                ))}
-              </select>
             </Field>
 
             <Field
@@ -401,7 +376,7 @@ function ProfileSettingsInner() {
               description="Helps clients gauge fit before they read your bid."
             >
               <div className="grid gap-5 md:grid-cols-3">
-                <Field label="Indicative hourly rate (A$)" htmlFor="hourly_rate">
+                <Field label="Indicative hourly rate ($)" htmlFor="hourly_rate">
                   <input
                     id="hourly_rate"
                     type="number"
@@ -547,7 +522,7 @@ function ProfileSettingsInner() {
                   value={form.tax_id_label}
                   onChange={(e) => setForm({ ...form, tax_id_label: e.target.value })}
                 >
-                  {["ABN", "ACN", "GST No.", "Tax ID", "VAT No.", "EIN"].map((t) => (
+                  {["GSTIN", "PAN", "VAT No.", "Tax ID", "ABN", "EIN"].map((t) => (
                     <option key={t} value={t}>
                       {t}
                     </option>

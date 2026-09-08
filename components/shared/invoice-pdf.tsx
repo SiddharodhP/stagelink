@@ -11,18 +11,19 @@ import { amountInWords } from "@/lib/utils";
 /**
  * Vector PDF invoice — real selectable text, not a screenshot.
  *
- * Currency note: the built-in PDF fonts have no glyph for the rupee sign
- * (U+20B9), so it renders as a blank box. Amounts use the ISO code instead
- * ("INR 12,500"), which is also standard on international invoices and
- * avoids shipping a webfont for one character.
+ * Currency note: amounts use the ISO code rather than a symbol
+ * ("USD 12,500"). That is standard on international invoices, and it keeps
+ * the built-in PDF fonts usable — several currency signs have no glyph in
+ * them and render as a blank box, which a symbol-based format would hit
+ * the moment an invoice was raised in anything but dollars.
  */
 function money(amount: number, currency: string) {
-  return `${currency} ${amount.toLocaleString("en-AU")}`;
+  return `${currency} ${amount.toLocaleString("en-US")}`;
 }
 
 function formatDay(value: string | null | undefined) {
   if (!value) return "—";
-  return new Date(value).toLocaleDateString("en-AU", {
+  return new Date(value).toLocaleDateString("en-US", {
     day: "numeric",
     month: "short",
     year: "numeric",
@@ -226,7 +227,7 @@ function Party({
 
 export function InvoicePdf({ invoice }: { invoice: Invoice }) {
   const status = STATUS[invoice.status] ?? STATUS.sent;
-  const currency = invoice.currency || "AUD";
+  const currency = invoice.currency || "USD";
   const isReceipt = invoice.status === "paid";
 
   const fromName = invoice.from_name || invoice.freelancer?.full_name || "Freelancer";

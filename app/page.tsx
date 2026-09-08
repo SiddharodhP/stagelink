@@ -381,7 +381,7 @@ export default function Home() {
                           {p.category?.name || "Project"}
                         </span>
                         <span className="font-display text-lg font-semibold">
-                          {formatPrice(p.budget_total, p.currency)}
+                          {formatPrice(p.budget_total)}
                         </span>
                       </div>
 

@@ -23,10 +23,8 @@ export const PUBLIC_PROFILE_COLUMNS = `
   id, role, full_name, headline, bio, avatar_url, location, company_name,
   website, hourly_rate, experience_years, availability, skills,
   city, state, country, works_remotely, travel_radius_km, completeness,
-  preferred_currency,
   is_verified, is_suspended, created_at,
-  avg_rating, total_reviews, total_earned, total_spent,
-  earnings_by_currency, spending_by_currency
+  avg_rating, total_reviews, total_earned, total_spent
 `;
 
 export async function updateProfile(id: string, patch: Partial<Profile>) {

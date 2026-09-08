@@ -56,12 +56,6 @@ import {
   RecurrenceCadence,
 } from "@/types/marketplace";
 import { formatPrice, formatDate, cn } from "@/lib/utils";
-import {
-  sumMoney,
-  formatMoneySum,
-  hasMoney,
-  DEFAULT_CURRENCY,
-} from "@/lib/currency";
 
 const TABS = [
   { key: "open", label: "Open" },
@@ -114,7 +108,6 @@ function InvoicesList({ profile }: { profile: Profile }) {
   useEffect(() => {
     load();
   }, [load]);
-
 
   const openSetup = async () => {
     setSetupOpen(true);
@@ -188,36 +181,24 @@ function InvoicesList({ profile }: { profile: Profile }) {
     all: invoices.length,
   };
 
-  // Invoices can be in different currencies, so these are converted into
-  // the viewer's own before summing. sumMoney marks the result approximate
-  // when it had to convert — a plain reduce() here was adding rupees to
-  // dollars and presenting the result as a fact.
-  const viewerCurrency = profile.preferred_currency || DEFAULT_CURRENCY;
-  const amountOf = (i: Invoice) => i.total_amount;
-  const currencyOf = (i: Invoice) => i.currency;
-
-  const outstanding = sumMoney(
-    invoices.filter((i) => ["sent", "acknowledged"].includes(i.status)),
-    amountOf, currencyOf, viewerCurrency);
-  const settled = sumMoney(
-    invoices.filter((i) => i.status === "paid"),
-    amountOf, currencyOf, viewerCurrency);
-  const overdueTotal = sumMoney(
-    overdueInvoices, amountOf, currencyOf, viewerCurrency);
+  const outstanding = invoices
+    .filter((i) => ["sent", "acknowledged"].includes(i.status))
+    .reduce((s, i) => s + i.total_amount, 0);
+  const settled = invoices
+    .filter((i) => i.status === "paid")
+    .reduce((s, i) => s + i.total_amount, 0);
+  const overdueTotal = overdueInvoices.reduce((s, i) => s + i.total_amount, 0);
 
   // What the active retainers commit to per month, roughly — weekly and
   // fortnightly are normalised so the number is comparable.
-  const perMonth = sumMoney(
-    retainers.filter((r) => r.status === "active"),
-    (r) => {
+  const perMonth = retainers
+    .filter((r) => r.status === "active")
+    .reduce((s, r) => {
       const gross = r.amount + Math.round((r.amount * r.tax_percent) / 100);
       const factor =
         r.cadence === "weekly" ? 52 / 12 : r.cadence === "fortnightly" ? 26 / 12 : 1;
-      return gross * factor;
-    },
-    (r) => r.currency,
-    viewerCurrency
-  );
+      return s + gross * factor;
+    }, 0);
 
   return (
     <div className="mx-auto max-w-4xl">
@@ -241,28 +222,28 @@ function InvoicesList({ profile }: { profile: Profile }) {
       <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
         <StatTile
           label={isClient ? "Awaiting payment" : "Outstanding"}
-          value={formatMoneySum(outstanding)}
+          value={formatPrice(outstanding)}
           icon={FileText}
           hint={`${counts.open} invoice${counts.open === 1 ? "" : "s"}`}
         />
         {counts.overdue > 0 ? (
           <StatTile
             label="Overdue"
-            value={formatMoneySum(overdueTotal)}
+            value={formatPrice(overdueTotal)}
             icon={AlertTriangle}
             hint={`${counts.overdue} past due`}
           />
         ) : (
           <StatTile
             label={isClient ? "Total paid" : "Total received"}
-            value={formatMoneySum(settled)}
+            value={formatPrice(settled)}
             icon={ArrowUpRight}
             hint={`${counts.paid} settled`}
           />
         )}
         <StatTile
           label="Recurring"
-          value={hasMoney(perMonth) ? `${formatMoneySum(perMonth, viewerCurrency)}/mo` : "—"}
+          value={perMonth > 0 ? `${formatPrice(Math.round(perMonth))}/mo` : "—"}
           icon={RefreshCw}
           hint={`${liveRetainers.length} live retainer${liveRetainers.length === 1 ? "" : "s"}`}
         />
@@ -378,7 +359,7 @@ function InvoicesList({ profile }: { profile: Profile }) {
                   </div>
                 </div>
                 <span className="font-display shrink-0 text-lg font-semibold">
-                  {formatPrice(inv.total_amount, inv.currency)}
+                  {formatPrice(inv.total_amount)}
                 </span>
               </Link>
             );

@@ -64,8 +64,6 @@ export interface Profile {
   country?: string | null;
   works_remotely?: boolean;
   travel_radius_km?: number | null;
-  /** ISO 4217. Defaults new projects this person posts. */
-  preferred_currency?: string;
   /** 0-100, maintained by DB trigger. See compute_profile_completeness. */
   completeness?: number;
   // Billing fields are NOT selectable by anon/authenticated (migration 011).
@@ -84,10 +82,6 @@ export interface Profile {
   total_reviews?: number;
   total_earned?: number;
   total_spent?: number;
-  /** Exact lifetime totals, kept per currency: {"INR": 15000, "AUD": 1200}.
-   *  Replaced a USD-normalised figure that needed a daily rate refresh. */
-  earnings_by_currency?: Record<string, number>;
-  spending_by_currency?: Record<string, number>;
 }
 
 export interface Category {
@@ -107,8 +101,6 @@ export interface Project {
   location_pref: LocationPref;
   expected_duration: string | null;
   deadline: string | null;
-  /** ISO 4217. Everything downstream of this project settles in it. */
-  currency?: string;
   /** What the client advertised when posting. Freelancers bid against this. */
   budget_stated?: number;
   /** Sum of agreed milestones — 0 until a plan exists (migration 018). */
@@ -203,10 +195,6 @@ export interface Transaction {
   payee_id: string | null;
   type: TransactionType;
   amount: number;
-  /** ISO 4217, inherited from the project (migration 021). */
-  currency?: string;
-  /** Value at the rate when it happened, so historical totals don't drift. */
-  amount_usd?: number | null;
   status: TransactionStatus;
   reference: string;
   created_at: string;

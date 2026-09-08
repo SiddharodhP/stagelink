@@ -44,7 +44,6 @@ import { getMyProfile } from "@/lib/services/auth";
 import { getOrCreateConversation } from "@/lib/services/messaging";
 import { PortfolioItem, Profile, Review } from "@/types/marketplace";
 import { formatPrice, formatDate, cn } from "@/lib/utils";
-import { formatCurrencyMap, DEFAULT_CURRENCY } from "@/lib/currency";
 import { AVAILABILITY_OPTIONS } from "@/lib/constants";
 
 export default function PublicProfilePage() {
@@ -127,9 +126,6 @@ export default function PublicProfilePage() {
 
   const isFreelancer = profile.role === "freelancer";
   const isSelf = viewer?.id === profile.id;
-  // A signed-out visitor has no preference, so fall back to the platform
-  // default rather than showing a bare number.
-  const viewerCurrency = viewer?.preferred_currency || DEFAULT_CURRENCY;
   const availability = AVAILABILITY_OPTIONS.find((a) => a.value === profile.availability);
 
   return (
@@ -331,7 +327,7 @@ export default function PublicProfilePage() {
                       <div className="flex items-center justify-between">
                         <dt className="text-muted-foreground">Total earned</dt>
                         <dd className="font-display text-base font-semibold">
-                          {formatCurrencyMap(profile.earnings_by_currency, viewerCurrency)}
+                          {formatPrice(profile.total_earned || 0)}
                         </dd>
                       </div>
                       {profile.hourly_rate ? (
@@ -362,7 +358,7 @@ export default function PublicProfilePage() {
                     <div className="flex items-center justify-between">
                       <dt className="text-muted-foreground">Total spent</dt>
                       <dd className="font-display text-base font-semibold">
-                        {formatCurrencyMap(profile.spending_by_currency, viewerCurrency)}
+                        {formatPrice(profile.total_spent || 0)}
                       </dd>
                     </div>
                   )}

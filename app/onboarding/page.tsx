@@ -425,7 +425,7 @@ export default function OnboardingPage() {
 
             <div className="space-y-5">
               <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                <Field label="Indicative rate (A$ per hour)" htmlFor="hourly_rate">
+                <Field label="Indicative rate ($ per hour)" htmlFor="hourly_rate">
                   <input
                     id="hourly_rate"
                     type="number"
@@ -435,7 +435,7 @@ export default function OnboardingPage() {
                     onChange={(e) =>
                       setForm({ ...form, hourly_rate: e.target.value })
                     }
-                    placeholder="e.g. 85"
+                    placeholder="e.g. 1500"
                   />
                 </Field>
                 <Field label="Years of experience" htmlFor="experience_years">

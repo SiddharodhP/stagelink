@@ -9,6 +9,7 @@ import {
   FileSignature,
   PlusCircle,
   ArrowUpRight,
+  AlertTriangle,
   Clock,
 } from "lucide-react";
 
@@ -21,12 +22,6 @@ import {
   SkeletonRows,
 } from "@/components/shared/dashboard-ui";
 import { CompletenessMeter } from "@/components/shared/completeness-meter";
-import {
-  sumMoney,
-  formatMoneySum,
-  netMoney,
-  DEFAULT_CURRENCY,
-} from "@/lib/currency";
 import {
   ProjectStatusPill,
   ContractStatusPill,
@@ -66,17 +61,12 @@ function Dashboard({ profile }: { profile: Profile }) {
   const activeContracts = contracts.filter((c) => c.status === "active");
   const pendingAcceptance = contracts.filter((c) => c.status === "pending_acceptance");
   const totalBids = open.reduce((s, p) => s + p.bids_count, 0);
-  // Converted into the client's own currency before adding — projects can
-  // be posted in different ones and a raw sum would mix them.
-  const viewerCurrency = profile.preferred_currency || DEFAULT_CURRENCY;
-
-
-  const spent = sumMoney(
-    transactions.filter((t) => t.type === "escrow_fund" && t.status === "completed"),
-    (t) => t.amount, (t) => t.currency, viewerCurrency);
-  const refunded = sumMoney(
-    transactions.filter((t) => t.type === "refund" && t.status === "completed"),
-    (t) => t.amount, (t) => t.currency, viewerCurrency);
+  const spent = transactions
+    .filter((t) => t.type === "escrow_fund" && t.status === "completed")
+    .reduce((s, t) => s + t.amount, 0);
+  const refunded = transactions
+    .filter((t) => t.type === "refund" && t.status === "completed")
+    .reduce((s, t) => s + t.amount, 0);
 
   // Milestones waiting on this client's review across all active contracts
   const awaitingReview = activeContracts.filter((c) =>
@@ -129,7 +119,7 @@ function Dashboard({ profile }: { profile: Profile }) {
         />
         <StatTile
           label="Total spent"
-          value={formatMoneySum(netMoney([spent], [refunded]), viewerCurrency)}
+          value={formatPrice(spent - refunded)}
           icon={Wallet}
           hint="Escrow funded, net of refunds"
           href="/client/payments"

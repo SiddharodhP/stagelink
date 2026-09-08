@@ -1,5 +1,3 @@
-import { formatMoney, DEFAULT_CURRENCY } from "@/lib/currency";
-
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -7,19 +5,16 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-/**
- * Formats an amount in its own currency.
- *
- * `currency` is optional so the 70-odd existing call sites keep compiling,
- * but every one that has a real currency to hand should pass it — an INR
- * amount rendered with a dollar sign is a lie, not a rounding error.
- */
-export function formatPrice(price: number, currency?: string | null): string {
-  return formatMoney(price, currency || DEFAULT_CURRENCY);
+export function formatPrice(price: number): string {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    maximumFractionDigits: 0,
+  }).format(price);
 }
 
 export function formatDate(date: string | Date): string {
-  return new Intl.DateTimeFormat('en-AU', {
+  return new Intl.DateTimeFormat('en-US', {
     day: 'numeric',
     month: 'short',
     year: 'numeric',
@@ -49,14 +44,6 @@ export function timeAgo(date: string | Date): string {
   return formatDate(date);
 }
 
-export function formatUSD(price: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    maximumFractionDigits: 0,
-  }).format(price);
-}
-
 export function formatCompact(n: number): string {
   if (n >= 1_000_000) {
     return (n / 1_000_000).toFixed(n % 1_000_000 === 0 ? 0 : 1) + 'M';
@@ -78,10 +65,44 @@ function twoDigits(n: number): string {
   return TENS[t] + (o ? ` ${ONES[o]}` : '');
 }
 
-/**
- * Amount in words using the Indian numbering system (crore/lakh/thousand).
- * Standard on Indian invoices, where the total is customarily spelled out
- * alongside the figure.
- */
+function threeDigits(n: number): string {
+  const hundred = Math.floor(n / 100);
+  const rest = n % 100;
+  const parts: string[] = [];
+  if (hundred) parts.push(`${ONES[hundred]} Hundred`);
+  if (rest) parts.push(twoDigits(rest));
+  return parts.join(' ');
+}
 
-export { amountInWords } from "@/lib/currency";
+/**
+ * Amount in words for the invoice PDF, in the short scale that goes with
+ * dollars: billion / million / thousand, not crore / lakh.
+ *
+ * This line is the legal fallback when an invoice's numerals are disputed,
+ * so it has to agree with the figure beside it. Spelling $250,000 as
+ * "Two Lakh Fifty Thousand" would not.
+ */
+export function amountInWords(amount: number, currency = 'USD'): string {
+  const unit = currency === 'USD' ? 'Dollars' : currency;
+
+  const n = Math.floor(Math.abs(amount));
+  if (n === 0) return `${unit} Zero Only`;
+
+  const SCALES: [number, string][] = [
+    [1_000_000_000, 'Billion'],
+    [1_000_000, 'Million'],
+    [1_000, 'Thousand'],
+  ];
+
+  const parts: string[] = [];
+  let rest = n;
+  for (const [size, name] of SCALES) {
+    if (rest >= size) {
+      parts.push(`${threeDigits(Math.floor(rest / size))} ${name}`);
+      rest %= size;
+    }
+  }
+  if (rest) parts.push(threeDigits(rest));
+
+  return `${unit} ${parts.join(' ')} Only`;
+}

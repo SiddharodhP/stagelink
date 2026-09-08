@@ -46,7 +46,7 @@ export function ProjectCard({ project, saved, onToggleSave, showSave }: ProjectC
 
         <div className="hidden shrink-0 text-right sm:block">
           <p className="font-display text-2xl font-semibold leading-none">
-            {formatPrice(project.budget_total, project.currency)}
+            {formatPrice(project.budget_total)}
           </p>
           <p className="mt-1 text-xs text-muted-foreground">fixed · milestones</p>
         </div>
@@ -84,11 +84,11 @@ export function ProjectCard({ project, saved, onToggleSave, showSave }: ProjectC
           {project.deadline && (
             <span className="flex items-center gap-1">
               <Clock className="h-3.5 w-3.5" />
-              due {new Date(project.deadline).toLocaleDateString("en-AU", { day: "numeric", month: "short" })}
+              due {new Date(project.deadline).toLocaleDateString("en-US", { day: "numeric", month: "short" })}
             </span>
           )}
           <span className="font-display text-base font-semibold text-foreground sm:hidden">
-            {formatPrice(project.budget_total, project.currency)}
+            {formatPrice(project.budget_total)}
           </span>
         </div>
       </div>

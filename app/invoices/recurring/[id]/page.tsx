@@ -119,8 +119,6 @@ function RetainerDetail({ profile }: { profile: Profile }) {
   const tax = Math.round((retainer.amount * retainer.tax_percent) / 100);
   const gross = retainer.amount + tax;
   const per = CADENCE_NOUN[retainer.cadence];
-  // One retainer, one contract, one currency.
-  const currency = retainer.currency;
 
   const needsApproval = isClient && retainer.status === "pending_approval";
   const canPause = retainer.status === "active";
@@ -197,15 +195,15 @@ function RetainerDetail({ profile }: { profile: Profile }) {
           </p>
 
           <p className="font-display mt-5 text-4xl font-semibold">
-            {formatPrice(gross, currency)}
+            {formatPrice(gross)}
             <span className="ml-2 text-base font-normal text-muted-foreground">
               per {per}
             </span>
           </p>
           {retainer.tax_percent > 0 && (
             <p className="mt-1 text-sm text-muted-foreground">
-              {formatPrice(retainer.amount, currency)} + {retainer.tax_percent}% tax (
-              {formatPrice(tax, currency)})
+              {formatPrice(retainer.amount)} + {retainer.tax_percent}% tax (
+              {formatPrice(tax)})
             </p>
           )}
         </div>
@@ -219,7 +217,7 @@ function RetainerDetail({ profile }: { profile: Profile }) {
             </p>
             <p className="mb-4 text-sm leading-relaxed text-foreground/80">
               If you approve, Roster will issue an invoice for{" "}
-              <strong>{formatPrice(gross, currency)}</strong> every {per}
+              <strong>{formatPrice(gross)}</strong> every {per}
               {retainer.max_occurrences
                 ? `, up to ${retainer.max_occurrences} times`
                 : ", until you or they end it"}
@@ -297,14 +295,14 @@ function RetainerDetail({ profile }: { profile: Profile }) {
             value={`${retainer.occurrences_created}`}
           />
           <Detail label="Payment terms" value={`Net ${retainer.payment_terms_days}`} />
-          <Detail label="Collected" value={formatPrice(billed, currency)} />
+          <Detail label="Collected" value={formatPrice(billed)} />
           <Detail
             label="Outstanding"
             value={
               outstanding > 0 ? (
-                <span className="text-rose-700">{formatPrice(outstanding, currency)}</span>
+                <span className="text-rose-700">{formatPrice(outstanding)}</span>
               ) : (
-                formatPrice(0, currency)
+                formatPrice(0)
               )
             }
           />
@@ -394,7 +392,7 @@ function RetainerDetail({ profile }: { profile: Profile }) {
                   </p>
                 </div>
                 <span className="font-display shrink-0 text-lg font-semibold">
-                  {formatPrice(inv.total_amount, inv.currency)}
+                  {formatPrice(inv.total_amount)}
                 </span>
               </Link>
             ))}

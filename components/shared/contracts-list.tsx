@@ -106,8 +106,6 @@ export function ContractsList({
             const paidValue = paid.reduce((s, m) => s + m.amount, 0);
             const pct = totalValue ? Math.round((paidValue / totalValue) * 100) : 0;
             const active = milestones.find((m) => !["paid", "cancelled"].includes(m.status));
-            // One contract, one project, one currency — no conversion needed.
-            const currency = c.project?.currency;
 
             return (
               <Link
