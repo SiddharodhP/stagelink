@@ -6,7 +6,7 @@ import { Users, Briefcase, FileSignature, Wallet, ShieldAlert } from "lucide-rea
 import { WorkspaceShell } from "@/components/layout/workspace-shell";
 import { PageHeader, StatTile, SkeletonRows } from "@/components/shared/dashboard-ui";
 import { getPlatformStats } from "@/lib/services/admin";
-import { formatPrice } from "@/lib/utils";
+import { formatMoney } from "@/lib/currency";
 
 function AdminOverview() {
   const [stats, setStats] = useState<Awaited<ReturnType<typeof getPlatformStats>> | null>(null);
@@ -37,7 +37,7 @@ function AdminOverview() {
         <StatTile label="Contracts" value={stats.contracts} icon={FileSignature} />
         <StatTile
           label="Volume released"
-          value={formatPrice(stats.volumeReleased)}
+          value={`≈ ${formatMoney(stats.volumeReleasedUsd, "USD")}`}
           icon={Wallet}
           hint="Paid out from escrow"
         />

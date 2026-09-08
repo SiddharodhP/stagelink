@@ -9,14 +9,20 @@ export async function getPlatformStats() {
     supabase.from("profiles").select("id", { count: "exact", head: true }),
     supabase.from("projects").select("id", { count: "exact", head: true }).neq("status", "draft"),
     supabase.from("contracts").select("id", { count: "exact", head: true }),
-    supabase.from("transactions").select("amount, type").eq("type", "release").eq("status", "completed"),
+    supabase.from("transactions").select("amount_usd, type").eq("type", "release").eq("status", "completed"),
     supabase.from("disputes").select("id", { count: "exact", head: true }).neq("status", "resolved"),
   ]);
   return {
     users: users.count || 0,
     projects: projects.count || 0,
     contracts: contracts.count || 0,
-    volumeReleased: (volume.data || []).reduce((s: number, t: any) => s + t.amount, 0),
+    // Summed in USD, the only unit comparable across every project's
+    // currency. Rows with no rate yet are excluded rather than added raw;
+    // the cron prices them once rates land.
+    volumeReleasedUsd: (volume.data || []).reduce(
+      (s: number, t: { amount_usd: number | null }) => s + (t.amount_usd || 0),
+      0
+    ),
     openDisputes: disputes.count || 0,
   };
 }

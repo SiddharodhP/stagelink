@@ -12,6 +12,14 @@ import {
 import { getMyTransactions } from "@/lib/services/contracts";
 import { Profile, Transaction } from "@/types/marketplace";
 import { formatPrice, formatDate, cn } from "@/lib/utils";
+import {
+  sumMoney,
+  formatMoneySum,
+  formatMoney,
+  DEFAULT_CURRENCY,
+  RateTable,
+} from "@/lib/currency";
+import { getExchangeRates } from "@/lib/services/rates";
 
 const TYPE_META: Record<
   string,
@@ -26,6 +34,7 @@ const TYPE_META: Record<
 export function TransactionsList({ profile }: { profile: Profile }) {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
+  const [rates, setRates] = useState<RateTable | null>(null);
 
   const isClient = profile.role === "client";
 
@@ -36,19 +45,37 @@ export function TransactionsList({ profile }: { profile: Profile }) {
     });
   }, [profile.id]);
 
-  const earned = transactions
-    .filter((t) => t.type === "release" && t.payee_id === profile.id)
-    .reduce((s, t) => s + t.amount, 0);
-  const funded = transactions
-    .filter((t) => t.type === "escrow_fund" && t.payer_id === profile.id)
-    .reduce((s, t) => s + t.amount, 0);
-  const refunded = transactions
-    .filter((t) => t.type === "refund" && t.payee_id === profile.id)
-    .reduce((s, t) => s + t.amount, 0);
-  const released = transactions
-    .filter((t) => t.type === "release" && t.payer_id === profile.id)
-    .reduce((s, t) => s + t.amount, 0);
-  const inEscrow = Math.max(0, funded - released - refunded);
+  // The ledger can span projects in different currencies, so the totals
+  // below need a rate table to add them up honestly.
+  useEffect(() => {
+    let cancelled = false;
+    getExchangeRates().then((r) => {
+      if (!cancelled) setRates(r);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // Converted into the viewer's currency before adding. A plain reduce()
+  // here was summing whatever currencies happened to be in the ledger.
+  const viewerCurrency = profile.preferred_currency || DEFAULT_CURRENCY;
+  const total = (rows: Transaction[]) =>
+    sumMoney(rows, (t) => t.amount, (t) => t.currency, viewerCurrency, rates);
+
+  const earned = total(
+    transactions.filter((t) => t.type === "release" && t.payee_id === profile.id)
+  );
+  const funded = total(
+    transactions.filter((t) => t.type === "escrow_fund" && t.payer_id === profile.id)
+  );
+  const refunded = total(
+    transactions.filter((t) => t.type === "refund" && t.payee_id === profile.id)
+  );
+  const released = total(
+    transactions.filter((t) => t.type === "release" && t.payer_id === profile.id)
+  );
+  const inEscrow = Math.max(0, funded.total - released.total - refunded.total);
 
   return (
     <div className="mx-auto max-w-4xl">
@@ -65,18 +92,18 @@ export function TransactionsList({ profile }: { profile: Profile }) {
       <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
         {isClient ? (
           <>
-            <StatTile label="Total funded" value={formatPrice(funded)} icon={Wallet} />
+            <StatTile label="Total funded" value={formatMoneySum(funded)} icon={Wallet} />
             <StatTile
               label="Held in escrow"
-              value={formatPrice(inEscrow)}
+              value={formatMoney(inEscrow, viewerCurrency)}
               icon={ArrowUpRight}
               hint="Awaiting milestone approval"
             />
-            <StatTile label="Refunded to you" value={formatPrice(refunded)} icon={RotateCcw} />
+            <StatTile label="Refunded to you" value={formatMoneySum(refunded)} icon={RotateCcw} />
           </>
         ) : (
           <>
-            <StatTile label="Total earned" value={formatPrice(earned)} icon={Wallet} />
+            <StatTile label="Total earned" value={formatMoneySum(earned)} icon={Wallet} />
             <StatTile
               label="Payments received"
               value={transactions.filter((t) => t.type === "release" && t.payee_id === profile.id).length}
@@ -84,14 +111,15 @@ export function TransactionsList({ profile }: { profile: Profile }) {
             />
             <StatTile
               label="Average per milestone"
-              value={formatPrice(
+              value={formatMoney(
                 Math.round(
-                  earned /
+                  earned.total /
                     Math.max(
                       1,
                       transactions.filter((t) => t.type === "release" && t.payee_id === profile.id).length
                     )
-                )
+                ),
+                viewerCurrency
               )}
               icon={ArrowUpRight}
             />

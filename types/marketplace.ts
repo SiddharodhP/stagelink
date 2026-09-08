@@ -203,6 +203,10 @@ export interface Transaction {
   payee_id: string | null;
   type: TransactionType;
   amount: number;
+  /** ISO 4217, inherited from the project (migration 021). */
+  currency?: string;
+  /** Value at the rate when it happened, so historical totals don't drift. */
+  amount_usd?: number | null;
   status: TransactionStatus;
   reference: string;
   created_at: string;

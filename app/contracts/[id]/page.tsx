@@ -210,6 +210,8 @@ function Workspace({ profile }: { profile: Profile }) {
   const other = isClient ? contract.freelancer : contract.client;
   const isActive = contract.status === "active";
   const isPending = contract.status === "pending_acceptance";
+  // Everything on this contract settles in the project's currency.
+  const currency = contract.project?.currency;
   // pending_acceptance covers two different situations now: the client
   // still drafting, and the freelancer reviewing what was sent.
   const planSent = Boolean(contract.plan_sent_at);
