@@ -207,21 +207,21 @@ export default function Home() {
                     </div>
                   </div>
 
-                  {/* Rules rather than gaps. Once the second line went the
-                      rows had nothing holding them together and read as five
-                      loose labels floating in the panel.
+                  {/* Filled rows, not hairlines between them.
 
-                      Same opacity as the client panel despite the far darker
-                      ground. Both contrast models said 25% here matched 45%
-                      there, and on screen it did not: the amber glow washing
-                      over this panel lifts the local background enough that
-                      the rule disappeared into it. */}
-                  <ul className="divide-y divide-white/45">
+                      A 1px rule was the obvious answer and it kept failing on
+                      this panel: identical markup and identical border colour
+                      to the client side, verified in the shipped CSS and in
+                      the served HTML, and still nothing readable against the
+                      near black ground. A row that is its own block does not
+                      depend on a single pixel surviving a gradient, a blurred
+                      glow behind it, and whatever the display does to it. */}
+                  <ul className="space-y-2">
                     {FREELANCER_BENEFITS.map(({ icon: Icon, title }) => (
                       <motion.li
                         key={title}
                         variants={staggerItem}
-                        className="group/row -mx-3 flex items-center gap-4 px-3 py-3.5 transition-colors duration-300 hover:bg-white/[0.05]"
+                        className="group/row flex items-center gap-4 rounded-xl bg-white/[0.09] px-4 py-3.5 ring-1 ring-inset ring-white/[0.18] transition-colors duration-300 hover:bg-white/[0.16]"
                       >
                         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/[0.07] text-[#F0A868] ring-1 ring-inset ring-white/10 transition-all duration-300 group-hover/row:bg-[#F0A868] group-hover/row:text-[#0A2622] group-hover/row:ring-[#F0A868]">
                           <Icon className="h-4 w-4" />
@@ -275,12 +275,12 @@ export default function Home() {
                     </div>
                   </div>
 
-                  <ul className="divide-y divide-white/45">
+                  <ul className="space-y-2">
                     {CLIENT_BENEFITS.map(({ icon: Icon, title }) => (
                       <motion.li
                         key={title}
                         variants={staggerItem}
-                        className="group/row -mx-3 flex items-center gap-4 px-3 py-3.5 transition-colors duration-300 hover:bg-white/[0.10]"
+                        className="group/row flex items-center gap-4 rounded-xl bg-white/[0.12] px-4 py-3.5 ring-1 ring-inset ring-white/25 transition-colors duration-300 hover:bg-white/[0.20]"
                       >
                         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/15 text-white ring-1 ring-inset ring-white/20 transition-all duration-300 group-hover/row:bg-white group-hover/row:text-[#C03A0B]">
                           <Icon className="h-4 w-4" />
