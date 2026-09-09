@@ -115,7 +115,7 @@ function Dashboard({ profile }: { profile: Profile }) {
           label="Active contracts"
           value={activeContracts.length}
           icon={FileSignature}
-          href="/client/contracts"
+          href="/client/projects"
         />
         <StatTile
           label="Total spent"
@@ -248,7 +248,7 @@ function Dashboard({ profile }: { profile: Profile }) {
               </p>
             </div>
             <Link
-              href="/client/contracts"
+              href="/client/projects"
               className="flex shrink-0 items-center gap-1 text-sm font-medium text-brand hover:text-brand-deep"
             >
               View all <ArrowUpRight className="h-3.5 w-3.5" />

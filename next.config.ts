@@ -41,6 +41,20 @@ const nextConfig: NextConfig = {
         destination: "/people",
         permanent: true,
       },
+      /**
+       * Contracts folded into the client project list — a contract is a
+       * stage a project reaches, not a separate thing to manage.
+       *
+       * Temporary (307) rather than permanent, unlike the rules above.
+       * These are signed-in app routes with nothing indexed to preserve,
+       * and a 308 would be cached in browsers indefinitely, which is a
+       * hard thing to take back if the page ever returns.
+       */
+      {
+        source: "/client/contracts",
+        destination: "/client/projects",
+        permanent: false,
+      },
     ];
   },
 };

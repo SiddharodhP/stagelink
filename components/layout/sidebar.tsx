@@ -37,9 +37,8 @@ export function Sidebar({ role, className }: SidebarProps) {
 
   const clientLinks = [
     { href: "/client/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/client/projects", label: "My projects", icon: Briefcase },
+    { href: "/client/projects", label: "Projects", icon: Briefcase },
     { href: "/projects/new", label: "Post a project", icon: PlusCircle },
-    { href: "/client/contracts", label: "Contracts", icon: FileSignature },
     { href: "/client/payments", label: "Payments", icon: Wallet },
     { href: "/invoices", label: "Invoices", icon: Receipt },
     { href: "/messages", label: "Messages", icon: MessageSquare },

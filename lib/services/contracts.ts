@@ -10,7 +10,7 @@ const supabase = createBrowserClient();
 
 const CONTRACT_SELECT = `
   *,
-  project:project_id(*, category:category_id(id, name, slug)),
+  project:project_id(*, category:category_id(id, name, slug), milestones(*)),
   client:client_id(id, full_name, avatar_url, company_name, location, is_verified),
   freelancer:freelancer_id(id, full_name, headline, avatar_url, location, is_verified),
   bid:bid_id(*)
