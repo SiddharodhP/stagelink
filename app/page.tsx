@@ -209,8 +209,14 @@ export default function Home() {
 
                   {/* Rules rather than gaps. Once the second line went the
                       rows had nothing holding them together and read as five
-                      loose labels floating in the panel. */}
-                  <ul className="divide-y divide-white/25">
+                      loose labels floating in the panel.
+
+                      Same opacity as the client panel despite the far darker
+                      ground. Both contrast models said 25% here matched 45%
+                      there, and on screen it did not: the amber glow washing
+                      over this panel lifts the local background enough that
+                      the rule disappeared into it. */}
+                  <ul className="divide-y divide-white/45">
                     {FREELANCER_BENEFITS.map(({ icon: Icon, title }) => (
                       <motion.li
                         key={title}
