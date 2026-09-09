@@ -24,36 +24,55 @@ import {
 } from "@/components/shared/dashboard-ui";
 import {
   getCategories,
-  getSkillsList,
   createDraftProject,
   publishProject,
 } from "@/lib/services/projects";
 import { Category, Profile } from "@/types/marketplace";
-import {
-  EXPERIENCE_LEVELS,
-  LOCATION_PREFS,
-  DURATION_OPTIONS,
-} from "@/lib/constants";
+import { LOCATION_PREFS, DURATION_OPTIONS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
-const STEPS = ["Basics", "Skills & scope", "Review"] as const;
+/**
+ * Nine suggestions, three per craft, rather than the whole skills table.
+ *
+ * The picker used to render the first forty rows of `skills` in alphabetical
+ * order, so it opened on "2D Animation, 3D Animation, Adobe After Effects"
+ * and buried the things most shoots actually need thirty chips down. Nine
+ * curated ones read as a starting point instead of a dump; everything else
+ * goes in through the free text box, which is where a long tail belongs.
+ *
+ * These names match rows in the skills table, so freelancer filtering keeps
+ * working on them.
+ */
+const SKILL_SUGGESTIONS = [
+  {
+    label: "Photography",
+    skills: ["Wedding Photography", "Event Photography", "Product Photography"],
+  },
+  {
+    label: "Videography",
+    skills: ["Wedding Videography", "Event Videography", "Cinematography"],
+  },
+  {
+    label: "Editing",
+    skills: ["Video Editing", "Photo Retouching", "Colour Grading"],
+  },
+];
+
+const STEPS = ["Project details", "Review"] as const;
 
 function Wizard({ profile }: { profile: Profile }) {
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [isPublishing, setIsPublishing] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [skillOptions, setSkillOptions] = useState<string[]>([]);
   const [customSkill, setCustomSkill] = useState("");
 
   const [form, setForm] = useState({
     title: "",
     description: "",
     category_id: "",
-    experience_level: "intermediate",
     location_pref: "remote",
     expected_duration: "",
-    deadline: "",
     budget_stated: "",
     skills: [] as string[],
   });
@@ -61,7 +80,6 @@ function Wizard({ profile }: { profile: Profile }) {
 
   useEffect(() => {
     getCategories().then(({ data }) => setCategories(data));
-    getSkillsList().then(({ data }) => setSkillOptions(data));
   }, []);
 
 
@@ -79,18 +97,21 @@ function Wizard({ profile }: { profile: Profile }) {
     setCustomSkill("");
   };
 
-  /* ---- per-step validation ---- */
+  /**
+   * Only what a posting genuinely cannot work without: something to call it,
+   * a category to file it under, and a number for freelancers to bid against
+   * (the publish trigger rejects a project without one).
+   *
+   * The old minimum lengths -- five characters of title, thirty of
+   * description -- and the "at least one skill" rule are gone. They were
+   * there to push people towards a better brief, but a form that argues with
+   * you is a form people abandon, and a thin brief still gets bids.
+   */
   const stepErrors = (): string | null => {
     if (step === 0) {
-      if (form.title.trim().length < 5) return "Give your project a title of at least 5 characters";
-      if (form.description.trim().length < 30)
-        return "Add a description of at least 30 characters so freelancers can bid accurately";
+      if (!form.title.trim()) return "Give your project a title";
       if (!form.category_id) return "Pick a category";
-    }
-    if (step === 1) {
-      const budget = Number(form.budget_stated);
-      if (!budget || budget <= 0) return "Add the budget you have in mind";
-      if (form.skills.length === 0) return "Add at least one required skill";
+      if (Number(form.budget_stated) <= 0) return "Add the budget you have in mind";
     }
     return null;
   };
@@ -117,10 +138,8 @@ function Wizard({ profile }: { profile: Profile }) {
         description: form.description.trim(),
         category_id: Number(form.category_id),
         skills: form.skills,
-        experience_level: form.experience_level as any,
         location_pref: form.location_pref as any,
         expected_duration: form.expected_duration || null,
-        deadline: form.deadline || null,
         budget_stated: Number(form.budget_stated),
       });
       if (error || !project) throw error || new Error("Could not create project");
@@ -139,7 +158,7 @@ function Wizard({ profile }: { profile: Profile }) {
   };
 
   const saveDraft = async () => {
-    if (form.title.trim().length < 5) {
+    if (!form.title.trim()) {
       toast.error("Add a title before saving a draft");
       return;
     }
@@ -149,10 +168,8 @@ function Wizard({ profile }: { profile: Profile }) {
       description: form.description.trim(),
       category_id: form.category_id ? Number(form.category_id) : null,
       skills: form.skills,
-      experience_level: form.experience_level as any,
       location_pref: form.location_pref as any,
       expected_duration: form.expected_duration || null,
-      deadline: form.deadline || null,
       budget_stated: Number(form.budget_stated) || 0,
     });
     if (!error && project) {
@@ -206,14 +223,18 @@ function Wizard({ profile }: { profile: Profile }) {
       </ol>
 
       <div className="rounded-xl border border-border bg-white p-6 md:p-8">
-        {/* ---------- Step 0: Basics ---------- */}
+        {/* ---------- Step 0: everything about the project ----------
+             Basics and "Skills & scope" used to be two screens with a
+             Continue between them. Splitting eight fields across two steps
+             made the form feel longer than it is, and the second screen was
+             where people were dropping out. */}
         {step === 0 && (
           <div className="space-y-5">
             <Field
               label="Project title"
               htmlFor="title"
               required
-              hint="Write it like a job posting — specific enough that the right freelancer stops scrolling."
+              hint="Specific enough that the right freelancer stops scrolling."
             >
               <input
                 id="title"
@@ -228,15 +249,14 @@ function Wizard({ profile }: { profile: Profile }) {
             <Field
               label="Description"
               htmlFor="description"
-              required
-              hint="Scope, context, tech constraints, and what 'done' looks like. Vague briefs get vague bids."
+              hint="What the shoot is, where it is, and what you need delivered."
             >
               <textarea
                 id="description"
-                className={cn(textareaClass, "min-h-[180px]")}
+                className={cn(textareaClass, "min-h-[140px]")}
                 value={form.description}
                 onChange={(e) => setForm({ ...form, description: e.target.value })}
-                placeholder="What are you building, who is it for, what already exists, and what does success look like?"
+                placeholder="What are you shooting, who is it for, and what does done look like?"
               />
             </Field>
 
@@ -252,6 +272,38 @@ function Wizard({ profile }: { profile: Profile }) {
                   {categories.map((c) => (
                     <option key={c.id} value={c.id}>
                       {c.name}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+
+              <Field
+                label="Your budget ($)"
+                htmlFor="budget_stated"
+                required
+                hint="Freelancers bid against this. Milestones come later."
+              >
+                <input
+                  id="budget_stated"
+                  type="number"
+                  min={1}
+                  className={inputClass}
+                  value={form.budget_stated}
+                  onChange={(e) => setForm({ ...form, budget_stated: e.target.value })}
+                  placeholder="e.g. 2000"
+                />
+              </Field>
+
+              <Field label="Work location" htmlFor="loc">
+                <select
+                  id="loc"
+                  className={selectClass}
+                  value={form.location_pref}
+                  onChange={(e) => setForm({ ...form, location_pref: e.target.value })}
+                >
+                  {LOCATION_PREFS.map((l) => (
+                    <option key={l.value} value={l.value}>
+                      {l.label}
                     </option>
                   ))}
                 </select>
@@ -273,29 +325,27 @@ function Wizard({ profile }: { profile: Profile }) {
                 </select>
               </Field>
             </div>
-          </div>
-        )}
 
-        {/* ---------- Step 1: Skills & scope ---------- */}
-        {step === 1 && (
-          <div className="space-y-6">
-            <div>
-              <p className="mb-2 text-sm font-medium">
-                Required skills <span className="text-brand">*</span>
-              </p>
+            {/* ---- Skills ---- */}
+            <div className="border-t border-border pt-6">
+              <p className="mb-1 text-sm font-medium">Skills</p>
               <p className="mb-4 text-xs text-muted-foreground">
-                Freelancers filter by these — pick what genuinely matters for the work.
+                Optional. Tap a few, or type your own.
               </p>
 
               {form.skills.length > 0 && (
-                <div className="mb-4 flex flex-wrap gap-2 border-b border-border pb-4">
-                  {form.skills.map((s) => (
+                <div className="mb-4 flex flex-wrap gap-2">
+                  {form.skills.map((sk) => (
                     <span
-                      key={s}
+                      key={sk}
                       className="inline-flex items-center gap-1.5 rounded-full bg-ink px-3 py-1.5 text-[13px] font-medium text-paper"
                     >
-                      {s}
-                      <button type="button" onClick={() => toggleSkill(s)} aria-label={`Remove ${s}`}>
+                      {sk}
+                      <button
+                        type="button"
+                        onClick={() => toggleSkill(sk)}
+                        aria-label={`Remove ${sk}`}
+                      >
                         <X className="h-3 w-3 opacity-70 hover:opacity-100" />
                       </button>
                     </span>
@@ -303,7 +353,7 @@ function Wizard({ profile }: { profile: Profile }) {
                 </div>
               )}
 
-              <div className="mb-4 flex gap-2">
+              <div className="mb-5 flex gap-2">
                 <input
                   className={inputClass}
                   value={customSkill}
@@ -314,90 +364,42 @@ function Wizard({ profile }: { profile: Profile }) {
                       addCustomSkill();
                     }
                   }}
-                  placeholder="Add a skill that isn't listed…"
+                  placeholder="Type a skill and press enter"
                 />
-                <Button type="button" variant="outline" className="shrink-0" onClick={addCustomSkill}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="shrink-0"
+                  onClick={addCustomSkill}
+                >
                   <Plus className="mr-1.5 h-4 w-4" /> Add
                 </Button>
               </div>
 
-              <div className="flex flex-wrap gap-2">
-                {skillOptions
-                  .filter((s) => !form.skills.includes(s))
-                  .slice(0, 40)
-                  .map((s) => (
-                    <ChipToggle key={s} active={false} onClick={() => toggleSkill(s)}>
-                      {s}
-                    </ChipToggle>
-                  ))}
+              <div className="space-y-3.5">
+                {SKILL_SUGGESTIONS.map((group) => {
+                  const rest = group.skills.filter((sk) => !form.skills.includes(sk));
+                  if (rest.length === 0) return null;
+                  return (
+                    <div key={group.label}>
+                      <p className="eyebrow mb-2">{group.label}</p>
+                      <div className="flex flex-wrap gap-2">
+                        {rest.map((sk) => (
+                          <ChipToggle key={sk} active={false} onClick={() => toggleSkill(sk)}>
+                            {sk}
+                          </ChipToggle>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-            </div>
-
-            <div className="grid gap-5 border-t border-border pt-6 md:grid-cols-2">
-              <Field label="Experience level" htmlFor="exp">
-                <select
-                  id="exp"
-                  className={selectClass}
-                  value={form.experience_level}
-                  onChange={(e) => setForm({ ...form, experience_level: e.target.value })}
-                >
-                  {EXPERIENCE_LEVELS.map((l) => (
-                    <option key={l.value} value={l.value}>
-                      {l.label} — {l.hint}
-                    </option>
-                  ))}
-                </select>
-              </Field>
-
-              <Field label="Work location" htmlFor="loc">
-                <select
-                  id="loc"
-                  className={selectClass}
-                  value={form.location_pref}
-                  onChange={(e) => setForm({ ...form, location_pref: e.target.value })}
-                >
-                  {LOCATION_PREFS.map((l) => (
-                    <option key={l.value} value={l.value}>
-                      {l.label}
-                    </option>
-                  ))}
-                </select>
-              </Field>
-
-              <Field
-                label="Your budget ($)"
-                htmlFor="budget_stated"
-                required
-                hint="What you expect to spend overall. Freelancers bid against this — the milestone breakdown comes later, once you have picked someone."
-              >
-                <input
-                  id="budget_stated"
-                  type="number"
-                  min={1}
-                  className={inputClass}
-                  value={form.budget_stated}
-                  onChange={(e) =>
-                    setForm({ ...form, budget_stated: e.target.value })
-                  }
-                  placeholder="e.g. 45000"
-                />
-              </Field>
-
-              <Field label="Overall deadline" htmlFor="deadline" hint="Optional — the date the whole project should be done.">
-                <input
-                  id="deadline"
-                  type="date"
-                  className={inputClass}
-                  value={form.deadline}
-                  onChange={(e) => setForm({ ...form, deadline: e.target.value })}
-                />
-              </Field>
             </div>
           </div>
         )}
 
-        {/* ---------- Step 2: Review ---------- */}
-        {step === 2 && (
+        {/* ---------- Step 1: Review ---------- */}
+        {step === 1 && (
           <div className="space-y-8">
             <div>
               <p className="eyebrow mb-2">Preview</p>
@@ -419,10 +421,9 @@ function Wizard({ profile }: { profile: Profile }) {
               </div>
             </div>
 
-            <dl className="grid grid-cols-2 gap-4 border-y border-border py-5 text-sm sm:grid-cols-4">
+            <dl className="grid grid-cols-2 gap-4 border-y border-border py-5 text-sm sm:grid-cols-3">
               {[
                 ["Category", categories.find((c) => String(c.id) === form.category_id)?.name || "—"],
-                ["Experience", EXPERIENCE_LEVELS.find((e) => e.value === form.experience_level)?.label],
                 ["Location", LOCATION_PREFS.find((l) => l.value === form.location_pref)?.label],
                 ["Duration", form.expected_duration || "Flexible"],
               ].map(([k, v]) => (

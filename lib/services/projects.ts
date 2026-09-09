@@ -44,8 +44,6 @@ export async function searchProjects(filters: Partial<ProjectFilters>) {
     query = query.overlaps("skills", filters.skills);
   if (filters.budgetMin != null) query = query.gte("budget_total", filters.budgetMin);
   if (filters.budgetMax != null) query = query.lte("budget_total", filters.budgetMax);
-  if (filters.experienceLevel)
-    query = query.eq("experience_level", filters.experienceLevel);
   if (filters.maxBids != null) query = query.lte("bids_count", filters.maxBids);
 
   switch (filters.sortBy) {

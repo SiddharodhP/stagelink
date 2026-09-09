@@ -8,7 +8,6 @@ import {
   ArrowLeft,
   Clock,
   MapPin,
-  Users,
   Loader2,
   Heart,
   Paperclip,
@@ -38,7 +37,7 @@ import { getPublicProfile } from "@/lib/services/profiles";
 import { getOrCreateConversation } from "@/lib/services/messaging";
 import { Bid, Profile, Project } from "@/types/marketplace";
 import { formatPrice, formatDate, timeAgo, cn, displayName, partyName } from "@/lib/utils";
-import { EXPERIENCE_LEVELS, LOCATION_PREFS } from "@/lib/constants";
+import { LOCATION_PREFS } from "@/lib/constants";
 
 export default function ProjectDetailPage() {
   const params = useParams();
@@ -137,7 +136,6 @@ export default function ProjectDetailPage() {
 
   const isOwner = profile?.id === project.client_id;
   const isFreelancer = profile?.role === "freelancer";
-  const exp = EXPERIENCE_LEVELS.find((e) => e.value === project.experience_level);
   const loc = LOCATION_PREFS.find((l) => l.value === project.location_pref);
   const milestones = project.milestones || [];
 
@@ -214,11 +212,6 @@ export default function ProjectDetailPage() {
               </section>
 
               <section className="mb-8 flex flex-wrap gap-x-8 gap-y-3 border-y border-border py-5 text-sm">
-                <span className="flex items-center gap-2">
-                  <Users className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-muted-foreground">Experience:</span>
-                  <strong className="font-medium">{exp?.label}</strong>
-                </span>
                 <span className="flex items-center gap-2">
                   <MapPin className="h-4 w-4 text-muted-foreground" />
                   <span className="text-muted-foreground">Location:</span>

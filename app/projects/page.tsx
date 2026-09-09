@@ -27,7 +27,7 @@ import {
 import { getMyProfile } from "@/lib/services/auth";
 import { useDebounce } from "@/hooks/use-debounce";
 import { Category, Profile, Project, ProjectFilters } from "@/types/marketplace";
-import { PROJECT_SORTS, BUDGET_PRESETS, EXPERIENCE_LEVELS } from "@/lib/constants";
+import { PROJECT_SORTS, BUDGET_PRESETS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -37,7 +37,6 @@ const INITIAL: ProjectFilters = {
   skills: [],
   budgetMin: null,
   budgetMax: null,
-  experienceLevel: "",
   maxBids: null,
   sortBy: "newest",
   page: 1,
@@ -115,7 +114,6 @@ export default function BrowseProjectsPage() {
     (filters.categoryId ? 1 : 0) +
     filters.skills.length +
     (budgetPreset > 0 ? 1 : 0) +
-    (filters.experienceLevel ? 1 : 0) +
     (filters.maxBids != null ? 1 : 0);
 
   const totalPages = Math.max(1, Math.ceil(total / PROJECT_PAGE_SIZE));
@@ -178,23 +176,6 @@ export default function BrowseProjectsPage() {
                 {b.label}
               </span>
             </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="border-b border-border py-5">
-        <h4 className="eyebrow mb-3">Experience level</h4>
-        <div className="flex flex-wrap gap-2">
-          {EXPERIENCE_LEVELS.map((l) => (
-            <ChipToggle
-              key={l.value}
-              active={filters.experienceLevel === l.value}
-              onClick={() =>
-                update({ experienceLevel: filters.experienceLevel === l.value ? "" : (l.value as any) })
-              }
-            >
-              {l.label}
-            </ChipToggle>
           ))}
         </div>
       </div>

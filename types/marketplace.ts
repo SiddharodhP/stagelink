@@ -278,7 +278,6 @@ export interface ProjectFilters {
   skills: string[];
   budgetMin: number | null;
   budgetMax: number | null;
-  experienceLevel: ExperienceLevel | "";
   maxBids: number | null;
   sortBy: "newest" | "budget_desc" | "budget_asc" | "deadline" | "fewest_bids";
   page: number;

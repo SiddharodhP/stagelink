@@ -9,7 +9,6 @@ import {
   SkillTags,
   UserAvatar,
 } from "@/components/shared/marketplace-ui";
-import { EXPERIENCE_LEVELS } from "@/lib/constants";
 
 interface ProjectCardProps {
   project: Project;
@@ -20,7 +19,6 @@ interface ProjectCardProps {
 
 /** Information-dense list card — reads like a job board row, not a tile. */
 export function ProjectCard({ project, saved, onToggleSave, showSave }: ProjectCardProps) {
-  const exp = EXPERIENCE_LEVELS.find((e) => e.value === project.experience_level);
 
   return (
     <article className="card-lift relative rounded-xl border border-border bg-card p-5 md:p-6">
@@ -33,7 +31,6 @@ export function ProjectCard({ project, saved, onToggleSave, showSave }: ProjectC
           <p className="mb-1.5 text-xs text-muted-foreground">
             {project.published_at ? `Posted ${timeAgo(project.published_at)}` : "Draft"}
             {project.category?.name && <> · {project.category.name}</>}
-            {exp && <> · {exp.label}</>}
           </p>
           <h3 className="font-display mb-2 break-words text-xl font-semibold leading-snug tracking-tight">
             {project.title}
