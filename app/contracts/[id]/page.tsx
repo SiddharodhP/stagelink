@@ -232,10 +232,17 @@ function Workspace({ profile }: { profile: Profile }) {
 
   /** Whose turn is it? Drives the banner at the top. */
   const nextAction = (() => {
-    if (isPending)
+    if (isPending) {
+      // Before the plan is sent the ball is in the client's court, not the
+      // freelancer's — there is nothing yet for them to confirm.
+      if (!planSent)
+        return isClient
+          ? { who: "you", text: "Break the work into milestones below and send the plan to the freelancer." }
+          : { who: "them", text: "Waiting for the client to send a milestone plan. Talk the work through with them in the meantime." };
       return isClient
         ? { who: "them", text: "Waiting for the freelancer to confirm your milestone structure." }
         : { who: "you", text: "Review the milestones below and confirm to start work." };
+    }
     if (!isActive) return null;
     if (!activeMilestone) return null;
     switch (activeMilestone.status) {
@@ -420,7 +427,7 @@ function Workspace({ profile }: { profile: Profile }) {
       <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
           <div className="mb-2 flex items-center gap-3">
-            <ContractStatusPill status={contract.status} />
+            <ContractStatusPill status={contract.status} planSent={planSent} />
             <span className="text-sm text-muted-foreground">
               Started {contract.started_at ? formatDate(contract.started_at) : "—"}
             </span>

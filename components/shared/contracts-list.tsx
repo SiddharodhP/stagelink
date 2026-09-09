@@ -116,7 +116,10 @@ export function ContractsList({
                 <div className="mb-4 flex flex-wrap items-start justify-between gap-4">
                   <div className="min-w-0">
                     <div className="mb-2 flex flex-wrap items-center gap-2.5">
-                      <ContractStatusPill status={c.status} />
+                      <ContractStatusPill
+                        status={c.status}
+                        planSent={Boolean(c.plan_sent_at)}
+                      />
                       {active && c.status === "active" && (
                         <MilestoneStatusPill status={active.status} />
                       )}

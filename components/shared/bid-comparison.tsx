@@ -113,7 +113,7 @@ export function BidComparison({
       toast.error(error.message || "Could not award the project");
       return;
     }
-    toast.success("Project awarded — the freelancer will confirm the milestones");
+    toast.success("Project awarded — now draft the milestones and send them");
     setAwardTarget(null);
     onAwarded();
     if (contractId) router.push(`/contracts/${contractId}`);

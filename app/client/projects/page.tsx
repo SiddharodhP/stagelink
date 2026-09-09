@@ -204,7 +204,12 @@ function ProjectsPage({ profile }: { profile: Profile }) {
                 {/* Status tags — everything that used to be a tab */}
                 <div className="mb-2.5 flex flex-wrap items-center gap-2">
                   <ProjectStatusPill status={p.status} />
-                  {contract && <ContractStatusPill status={contract.status} />}
+                  {contract && (
+                    <ContractStatusPill
+                      status={contract.status}
+                      planSent={Boolean(contract.plan_sent_at)}
+                    />
+                  )}
                   {contract?.status === "active" && next && (
                     <MilestoneStatusPill status={next.status} />
                   )}
@@ -316,7 +321,9 @@ function ProjectsPage({ profile }: { profile: Profile }) {
                           <Link href={`/contracts/${contract.id}`}>
                             <FileSignature className="mr-1.5 h-3.5 w-3.5" />
                             {contract.status === "pending_acceptance"
-                              ? "Review contract"
+                              ? contract.plan_sent_at
+                                ? "Review contract"
+                                : "Draft milestones"
                               : "Open contract"}
                           </Link>
                         </Button>

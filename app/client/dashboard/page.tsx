@@ -276,7 +276,10 @@ function Dashboard({ profile }: { profile: Profile }) {
                         </p>
                       </div>
                     </div>
-                    <ContractStatusPill status={c.status} />
+                    <ContractStatusPill
+                      status={c.status}
+                      planSent={Boolean(c.plan_sent_at)}
+                    />
                   </Link>
                 </li>
               ))}

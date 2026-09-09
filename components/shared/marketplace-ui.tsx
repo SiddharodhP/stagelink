@@ -66,7 +66,26 @@ export function MilestoneStatusPill({ status }: { status: string }) {
   return <Pill label={MILESTONE_STATUS_LABELS[status] || status} tone={MILESTONE_TONES[status] || "neutral"} />;
 }
 
-export function ContractStatusPill({ status }: { status: string }) {
+/**
+ * pending_acceptance covers two opposite situations, and calling both of
+ * them "Awaiting freelancer confirmation" told the client the freelancer
+ * was holding things up when the milestone plan had not been written yet.
+ * Both sides then sat waiting for the other.
+ *
+ * Migration 018 stored the difference in plan_sent_at rather than adding an
+ * enum value, so pass it in and the pill can say which half it is. Callers
+ * that omit it keep the old label.
+ */
+export function ContractStatusPill({
+  status,
+  planSent,
+}: {
+  status: string;
+  planSent?: boolean;
+}) {
+  if (status === "pending_acceptance" && planSent === false) {
+    return <Pill label="Planning milestones" tone="wait" />;
+  }
   return <Pill label={CONTRACT_STATUS_LABELS[status] || status} tone={CONTRACT_TONES[status] || "neutral"} />;
 }
 
