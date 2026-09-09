@@ -55,56 +55,56 @@ const staggerItem = {
 const FREELANCER_BENEFITS = [
   {
     icon: Wallet,
-    title: "Paid per milestone, funded upfront",
-    text: "Each stage is escrowed before you shoot. You never work on a promise.",
+    title: "Paid per stage",
+    text: "Money is escrowed before you shoot.",
   },
   {
     icon: ListChecks,
-    title: "You confirm the plan first",
-    text: "The milestone structure needs your explicit agreement — it isn't imposed on you.",
+    title: "You agree the plan",
+    text: "Nothing starts until you accept the stages.",
   },
   {
     icon: FileText,
     title: "Invoice in one click",
-    text: "Send an invoice with the PDF attached the moment a stage is delivered.",
+    text: "A PDF goes out the moment you deliver.",
   },
   {
     icon: RefreshCw,
-    title: "Retainers, not just one-offs",
-    text: "Bill an ongoing client weekly or monthly, issued and chased automatically.",
+    title: "Recurring retainers",
+    text: "Bill weekly or monthly, chased for you.",
   },
   {
     icon: Star,
     title: "A reputation you own",
-    text: "Every completed contract adds a public review from real, paid work.",
+    text: "Public reviews from real, paid work.",
   },
 ];
 
 const CLIENT_BENEFITS = [
   {
     icon: Layers,
-    title: "See the whole plan before you pay",
-    text: "Every deliverable, deadline and price is agreed before a shutter clicks.",
+    title: "See the plan before you pay",
+    text: "Deliverables, deadlines and prices, agreed upfront.",
   },
   {
     icon: Lock,
-    title: "Money moves only on approval",
-    text: "Funds sit in escrow until you sign off. Nothing is released on trust.",
+    title: "Money moves on approval",
+    text: "Funds sit in escrow until you sign off.",
   },
   {
     icon: MapPin,
     title: "Browse by city and craft",
-    text: "Filter photographers, videographers and editors who can actually reach your shoot.",
+    text: "Find people who can reach your shoot.",
   },
   {
     icon: Video,
     title: "Talk before you commit",
-    text: "Video call anyone from the message thread — no scheduling links, no third-party app.",
+    text: "Video call from the chat. No other apps.",
   },
   {
     icon: FileText,
-    title: "One clean paper trail",
-    text: "Invoices, receipts and payments in one place, with tax fields built in.",
+    title: "One paper trail",
+    text: "Invoices, receipts and payments in one place.",
   },
 ];
 
@@ -160,9 +160,8 @@ export default function Home() {
                 Paid in <span className="italic text-brand">stages.</span>
               </h1>
               <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
-                Shoots are split into milestones with clear deliverables and
-                prices, and every stage is funded in escrow before it starts —
-                so neither side is working on trust alone.
+                Split every shoot into stages. Each one is funded before it
+                starts and paid on approval.
               </p>
 
               <form
@@ -323,9 +322,9 @@ export default function Home() {
               className="mt-8 flex flex-wrap items-center justify-center gap-x-7 gap-y-2 text-sm text-muted-foreground"
             >
               {[
-                "Escrow on every milestone",
+                "Escrow on every stage",
                 "No agency middlemen",
-                "Two-way reviews",
+                "Reviews both ways",
               ].map((t) => (
                 <span key={t} className="inline-flex items-center gap-2">
                   <Check className="h-4 w-4 text-brand" />
@@ -426,8 +425,7 @@ export default function Home() {
                   No open shoots right now
                 </p>
                 <p className="mx-auto mb-6 max-w-md text-muted-foreground">
-                  Post the first one, or create a freelancer profile so
-                  you&apos;re listed when clients start looking.
+                  Post the first one, or list yourself as a freelancer.
                 </p>
                 <Button
                   asChild
@@ -446,7 +444,7 @@ export default function Home() {
             <motion.div {...fadeUp} className="mb-14 max-w-2xl">
               <p className="eyebrow mb-3">How it works</p>
               <h2 className="font-display text-4xl font-semibold tracking-tight md:text-5xl">
-                Structure first. Then competition. Then payment.
+                Post. Pick. Pay in stages.
               </h2>
             </motion.div>
 
@@ -458,20 +456,20 @@ export default function Home() {
                 {
                   n: "01",
                   icon: ListChecks,
-                  title: "The client defines the work",
-                  text: "A project is split into milestones — each with its own deliverables, deadline, and payment amount. No vague briefs, no scope surprises.",
+                  title: "Post the work",
+                  text: "Write a brief, set a budget. That is all it takes to go live.",
                 },
                 {
                   n: "02",
                   icon: Gavel,
-                  title: "Freelancers bid on it",
-                  text: "They see the full milestone structure before bidding, then compete on price, approach, and track record. Clients pick the best fit — not just the cheapest.",
+                  title: "Pick your person",
+                  text: "Compare bids on price, approach and track record.",
                 },
                 {
                   n: "03",
                   icon: ShieldCheck,
-                  title: "Payment follows approval",
-                  text: "The client funds a milestone into escrow before work starts, and releases it once the deliverable is approved. Nobody works months for nothing.",
+                  title: "Agree stages, then pay",
+                  text: "Split the work into stages. Fund each one, release it on approval.",
                 },
               ].map((step) => (
                 <div key={step.n} className="bg-background p-8 md:p-10">
@@ -500,7 +498,7 @@ export default function Home() {
                 Post a project, or find your next one
               </h2>
               <p className="mx-auto mb-10 max-w-xl text-lg text-muted-foreground">
-                Free to join. You only pay when work is delivered and approved.
+                Free to join. Pay only when work is approved.
               </p>
               <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
                 <Button
