@@ -56,27 +56,22 @@ const FREELANCER_BENEFITS = [
   {
     icon: Wallet,
     title: "Paid per stage",
-    text: "Money is escrowed before you shoot.",
   },
   {
     icon: ListChecks,
     title: "You agree the plan",
-    text: "Nothing starts until you accept the stages.",
   },
   {
     icon: FileText,
     title: "Invoice in one click",
-    text: "A PDF goes out the moment you deliver.",
   },
   {
     icon: RefreshCw,
     title: "Recurring retainers",
-    text: "Bill weekly or monthly, chased for you.",
   },
   {
     icon: Star,
     title: "A reputation you own",
-    text: "Public reviews from real, paid work.",
   },
 ];
 
@@ -84,27 +79,22 @@ const CLIENT_BENEFITS = [
   {
     icon: Layers,
     title: "See the plan before you pay",
-    text: "Deliverables, deadlines and prices, agreed upfront.",
   },
   {
     icon: Lock,
     title: "Money moves on approval",
-    text: "Funds sit in escrow until you sign off.",
   },
   {
     icon: MapPin,
     title: "Browse by city and craft",
-    text: "Find people who can reach your shoot.",
   },
   {
     icon: Video,
     title: "Talk before you commit",
-    text: "Video call from the chat. No other apps.",
   },
   {
     icon: FileText,
     title: "One paper trail",
-    text: "Invoices, receipts and payments in one place.",
   },
 ];
 
@@ -217,22 +207,17 @@ export default function Home() {
                     </div>
                   </div>
 
-                  <ul className="space-y-0.5">
-                    {FREELANCER_BENEFITS.map(({ icon: Icon, title, text }) => (
+                  <ul className="space-y-1.5">
+                    {FREELANCER_BENEFITS.map(({ icon: Icon, title }) => (
                       <motion.li
                         key={title}
                         variants={staggerItem}
-                        className="group/row flex gap-4 rounded-2xl p-3.5 transition-colors duration-300 hover:bg-white/[0.05]"
+                        className="group/row flex items-center gap-4 rounded-2xl p-4 transition-colors duration-300 hover:bg-white/[0.05]"
                       >
-                        <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/[0.07] text-[#F0A868] ring-1 ring-inset ring-white/10 transition-all duration-300 group-hover/row:bg-[#F0A868] group-hover/row:text-[#0A2622] group-hover/row:ring-[#F0A868]">
+                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/[0.07] text-[#F0A868] ring-1 ring-inset ring-white/10 transition-all duration-300 group-hover/row:bg-[#F0A868] group-hover/row:text-[#0A2622] group-hover/row:ring-[#F0A868]">
                           <Icon className="h-4 w-4" />
                         </span>
-                        <div>
-                          <p className="font-semibold leading-snug">{title}</p>
-                          <p className="mt-1 text-sm leading-relaxed text-[#F4EFE6]/55">
-                            {text}
-                          </p>
-                        </div>
+                        <p className="text-[17px] font-semibold leading-snug">{title}</p>
                       </motion.li>
                     ))}
                   </ul>
@@ -281,22 +266,17 @@ export default function Home() {
                     </div>
                   </div>
 
-                  <ul className="space-y-0.5">
-                    {CLIENT_BENEFITS.map(({ icon: Icon, title, text }) => (
+                  <ul className="space-y-1.5">
+                    {CLIENT_BENEFITS.map(({ icon: Icon, title }) => (
                       <motion.li
                         key={title}
                         variants={staggerItem}
-                        className="group/row flex gap-4 rounded-2xl p-3.5 transition-colors duration-300 hover:bg-white/[0.10]"
+                        className="group/row flex items-center gap-4 rounded-2xl p-4 transition-colors duration-300 hover:bg-white/[0.10]"
                       >
-                        <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/15 text-white ring-1 ring-inset ring-white/20 transition-all duration-300 group-hover/row:bg-white group-hover/row:text-[#C03A0B]">
+                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/15 text-white ring-1 ring-inset ring-white/20 transition-all duration-300 group-hover/row:bg-white group-hover/row:text-[#C03A0B]">
                           <Icon className="h-4 w-4" />
                         </span>
-                        <div>
-                          <p className="font-semibold leading-snug">{title}</p>
-                          <p className="mt-1 text-sm leading-relaxed text-[#FDF3EC]/70">
-                            {text}
-                          </p>
-                        </div>
+                        <p className="text-[17px] font-semibold leading-snug">{title}</p>
                       </motion.li>
                     ))}
                   </ul>
