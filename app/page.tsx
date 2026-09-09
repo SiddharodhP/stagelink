@@ -210,7 +210,7 @@ export default function Home() {
                   {/* Rules rather than gaps. Once the second line went the
                       rows had nothing holding them together and read as five
                       loose labels floating in the panel. */}
-                  <ul className="divide-y divide-white/10">
+                  <ul className="divide-y divide-white/25">
                     {FREELANCER_BENEFITS.map(({ icon: Icon, title }) => (
                       <motion.li
                         key={title}
@@ -269,7 +269,7 @@ export default function Home() {
                     </div>
                   </div>
 
-                  <ul className="divide-y divide-white/20">
+                  <ul className="divide-y divide-white/45">
                     {CLIENT_BENEFITS.map(({ icon: Icon, title }) => (
                       <motion.li
                         key={title}
