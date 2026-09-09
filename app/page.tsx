@@ -207,12 +207,15 @@ export default function Home() {
                     </div>
                   </div>
 
-                  <ul className="space-y-1.5">
+                  {/* Rules rather than gaps. Once the second line went the
+                      rows had nothing holding them together and read as five
+                      loose labels floating in the panel. */}
+                  <ul className="divide-y divide-white/10">
                     {FREELANCER_BENEFITS.map(({ icon: Icon, title }) => (
                       <motion.li
                         key={title}
                         variants={staggerItem}
-                        className="group/row flex items-center gap-4 rounded-2xl p-4 transition-colors duration-300 hover:bg-white/[0.05]"
+                        className="group/row -mx-3 flex items-center gap-4 px-3 py-3.5 transition-colors duration-300 hover:bg-white/[0.05]"
                       >
                         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/[0.07] text-[#F0A868] ring-1 ring-inset ring-white/10 transition-all duration-300 group-hover/row:bg-[#F0A868] group-hover/row:text-[#0A2622] group-hover/row:ring-[#F0A868]">
                           <Icon className="h-4 w-4" />
@@ -266,12 +269,12 @@ export default function Home() {
                     </div>
                   </div>
 
-                  <ul className="space-y-1.5">
+                  <ul className="divide-y divide-white/20">
                     {CLIENT_BENEFITS.map(({ icon: Icon, title }) => (
                       <motion.li
                         key={title}
                         variants={staggerItem}
-                        className="group/row flex items-center gap-4 rounded-2xl p-4 transition-colors duration-300 hover:bg-white/[0.10]"
+                        className="group/row -mx-3 flex items-center gap-4 px-3 py-3.5 transition-colors duration-300 hover:bg-white/[0.10]"
                       >
                         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/15 text-white ring-1 ring-inset ring-white/20 transition-all duration-300 group-hover/row:bg-white group-hover/row:text-[#C03A0B]">
                           <Icon className="h-4 w-4" />
