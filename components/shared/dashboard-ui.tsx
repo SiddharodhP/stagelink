@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import Link from "next/link";
 import { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -157,6 +158,25 @@ export function SectionCard({
     </section>
   );
 }
+
+/**
+ * Stops the scroll wheel from editing a number field.
+ *
+ * Chrome and Firefox treat a wheel event over a focused <input type="number">
+ * as a step up or down. So you type an amount, scroll down the page to reach
+ * the submit button, and the field quietly counts itself away from what you
+ * typed -- 1000 becomes 981 after nineteen ticks, with nothing on screen to
+ * say it happened.
+ *
+ * It bites hardest on long forms where the amount sits above the fold and the
+ * button is below it, which is every money field in this app. Blurring on
+ * wheel is the standard fix: the page scrolls as normal, the input just stops
+ * listening.
+ *
+ * Attach to every input type="number", not only the ones handling money.
+ */
+export const blurOnWheel = (e: React.WheelEvent<HTMLInputElement>) =>
+  e.currentTarget.blur();
 
 export const inputClass =
   "flex h-11 w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-foreground placeholder:text-foreground/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50";

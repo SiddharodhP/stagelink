@@ -20,6 +20,7 @@ import {
   selectClass,
   textareaClass,
   ChipToggle,
+  blurOnWheel,
 } from "@/components/shared/dashboard-ui";
 import { UserAvatar } from "@/components/shared/marketplace-ui";
 import { getMyProfile } from "@/lib/services/auth";
@@ -429,6 +430,7 @@ export default function OnboardingPage() {
                   <input
                     id="hourly_rate"
                     type="number"
+                    onWheel={blurOnWheel}
                     min={0}
                     className={inputClass}
                     value={form.hourly_rate}
@@ -442,6 +444,7 @@ export default function OnboardingPage() {
                   <input
                     id="experience_years"
                     type="number"
+                    onWheel={blurOnWheel}
                     min={0}
                     className={inputClass}
                     value={form.experience_years}

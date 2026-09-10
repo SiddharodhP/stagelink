@@ -23,6 +23,7 @@ import {
   inputClass,
   selectClass,
   textareaClass,
+  blurOnWheel,
 } from "@/components/shared/dashboard-ui";
 import { Button } from "@/components/ui/button";
 import {
@@ -465,6 +466,7 @@ function InvoicesList({ profile }: { profile: Profile }) {
                   <input
                     id="r_amount"
                     type="number"
+                    onWheel={blurOnWheel}
                     min={1}
                     className={inputClass}
                     value={form.amount}
@@ -507,6 +509,7 @@ function InvoicesList({ profile }: { profile: Profile }) {
                   <input
                     id="r_terms"
                     type="number"
+                    onWheel={blurOnWheel}
                     min={0}
                     max={90}
                     className={inputClass}
@@ -523,6 +526,7 @@ function InvoicesList({ profile }: { profile: Profile }) {
                   <input
                     id="r_tax"
                     type="number"
+                    onWheel={blurOnWheel}
                     min={0}
                     max={100}
                     step="0.01"
@@ -539,6 +543,7 @@ function InvoicesList({ profile }: { profile: Profile }) {
                   <input
                     id="r_max"
                     type="number"
+                    onWheel={blurOnWheel}
                     min={1}
                     className={inputClass}
                     value={form.maxOccurrences}

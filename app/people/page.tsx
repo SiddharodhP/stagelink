@@ -14,6 +14,7 @@ import {
   Field,
   inputClass,
   selectClass,
+  blurOnWheel,
 } from "@/components/shared/dashboard-ui";
 import { FreelancerCard, ClientCard } from "@/components/shared/person-card";
 import { searchPeople, getOpenProjectCounts } from "@/lib/services/profiles";
@@ -248,6 +249,7 @@ function DirectoryInner() {
             <input
               id="f_rate"
               type="number"
+              onWheel={blurOnWheel}
               min={0}
               className={inputClass}
               value={filters.maxRate ?? ""}

@@ -6,7 +6,12 @@ import { toast } from "sonner";
 import { Plus, Trash2, Send, Loader2, MessageSquare } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Field, inputClass, textareaClass } from "@/components/shared/dashboard-ui";
+import {
+  Field,
+  inputClass,
+  textareaClass,
+  blurOnWheel,
+} from "@/components/shared/dashboard-ui";
 import { upsertMilestones } from "@/lib/services/projects";
 import { submitMilestonePlan } from "@/lib/services/contracts";
 import { Contract, Milestone } from "@/types/marketplace";
@@ -198,6 +203,7 @@ export function MilestonePlanner({
                   <input
                     id={`a-${r.key}`}
                     type="number"
+                    onWheel={blurOnWheel}
                     min={1}
                     className={inputClass}
                     value={r.amount}

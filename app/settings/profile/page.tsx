@@ -15,6 +15,7 @@ import {
   inputClass,
   selectClass,
   textareaClass,
+  blurOnWheel,
 } from "@/components/shared/dashboard-ui";
 import { UserAvatar } from "@/components/shared/marketplace-ui";
 import { getMyProfile } from "@/lib/services/auth";
@@ -277,6 +278,7 @@ function ProfileSettingsInner() {
                 <input
                   id="travel_radius_km"
                   type="number"
+                  onWheel={blurOnWheel}
                   min={0}
                   max={5000}
                   className={inputClass}
@@ -380,6 +382,7 @@ function ProfileSettingsInner() {
                   <input
                     id="hourly_rate"
                     type="number"
+                    onWheel={blurOnWheel}
                     min="0"
                     className={inputClass}
                     value={form.hourly_rate}
@@ -391,6 +394,7 @@ function ProfileSettingsInner() {
                   <input
                     id="experience_years"
                     type="number"
+                    onWheel={blurOnWheel}
                     min="0"
                     className={inputClass}
                     value={form.experience_years}

@@ -21,6 +21,7 @@ import {
   inputClass,
   selectClass,
   textareaClass,
+  blurOnWheel,
 } from "@/components/shared/dashboard-ui";
 import {
   getCategories,
@@ -286,6 +287,7 @@ function Wizard({ profile }: { profile: Profile }) {
                 <input
                   id="budget_stated"
                   type="number"
+                  onWheel={blurOnWheel}
                   min={1}
                   className={inputClass}
                   value={form.budget_stated}

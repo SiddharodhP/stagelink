@@ -6,7 +6,12 @@ import { toast } from "sonner";
 import { Loader2, Gavel, Pencil, Undo2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Field, inputClass, textareaClass } from "@/components/shared/dashboard-ui";
+import {
+  Field,
+  inputClass,
+  textareaClass,
+  blurOnWheel,
+} from "@/components/shared/dashboard-ui";
 import { BidStatusPill } from "@/components/shared/marketplace-ui";
 import { submitBid, reviseBid, withdrawBid } from "@/lib/services/bids";
 import { Bid, Profile, Project } from "@/types/marketplace";
@@ -179,6 +184,7 @@ export function BidPanel({
         <Field label="Your total price ($)" required hint="You can bid above or below the client's budget.">
           <input
             type="number"
+            onWheel={blurOnWheel}
             min="1"
             className={inputClass}
             value={amount}
@@ -189,6 +195,7 @@ export function BidPanel({
         <Field label="Delivery time (days)" required>
           <input
             type="number"
+            onWheel={blurOnWheel}
             min="1"
             className={inputClass}
             value={days}
