@@ -268,6 +268,25 @@ export default function ProjectDetailPage() {
                 )}
               </section>
 
+              {/* The bid form lives in the main column, not the sidebar.
+                  At 360px the rail was too narrow for a form with two
+                  numbers and a paragraph in it, and it sat beside the brief
+                  rather than after it. Here you read the project, then bid,
+                  and the note you just wrote appears in the thread below. */}
+              {isFreelancer && (
+                <section className="mt-12">
+                  <BidPanel
+                    project={project}
+                    profile={profile!}
+                    existingBid={myBid}
+                    onChange={(b) => {
+                      setMyBid(b);
+                      load();
+                    }}
+                  />
+                </section>
+              )}
+
               {/* Public thread. Visible to everyone, signed in or not —
                   a visitor deciding whether to join should be able to see
                   how much competition a project already has. */}
@@ -294,18 +313,6 @@ export default function ProjectDetailPage() {
 
             {/* ---------- Sidebar ---------- */}
             <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
-              {isFreelancer && (
-                <BidPanel
-                  project={project}
-                  profile={profile!}
-                  existingBid={myBid}
-                  onChange={(b) => {
-                    setMyBid(b);
-                    load();
-                  }}
-                />
-              )}
-
               {isOwner && (
                 <div className="rounded-xl border border-border bg-white p-6">
                   <h2 className="font-display mb-1 text-xl font-semibold">Your project</h2>

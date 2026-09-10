@@ -38,8 +38,11 @@ export function BidPanel({
     existingBid ? String(existingBid.amount) : String(project.budget_total || "")
   );
   const [days, setDays] = useState(existingBid ? String(existingBid.delivery_days) : "");
-  const [proposal, setProposal] = useState(existingBid?.proposal || "");
-  const [publicNote, setPublicNote] = useState(existingBid?.public_note || "");
+  // One box now, so prefer the public copy and fall back to the private
+  // one for bids placed when they were separate fields.
+  const [proposal, setProposal] = useState(
+    existingBid?.public_note || existingBid?.proposal || ""
+  );
 
   const isLive = existingBid && ["submitted", "shortlisted"].includes(existingBid.status);
   const canBid = project.status === "open";
@@ -47,17 +50,25 @@ export function BidPanel({
   const save = async () => {
     if (!Number(amount) || Number(amount) <= 0) return toast.error("Enter your bid amount");
     if (!Number(days) || Number(days) <= 0) return toast.error("Enter your delivery time in days");
-    if (proposal.trim().length < 40)
-      return toast.error("Write at least a few sentences explaining your approach");
-    if (!publicNote.trim())
-      return toast.error("Add a public note — other freelancers will see it");
+    if (!proposal.trim()) return toast.error("Write a short proposal");
 
     setIsSaving(true);
+    /**
+     * The same text fills both columns. place_bid still takes a private
+     * proposal and a public note and rejects an empty one of either, and
+     * project_comments is written from public_note -- so sending one string
+     * to both keeps the public thread working without a migration.
+     *
+     * It does mean the proposal is now public. That is the trade for one
+     * box instead of two: the price and delivery time stay private, the
+     * words do not.
+     */
+    const text = proposal.trim();
     const payload = {
       amount: Number(amount),
       delivery_days: Number(days),
-      proposal: proposal.trim(),
-      public_note: publicNote.trim(),
+      proposal: text,
+      public_note: text,
     };
 
     const { error } = existingBid
@@ -207,31 +218,17 @@ export function BidPanel({
         <Field
           label="Your proposal"
           required
-          hint="How you'd approach it, relevant experience, and how you'd stage the work. Only the client sees this."
+          hint="Posted on the project for everyone to read, including other freelancers. Your price and delivery time stay private."
         >
           <textarea
             className={textareaClass}
+            maxLength={1000}
             value={proposal}
             onChange={(e) => setProposal(e.target.value)}
-            placeholder="Explain your approach and why you're the right fit…"
-          />
-        </Field>
-
-        <Field
-          label="Public note"
-          required
-          hint="Shown on the project for everyone to read — including other freelancers. Your price and proposal above stay private."
-        >
-          <textarea
-            className={textareaClass}
-            rows={3}
-            maxLength={1000}
-            value={publicNote}
-            onChange={(e) => setPublicNote(e.target.value)}
-            placeholder="e.g. Six years shooting weddings across Karnataka. Available on those dates and happy to travel."
+            placeholder="How you'd approach it, what you've shot before, and why you're a good fit…"
           />
           <p className="mt-1.5 text-xs text-muted-foreground">
-            {publicNote.trim().length}/1000
+            {proposal.trim().length}/1000
           </p>
         </Field>
       </div>
