@@ -127,7 +127,7 @@ export function BidPanel({
         {existingBid.status === "accepted" ? (
           <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-900">
             <p className="mb-2 font-semibold">You won this project.</p>
-            <Link href="/freelancer/contracts" className="font-medium underline">
+            <Link href="/freelancer/work" className="font-medium underline">
               Review the milestones and confirm →
             </Link>
           </div>

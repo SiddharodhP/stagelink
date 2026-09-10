@@ -163,13 +163,13 @@ function Dashboard({ profile }: { profile: Profile }) {
           value={liveBids.length}
           icon={Gavel}
           hint={shortlisted.length ? `${shortlisted.length} shortlisted` : undefined}
-          href="/freelancer/bids"
+          href="/freelancer/work"
         />
         <StatTile
           label="Active contracts"
           value={activeContracts.length}
           icon={FileSignature}
-          href="/freelancer/contracts"
+          href="/freelancer/work"
         />
         <StatTile
           label="Total earned"
@@ -242,7 +242,7 @@ function Dashboard({ profile }: { profile: Profile }) {
           <div className="flex items-center justify-between border-b border-border px-6 py-5">
             <h2 className="font-display text-xl font-semibold">Recent bids</h2>
             <Link
-              href="/freelancer/bids"
+              href="/freelancer/work"
               className="flex items-center gap-1 text-sm font-medium text-brand hover:text-brand-deep"
             >
               View all <ArrowUpRight className="h-3.5 w-3.5" />

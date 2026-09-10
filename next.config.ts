@@ -55,6 +55,24 @@ const nextConfig: NextConfig = {
         destination: "/client/projects",
         permanent: false,
       },
+      /**
+       * Same merge on the freelancer side: a bid and the contract it becomes
+       * are one job at two stages, so they share a page.
+       *
+       * /freelancer/bids has to keep working beyond bookmarks -- the
+       * bid_rejected notification writes that path into the notifications
+       * table, so rows already in the database link to it.
+       */
+      {
+        source: "/freelancer/bids",
+        destination: "/freelancer/work",
+        permanent: false,
+      },
+      {
+        source: "/freelancer/contracts",
+        destination: "/freelancer/work",
+        permanent: false,
+      },
     ];
   },
 };

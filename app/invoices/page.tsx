@@ -406,7 +406,7 @@ function InvoicesList({ profile }: { profile: Profile }) {
               : "Deliver a milestone, then send an invoice from the contract page in one click."
           }
           actionLabel="View contracts"
-          actionHref={isClient ? "/client/projects" : "/freelancer/contracts"}
+          actionHref={isClient ? "/client/projects" : "/freelancer/work"}
         />
       )}
 
