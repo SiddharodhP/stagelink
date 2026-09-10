@@ -57,12 +57,19 @@ import {
 } from "@/types/marketplace";
 import { formatPrice, formatDate, cn, displayName, partyName } from "@/lib/utils";
 
+/**
+ * Two tabs, because there are only two kinds of thing on this page: an
+ * invoice, and a standing arrangement that issues them.
+ *
+ * Open, Overdue, Paid and All were four views of one list, and every row
+ * already carries its own status pill, so the tabs were re-stating what the
+ * rows say. What they did add was ordering -- the actionable invoices came
+ * first because you were looking at a filtered view. The single list sorts
+ * for that instead, see `sorted` below.
+ */
 const TABS = [
-  { key: "open", label: "Open" },
-  { key: "overdue", label: "Overdue" },
+  { key: "invoices", label: "Invoices" },
   { key: "retainers", label: "Retainers" },
-  { key: "paid", label: "Paid" },
-  { key: "all", label: "All" },
 ] as const;
 
 type TabKey = (typeof TABS)[number]["key"];
@@ -74,7 +81,7 @@ function InvoicesList({ profile }: { profile: Profile }) {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [retainers, setRetainers] = useState<RecurringInvoice[]>([]);
   const [loading, setLoading] = useState(true);
-  const [tab, setTab] = useState<TabKey>("open");
+  const [tab, setTab] = useState<TabKey>("invoices");
 
   const isClient = profile.role === "client";
 
@@ -162,24 +169,38 @@ function InvoicesList({ profile }: { profile: Profile }) {
 
   const overdueInvoices = invoices.filter(isOverdue);
 
-  const filtered = invoices.filter((i) => {
-    if (tab === "all") return true;
-    if (tab === "paid") return i.status === "paid";
-    if (tab === "overdue") return isOverdue(i);
-    return ["sent", "acknowledged"].includes(i.status);
-  });
+  /**
+   * Overdue first, then anything still owed, then settled; newest within
+   * each band. With the status tabs gone this is what keeps the invoice
+   * that needs attention at the top of the page.
+   */
+  const statusRank = (i: Invoice) => {
+    if (isOverdue(i)) return 0;
+    if (["sent", "acknowledged"].includes(i.status)) return 1;
+    if (i.status === "paid") return 2;
+    return 3;
+  };
+  const sorted = [...invoices].sort(
+    (a, b) =>
+      statusRank(a) - statusRank(b) ||
+      new Date(b.issued_at).getTime() - new Date(a.issued_at).getTime()
+  );
 
   const liveRetainers = retainers.filter((r) =>
     ["pending_approval", "active", "paused"].includes(r.status)
   );
 
   const counts = {
-    open: invoices.filter((i) => ["sent", "acknowledged"].includes(i.status)).length,
-    overdue: overdueInvoices.length,
+    invoices: invoices.length,
     retainers: retainers.length,
-    paid: invoices.filter((i) => i.status === "paid").length,
-    all: invoices.length,
   };
+  // No longer tabs, but the summary tiles and the tab badge still report
+  // these numbers.
+  const overdueCount = overdueInvoices.length;
+  const openCount = invoices.filter((i) =>
+    ["sent", "acknowledged"].includes(i.status)
+  ).length;
+  const paidCount = invoices.filter((i) => i.status === "paid").length;
 
   const outstanding = invoices
     .filter((i) => ["sent", "acknowledged"].includes(i.status))
@@ -224,21 +245,21 @@ function InvoicesList({ profile }: { profile: Profile }) {
           label={isClient ? "Awaiting payment" : "Outstanding"}
           value={formatPrice(outstanding)}
           icon={FileText}
-          hint={`${counts.open} invoice${counts.open === 1 ? "" : "s"}`}
+          hint={`${openCount} invoice${openCount === 1 ? "" : "s"}`}
         />
-        {counts.overdue > 0 ? (
+        {overdueCount > 0 ? (
           <StatTile
             label="Overdue"
             value={formatPrice(overdueTotal)}
             icon={AlertTriangle}
-            hint={`${counts.overdue} past due`}
+            hint={`${overdueCount} past due`}
           />
         ) : (
           <StatTile
             label={isClient ? "Total paid" : "Total received"}
             value={formatPrice(settled)}
             icon={ArrowUpRight}
-            hint={`${counts.paid} settled`}
+            hint={`${paidCount} settled`}
           />
         )}
         <StatTile
@@ -258,12 +279,22 @@ function InvoicesList({ profile }: { profile: Profile }) {
               "rounded-full px-4 py-2 text-sm font-medium transition-colors",
               tab === t.key
                 ? "bg-ink text-paper"
-                : "text-muted-foreground hover:bg-secondary hover:text-foreground",
-              t.key === "overdue" && counts.overdue > 0 && tab !== t.key && "text-rose-700"
+                : "text-muted-foreground hover:bg-secondary hover:text-foreground"
             )}
           >
             {t.label}
             <span className="ml-1.5 opacity-60">{counts[t.key]}</span>
+            {/* Overdue lost its tab, so it gets a mark here instead. */}
+            {t.key === "invoices" && overdueCount > 0 && (
+              <span
+                className={cn(
+                  "ml-1.5 rounded-full px-1.5 py-0.5 text-[11px] font-semibold",
+                  tab === t.key ? "bg-paper/20 text-paper" : "bg-red-50 text-red-700"
+                )}
+              >
+                {overdueCount} overdue
+              </span>
+            )}
           </button>
         ))}
       </div>
@@ -326,9 +357,9 @@ function InvoicesList({ profile }: { profile: Profile }) {
             actionHref={isClient ? "/discover" : undefined}
           />
         )
-      ) : filtered.length > 0 ? (
+      ) : sorted.length > 0 ? (
         <div className="overflow-hidden rounded-xl border border-border bg-white">
-          {filtered.map((inv) => {
+          {sorted.map((inv) => {
             const other = isClient ? inv.freelancer : inv.client;
             return (
               <Link
@@ -367,20 +398,12 @@ function InvoicesList({ profile }: { profile: Profile }) {
         </div>
       ) : (
         <EmptyCard
-          icon={tab === "overdue" ? AlertTriangle : FileText}
-          title={
-            tab === "all"
-              ? "No invoices yet"
-              : tab === "overdue"
-                ? "Nothing overdue"
-                : `No ${tab} invoices`
-          }
+          icon={FileText}
+          title="No invoices yet"
           description={
-            tab === "overdue"
-              ? "Every invoice is either paid or still within its payment terms."
-              : isClient
-                ? "When a freelancer delivers a milestone, their invoice appears here for you to acknowledge and pay."
-                : "Deliver a milestone, then send an invoice from the contract page in one click."
+            isClient
+              ? "When a freelancer delivers a milestone, their invoice appears here for you to acknowledge and pay."
+              : "Deliver a milestone, then send an invoice from the contract page in one click."
           }
           actionLabel="View contracts"
           actionHref={isClient ? "/client/projects" : "/freelancer/contracts"}
