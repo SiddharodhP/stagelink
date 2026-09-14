@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
@@ -51,6 +52,22 @@ const staggerItem = {
   whileInView: { opacity: 1, y: 0 },
   transition: { duration: 0.45, ease: "easeOut" as const },
 };
+
+/**
+ * The six real categories, with the photograph that stands for each.
+ *
+ * Display names are shortened from the database names -- "Photo Editing &
+ * Retouching" wraps to three lines in a tile -- but the slugs are the real
+ * ones, so each tile lands on its own category page.
+ */
+const CRAFTS = [
+  { name: "Photography", slug: "photography", img: "/marketing/cat-photography.webp" },
+  { name: "Videography", slug: "videography", img: "/marketing/cat-videography.webp" },
+  { name: "Video editing", slug: "video-editing", img: "/marketing/cat-video-editing.webp" },
+  { name: "Photo editing", slug: "photo-editing", img: "/marketing/cat-photo-editing.webp" },
+  { name: "Motion graphics", slug: "motion-graphics", img: "/marketing/cat-motion-graphics.webp" },
+  { name: "Drone & aerial", slug: "drone-aerial", img: "/marketing/cat-drone-aerial.webp" },
+];
 
 const FREELANCER_BENEFITS = [
   {
@@ -120,13 +137,143 @@ export default function Home() {
       <Navbar />
 
       <main className="flex-1">
+        {/* ============ Hero ============ */}
+        {/* Same words as before -- eyebrow, headline, search -- but standing on
+            a photograph instead of an empty page. This is a marketplace for
+            people who shoot for a living and it showed none of that work.
+
+            The shot puts its subject in the left third and leaves warm sky on
+            the right, so the grade fades to paper that way and the headline
+            lands on quiet ground rather than over a face. On phones there is
+            no room to sit beside anything, so the scrim turns vertical and the
+            text sits under the image instead. */}
+        <section className="relative isolate overflow-hidden">
+          <div aria-hidden className="absolute inset-0 -z-10">
+            <Image
+              src="/marketing/hero-wide.webp"
+              alt=""
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover object-[28%_center]"
+            />
+            {/* Explicit stops, not a to-l / via-80 shorthand. That shorthand
+                puts its midpoint at 50% of the width, which is exactly where
+                the photographer is, and washed him out to a ghost. This holds
+                solid paper across the right third where the words go, then
+                clears completely by 45% so the left half of the frame is the
+                photograph at full strength. */}
+            <div className="absolute inset-0 bg-[linear-gradient(to_top,#f7f4ee_0%,#f7f4ee_18%,rgba(247,244,238,0.82)_42%,rgba(247,244,238,0.1)_78%)] md:bg-[linear-gradient(to_left,#f7f4ee_0%,#f7f4ee_38%,rgba(247,244,238,0.6)_46%,rgba(247,244,238,0)_54%)]" />
+          </div>
+
+          <div className="container mx-auto px-4 md:px-6">
+            <div className="flex min-h-[78vh] items-center justify-center py-24 md:min-h-[82vh] md:justify-end md:py-32">
+              <motion.div
+                {...fadeUp}
+                className="w-full max-w-xl text-center md:text-left"
+              >
+                <p className="eyebrow mb-4">
+                  For photographers, videographers &amp; editors
+                </p>
+                <h1 className="font-display text-5xl font-semibold leading-[1.03] tracking-tight md:text-[4.5rem]">
+                  Book the shoot.
+                  <br />
+                  Paid in <span className="italic text-brand">stages.</span>
+                </h1>
+                <p className="mt-6 max-w-md text-lg leading-relaxed text-foreground/75 md:mx-0">
+                  Split every shoot into stages. Each one is funded before it
+                  starts and paid on approval.
+                </p>
+
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    goSearch(query);
+                  }}
+                  className="mt-8 flex max-w-lg items-center gap-2 rounded-full border border-ink/15 bg-white p-2 pl-5 shadow-[0_10px_30px_-18px_rgba(26,23,19,0.35)] focus-within:border-ink/50"
+                >
+                  <Search className="h-5 w-5 shrink-0 text-muted-foreground" />
+                  {/* min-w-0 matters here. A flex item defaults to
+                      min-width:auto, and an <input> reports an intrinsic width
+                      of roughly twenty characters, so this refused to shrink
+                      and forced the whole hero wider than a phone screen --
+                      the headline and the Find work button both ran off the
+                      right edge below about 500px. */}
+                  <input
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder="Try “wedding photographer”…"
+                    className="w-full min-w-0 bg-transparent text-[15px] outline-none"
+                  />
+                  <Button
+                    type="submit"
+                    className="h-11 shrink-0 rounded-full bg-ink px-6 text-paper hover:bg-ink-soft"
+                  >
+                    Find work
+                  </Button>
+                </form>
+              </motion.div>
+            </div>
+          </div>
+        </section>
+
+        {/* ============ Browse by craft ============ */}
+        <section id="crafts" className="border-t border-border bg-white py-20 md:py-24">
+          <div className="container mx-auto px-4 md:px-6">
+            <motion.div
+              {...fadeUp}
+              className="mb-10 flex flex-wrap items-end justify-between gap-4"
+            >
+              <div>
+                <p className="eyebrow mb-3">Browse by craft</p>
+                <h2 className="font-display text-4xl font-semibold tracking-tight md:text-5xl">
+                  Six things people hire for
+                </h2>
+              </div>
+              <Link
+                href="/people"
+                className="link-editorial hidden items-center gap-1 text-sm font-medium sm:flex"
+              >
+                See everyone <ArrowUpRight className="h-4 w-4" />
+              </Link>
+            </motion.div>
+
+            <motion.div
+              {...stagger}
+              className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-5"
+            >
+              {CRAFTS.map((c) => (
+                <motion.div key={c.slug} variants={staggerItem}>
+                  <Link
+                    href={`/projects/category/${c.slug}`}
+                    className="group relative block aspect-[4/5] overflow-hidden rounded-xl"
+                  >
+                    <Image
+                      src={c.img}
+                      alt={c.name}
+                      fill
+                      sizes="(max-width: 768px) 50vw, 33vw"
+                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"
+                    />
+                    {/* Ink from the bottom so the label reads on any frame. */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/25 to-transparent" />
+                    <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 p-4 md:p-5">
+                      <p className="font-display text-lg font-semibold leading-tight text-paper md:text-xl">
+                        {c.name}
+                      </p>
+                      <ArrowUpRight className="h-4 w-4 shrink-0 text-paper/70 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:text-paper" />
+                    </div>
+                  </Link>
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
+        </section>
+
         {/* ============ Benefits, both sides ============ */}
-        {/* First thing on the page now. The hero this replaced made the same
-            argument more slowly, and behind a mockup. id kept so the footer
-            link still lands here. */}
         <section
           id="for-freelancers"
-          className="relative overflow-hidden pb-20 pt-32 md:pb-28 md:pt-40"
+          className="relative overflow-hidden py-20 md:py-28"
         >
           {/* Washes in the two panel colours, so the split is felt before
               it is read. */}
@@ -140,43 +287,6 @@ export default function Home() {
           />
 
           <div className="container relative mx-auto px-4 md:px-6">
-            <motion.div {...fadeUp} className="mx-auto mb-12 max-w-3xl text-center">
-              <p className="eyebrow mb-4">
-                For photographers, videographers &amp; editors
-              </p>
-              <h1 className="font-display text-5xl font-semibold leading-[1.03] tracking-tight md:text-[4.5rem]">
-                Book the shoot.
-                <br />
-                Paid in <span className="italic text-brand">stages.</span>
-              </h1>
-              <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
-                Split every shoot into stages. Each one is funded before it
-                starts and paid on approval.
-              </p>
-
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  goSearch(query);
-                }}
-                className="mx-auto mt-8 flex max-w-xl items-center gap-2 rounded-full border border-ink/15 bg-white p-2 pl-5 shadow-[0_10px_30px_-18px_rgba(26,23,19,0.35)] focus-within:border-ink/50"
-              >
-                <Search className="h-5 w-5 shrink-0 text-muted-foreground" />
-                <input
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Try “wedding photographer”, “product video”…"
-                  className="w-full bg-transparent text-[15px] outline-none"
-                />
-                <Button
-                  type="submit"
-                  className="h-11 shrink-0 rounded-full bg-ink px-6 text-paper hover:bg-ink-soft"
-                >
-                  Find work
-                </Button>
-              </form>
-            </motion.div>
-
             <div className="grid gap-5 lg:grid-cols-2 lg:gap-6">
               {/* ---- Freelancers: deep teal, amber accents ---- */}
               <motion.div
