@@ -184,13 +184,22 @@ export default function Home() {
               ran into the buttons on a short one. In flow it simply follows the
               copy and cannot collide with it at any size.
 
+              The margin is negative because the measurement that matters is not
+              the element's top -- the photograph's upper sixth is empty dark
+              ground before his hair starts, so a 64px gap to the element read as
+              nearly 180px of nothing on screen. Pulling the frame up by 48px
+              lands the visible hairline about 70px under the buttons. It is a
+              fixed offset, so unlike the old absolute positioning it cannot
+              drift with the window; mobile takes a smaller one because the
+              frame is smaller there and so is its empty margin.
+
               Masked rather than cropped. The photograph's own ground is a warm
               vignette, not a flat colour, so a plain rectangle would show its
               edges against the page gradient. Two masks intersect: one fades
               the sides, one carries the bottom into paper. The top is left
               alone -- the image is already dark there and meets the page's ink
               directly, and fading it only ever produced a visible box. */}
-          <div aria-hidden className="pointer-events-none relative -z-10 mt-14 flex justify-center md:mt-16">
+          <div aria-hidden className="pointer-events-none relative -z-10 -mt-4 flex justify-center md:-mt-12">
             <div
               className="relative aspect-[5/6] w-[min(34rem,86vw)]"
               style={{
