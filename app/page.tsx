@@ -123,7 +123,7 @@ export default function Home() {
              blue one. */}
         <section
           data-dark-hero
-          className="relative isolate min-h-[124vh] overflow-hidden md:min-h-[128vh]"
+          className="relative isolate overflow-hidden"
         >
           {/* Ink at the top so the headline reads in paper, resolving to the
               page ground at the bottom so the section joins what follows
@@ -133,42 +133,8 @@ export default function Home() {
             className="absolute inset-0 -z-20 bg-[linear-gradient(to_bottom,#171410_0%,#171410_30%,#241f19_46%,#584e42_68%,#cfc6b8_86%,#f7f4ee_100%)]"
           />
 
-          {/* The subject, rising out of the gradient.
-
-              Masked rather than cropped. The photograph's own ground is a warm
-              vignette, not a flat colour, so a plain rectangle would show its
-              edges against the page gradient. Two masks intersect: one fades
-              the left and right sides, one fades the bottom into paper. The top
-              needs no mask -- the image is already near-black there and meets
-              the page's ink directly. */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 flex justify-center"
-          >
-            <div
-              className="relative aspect-[5/6] w-[min(34rem,86vw)]"
-              style={{
-                WebkitMaskImage:
-                  "linear-gradient(to right, transparent 0%, #000 20%, #000 80%, transparent 100%), linear-gradient(to bottom, #000 0%, #000 66%, transparent 97%)",
-                WebkitMaskComposite: "source-in",
-                maskImage:
-                  "linear-gradient(to right, transparent 0%, #000 20%, #000 80%, transparent 100%), linear-gradient(to bottom, #000 0%, #000 66%, transparent 97%)",
-                maskComposite: "intersect",
-              }}
-            >
-              <Image
-                src="/marketing/hero-figure.webp"
-                alt=""
-                fill
-                priority
-                sizes="(max-width: 768px) 86vw, 34rem"
-                className="object-cover object-top"
-              />
-            </div>
-          </div>
-
           <div className="container relative mx-auto px-4 md:px-6">
-            <div className="mx-auto max-w-3xl pb-[46vh] pt-32 text-center md:pb-[52vh] md:pt-36">
+            <div className="mx-auto max-w-3xl pt-32 text-center md:pt-36">
               <motion.div
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -209,6 +175,43 @@ export default function Home() {
               </motion.div>
             </div>
           </div>
+
+          {/* The subject, in normal flow rather than pinned to the bottom.
+
+              It used to be absolutely positioned inside a 124vh section, which
+              meant the gap between the buttons and the top of his head was a
+              function of window height -- fine on a tall screen, and his hair
+              ran into the buttons on a short one. In flow it simply follows the
+              copy and cannot collide with it at any size.
+
+              Masked rather than cropped. The photograph's own ground is a warm
+              vignette, not a flat colour, so a plain rectangle would show its
+              edges against the page gradient. Two masks intersect: one fades
+              the sides, one carries the bottom into paper. The top is left
+              alone -- the image is already dark there and meets the page's ink
+              directly, and fading it only ever produced a visible box. */}
+          <div aria-hidden className="pointer-events-none relative -z-10 mt-14 flex justify-center md:mt-16">
+            <div
+              className="relative aspect-[5/6] w-[min(34rem,86vw)]"
+              style={{
+                WebkitMaskImage:
+                  "linear-gradient(to right, transparent 0%, #000 20%, #000 80%, transparent 100%), linear-gradient(to bottom, #000 0%, #000 66%, transparent 97%)",
+                WebkitMaskComposite: "source-in",
+                maskImage:
+                  "linear-gradient(to right, transparent 0%, #000 20%, #000 80%, transparent 100%), linear-gradient(to bottom, #000 0%, #000 66%, transparent 97%)",
+                maskComposite: "intersect",
+              }}
+            >
+              <Image
+                src="/marketing/hero-figure.webp"
+                alt=""
+                fill
+                priority
+                sizes="(max-width: 768px) 86vw, 34rem"
+                className="object-cover object-top"
+              />
+            </div>
+            </div>
         </section>
 
         {/* ============ Three facts ============
