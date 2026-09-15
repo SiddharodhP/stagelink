@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Fraunces, Instrument_Sans } from "next/font/google";
+import { Archivo, Fraunces, Instrument_Sans } from "next/font/google";
 import { Toaster } from "sonner";
 import "./globals.css";
 import {
@@ -16,6 +16,24 @@ const instrument = Instrument_Sans({
   variable: "--font-instrument",
   subsets: ["latin"],
   display: "swap",
+});
+
+/**
+ * Poster face for the homepage.
+ *
+ * A high-contrast display serif over a cream ground is the single most
+ * recognisable signature of generated design right now, and Fraunces on
+ * #f7f4ee is exactly that. Archivo at its widest is a grotesque with the
+ * proportions of exhibition signage and lens-barrel engraving -- it leaves
+ * the cluster without touching the palette the photographs are graded to.
+ *
+ * Fraunces stays loaded: thirty-odd other pages still set font-display.
+ */
+const archivo = Archivo({
+  variable: "--font-archivo",
+  subsets: ["latin"],
+  display: "swap",
+  axes: ["wdth"],
 });
 
 const fraunces = Fraunces({
@@ -75,7 +93,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${instrument.variable} ${fraunces.variable}`}>
+    <html
+      lang="en"
+      className={`${instrument.variable} ${fraunces.variable} ${archivo.variable}`}
+    >
       <head>
         <JsonLd data={[organizationJsonLd(), websiteJsonLd()]} />
       </head>

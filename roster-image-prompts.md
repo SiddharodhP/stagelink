@@ -23,7 +23,48 @@ exact filename in the heading, then tell me and I'll wire them in.
 
 # SET A — HERO
 
-## A1 · `hero-wide.jpg` · 2400 × 1350
+## A1 · `hero-figure.jpg` · 2000 × 2400
+
+The Ballance-style hero: a centred figure rising out of the gradient, presenting
+something to the viewer. Note the two things that make it work — the subject
+fills most of the frame width, and the camera is angled toward you rather than
+held side-on. The page masks about 30% off each side to dissolve the edges, so a
+narrow subject loses a lot of itself to that mask.
+
+```
+A photographer filling most of the frame, seen from the waist up against a plain
+gradient background, head tilted back and eyes closed with the chin raised
+toward the light. Both hands hold a black mirrorless camera out in front of the
+chest, angled toward the viewer so the lens barrel faces us and catches the
+light, presented deliberately, the way someone shows you a thing they are proud
+of. They wear a simple dark charcoal high-necked top. A single hard key light
+from above rakes across the cheekbone, the jaw and the top of the lens.
+
+The background is a smooth vertical gradient from deep warm near-black at the top
+to a warm off-white at the bottom, completely empty of texture or objects, and
+the figure's lower edge dissolves softly into that pale bottom.
+
+Centred subject, 2000x2400 pixels, 5:6 aspect ratio. The figure spans roughly
+three quarters of the frame width, shoulders coming close to the left and right
+edges, with the camera large and prominent in the lower middle of the frame.
+Leave a generous area of empty dark gradient above the head for headline text to
+sit over.
+
+Editorial portrait photography, shot on a full-frame camera with an 85mm lens at
+f/2.8, single hard key light with deep controlled shadow, high contrast. Warm
+neutral grade, deep warm black (#1a1713) through to warm off-white (#f7f4ee),
+with burnt orange (#d6440f) appearing only as a thin camera strap. Fine film
+grain, no HDR. Photorealistic, sharp focus on the face and the camera body. No
+text, letters, words, watermarks, logos or user interface anywhere in the image.
+Avoid deformed hands, extra fingers, plastic airbrushed skin, and anyone smiling
+at the camera.
+```
+
+### Superseded · `hero-wide.jpg` · 2400 × 1350
+
+The original landscape rooftop frame. Still in the repo and still used as a
+fallback, but the hero is a centred portrait now, so this is not the shot to
+regenerate.
 
 ```
 A photographer crouched low on a sunlit rooftop terrace at golden hour, seen

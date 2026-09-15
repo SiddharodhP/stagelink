@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
-  ArrowUpRight,
   Search,
   ShieldCheck,
   ListChecks,
@@ -32,42 +31,19 @@ import { searchProjects } from "@/lib/services/projects";
 import { Project } from "@/types/marketplace";
 import { formatPrice } from "@/lib/utils";
 
-const fadeUp = {
-  initial: { opacity: 0, y: 24 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, margin: "-80px" },
-  transition: { duration: 0.55, ease: "easeOut" as const },
-};
-
-/** Parent/child pair so panel rows arrive one after another, not all at once. */
-const stagger = {
-  initial: {},
-  whileInView: {},
-  viewport: { once: true, margin: "-60px" },
-  transition: { staggerChildren: 0.07, delayChildren: 0.1 },
-};
-
-const staggerItem = {
-  initial: { opacity: 0, y: 16 },
-  whileInView: { opacity: 1, y: 0 },
-  transition: { duration: 0.45, ease: "easeOut" as const },
-};
-
 /**
- * The six real categories, with the photograph that stands for each.
+ * Entrance animation is deliberately inert everywhere except the contact
+ * sheet, which carries its own variants inline.
  *
- * Display names are shortened from the database names -- "Photo Editing &
- * Retouching" wraps to three lines in a tile -- but the slugs are the real
- * ones, so each tile lands on its own category page.
+ * Every section used to fade and slide up as it scrolled into view. Scattered
+ * entrances make a page feel like it is performing rather than presenting,
+ * and they are one of the clearest tells of a generated layout. There is one
+ * orchestrated moment now -- the sheet dealing its frames on load -- and
+ * everything below it is simply there when you arrive.
  */
-const CRAFTS = [
-  { name: "Photography", slug: "photography", img: "/marketing/cat-photography.webp" },
-  { name: "Videography", slug: "videography", img: "/marketing/cat-videography.webp" },
-  { name: "Video editing", slug: "video-editing", img: "/marketing/cat-video-editing.webp" },
-  { name: "Photo editing", slug: "photo-editing", img: "/marketing/cat-photo-editing.webp" },
-  { name: "Motion graphics", slug: "motion-graphics", img: "/marketing/cat-motion-graphics.webp" },
-  { name: "Drone & aerial", slug: "drone-aerial", img: "/marketing/cat-drone-aerial.webp" },
-];
+const fadeUp = {};
+const stagger = {};
+const staggerItem = {};
 
 const FREELANCER_BENEFITS = [
   {
@@ -137,136 +113,129 @@ export default function Home() {
       <Navbar />
 
       <main className="flex-1">
-        {/* ============ Hero ============ */}
-        {/* Same words as before -- eyebrow, headline, search -- but standing on
-            a photograph instead of an empty page. This is a marketplace for
-            people who shoot for a living and it showed none of that work.
+        {/* ============ Hero ============
+             Structure borrowed from ballance.framer.website: a centred stack on
+             a dark-to-light gradient, a mono pill above the headline, a two
+             button row with one hot CTA, and the subject bleeding up out of the
+             gradient. The palette is ours, not theirs -- deep ink resolving to
+             paper rather than navy resolving to white -- because seventeen
+             photographs are graded to this ground and would be orphaned by a
+             blue one. */}
+        <section
+          data-dark-hero
+          className="relative isolate min-h-[124vh] overflow-hidden md:min-h-[128vh]"
+        >
+          {/* Ink at the top so the headline reads in paper, resolving to the
+              page ground at the bottom so the section joins what follows
+              instead of ending at a hard line. */}
+          <div
+            aria-hidden
+            className="absolute inset-0 -z-20 bg-[linear-gradient(to_bottom,#171410_0%,#171410_30%,#241f19_46%,#584e42_68%,#cfc6b8_86%,#f7f4ee_100%)]"
+          />
 
-            The shot puts its subject in the left third and leaves warm sky on
-            the right, so the grade fades to paper that way and the headline
-            lands on quiet ground rather than over a face. On phones there is
-            no room to sit beside anything, so the scrim turns vertical and the
-            text sits under the image instead. */}
-        <section className="relative isolate overflow-hidden">
-          <div aria-hidden className="absolute inset-0 -z-10">
-            <Image
-              src="/marketing/hero-wide.webp"
-              alt=""
-              fill
-              priority
-              sizes="100vw"
-              className="object-cover object-[28%_center]"
-            />
-            {/* Explicit stops, not a to-l / via-80 shorthand. That shorthand
-                puts its midpoint at 50% of the width, which is exactly where
-                the photographer is, and washed him out to a ghost. This holds
-                solid paper across the right third where the words go, then
-                clears completely by 45% so the left half of the frame is the
-                photograph at full strength. */}
-            <div className="absolute inset-0 bg-[linear-gradient(to_top,#f7f4ee_0%,#f7f4ee_18%,rgba(247,244,238,0.82)_42%,rgba(247,244,238,0.1)_78%)] md:bg-[linear-gradient(to_left,#f7f4ee_0%,#f7f4ee_38%,rgba(247,244,238,0.6)_46%,rgba(247,244,238,0)_54%)]" />
+          {/* The subject, rising out of the gradient.
+
+              Masked rather than cropped. The photograph's own ground is a warm
+              vignette, not a flat colour, so a plain rectangle would show its
+              edges against the page gradient. Two masks intersect: one fades
+              the left and right sides, one fades the bottom into paper. The top
+              needs no mask -- the image is already near-black there and meets
+              the page's ink directly. */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 flex justify-center"
+          >
+            <div
+              className="relative aspect-[5/6] w-[min(34rem,86vw)]"
+              style={{
+                WebkitMaskImage:
+                  "linear-gradient(to right, transparent 0%, #000 20%, #000 80%, transparent 100%), linear-gradient(to bottom, #000 0%, #000 66%, transparent 97%)",
+                WebkitMaskComposite: "source-in",
+                maskImage:
+                  "linear-gradient(to right, transparent 0%, #000 20%, #000 80%, transparent 100%), linear-gradient(to bottom, #000 0%, #000 66%, transparent 97%)",
+                maskComposite: "intersect",
+              }}
+            >
+              <Image
+                src="/marketing/hero-figure.webp"
+                alt=""
+                fill
+                priority
+                sizes="(max-width: 768px) 86vw, 34rem"
+                className="object-cover object-top"
+              />
+            </div>
           </div>
 
-          <div className="container mx-auto px-4 md:px-6">
-            <div className="flex min-h-[78vh] items-center justify-center py-24 md:min-h-[82vh] md:justify-end md:py-32">
+          <div className="container relative mx-auto px-4 md:px-6">
+            <div className="mx-auto max-w-3xl pb-[46vh] pt-32 text-center md:pb-[52vh] md:pt-36">
               <motion.div
-                {...fadeUp}
-                className="w-full max-w-xl text-center md:text-left"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
               >
-                <p className="eyebrow mb-4">
-                  For photographers, videographers &amp; editors
-                </p>
-                <h1 className="font-display text-5xl font-semibold leading-[1.03] tracking-tight md:text-[4.5rem]">
-                  Book the shoot.
-                  <br />
-                  Paid in <span className="italic text-brand">stages.</span>
+                <Link
+                  href="/projects"
+                  className="inline-flex items-center gap-2 rounded-md bg-paper/10 px-3 py-2 font-mono text-[11px] uppercase tracking-[0.14em] text-paper/80 ring-1 ring-inset ring-paper/15 transition-colors hover:bg-paper/15 hover:text-paper"
+                >
+                  <span className="h-2 w-2 bg-brand" />
+                  See what is open right now
+                </Link>
+
+                <h1 className="font-poster mt-7 text-[clamp(2.5rem,6.4vw,4.75rem)] font-bold leading-[0.98] text-paper">
+                  Get paid without chasing
                 </h1>
-                <p className="mt-6 max-w-md text-lg leading-relaxed text-foreground/75 md:mx-0">
-                  Split every shoot into stages. Each one is funded before it
-                  starts and paid on approval.
+
+                <p className="mx-auto mt-6 max-w-xl text-[17px] leading-[1.6] text-paper/70">
+                  Roster splits every shoot into stages. The client funds each one
+                  before it starts, you deliver, and the money is released when it
+                  is approved. No invoicing into silence.
                 </p>
 
-                <form
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    goSearch(query);
-                  }}
-                  className="mt-8 flex max-w-lg items-center gap-2 rounded-full border border-ink/15 bg-white p-2 pl-5 shadow-[0_10px_30px_-18px_rgba(26,23,19,0.35)] focus-within:border-ink/50"
-                >
-                  <Search className="h-5 w-5 shrink-0 text-muted-foreground" />
-                  {/* min-w-0 matters here. A flex item defaults to
-                      min-width:auto, and an <input> reports an intrinsic width
-                      of roughly twenty characters, so this refused to shrink
-                      and forced the whole hero wider than a phone screen --
-                      the headline and the Find work button both ran off the
-                      right edge below about 500px. */}
-                  <input
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Try “wedding photographer”…"
-                    className="w-full min-w-0 bg-transparent text-[15px] outline-none"
-                  />
+                <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
                   <Button
-                    type="submit"
-                    className="h-11 shrink-0 rounded-full bg-ink px-6 text-paper hover:bg-ink-soft"
+                    asChild
+                    className="h-12 rounded-md bg-paper/10 px-7 font-mono text-[12px] uppercase tracking-[0.12em] text-paper ring-1 ring-inset ring-paper/20 hover:bg-paper/20"
                   >
-                    Find work
+                    <Link href="/projects">Browse the work</Link>
                   </Button>
-                </form>
+                  <Button
+                    asChild
+                    className="h-12 rounded-md bg-brand px-7 font-mono text-[12px] uppercase tracking-[0.12em] text-white hover:bg-brand-deep"
+                  >
+                    <Link href="/login">Create a profile</Link>
+                  </Button>
+                </div>
               </motion.div>
             </div>
           </div>
         </section>
 
-        {/* ============ Browse by craft ============ */}
-        <section id="crafts" className="border-t border-border bg-white py-20 md:py-24">
+        {/* ============ Three facts ============
+             Ballance runs 82% / 10x / 54% here. Those are measurements, and
+             Roster has not measured anything yet -- inventing them would be
+             putting fabricated evidence on the front page of a product about
+             trust. These are three things that are true by construction, set at
+             the same weight, and they become real numbers the day there is
+             data worth printing. */}
+        <section className="border-b border-border pb-20 pt-4 md:pb-24">
           <div className="container mx-auto px-4 md:px-6">
-            <motion.div
-              {...fadeUp}
-              className="mb-10 flex flex-wrap items-end justify-between gap-4"
-            >
-              <div>
-                <p className="eyebrow mb-3">Browse by craft</p>
-                <h2 className="font-display text-4xl font-semibold tracking-tight md:text-5xl">
-                  Six things people hire for
-                </h2>
-              </div>
-              <Link
-                href="/people"
-                className="link-editorial hidden items-center gap-1 text-sm font-medium sm:flex"
-              >
-                See everyone <ArrowUpRight className="h-4 w-4" />
-              </Link>
-            </motion.div>
-
-            <motion.div
-              {...stagger}
-              className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-5"
-            >
-              {CRAFTS.map((c) => (
-                <motion.div key={c.slug} variants={staggerItem}>
-                  <Link
-                    href={`/projects/category/${c.slug}`}
-                    className="group relative block aspect-[4/5] overflow-hidden rounded-xl"
-                  >
-                    <Image
-                      src={c.img}
-                      alt={c.name}
-                      fill
-                      sizes="(max-width: 768px) 50vw, 33vw"
-                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"
-                    />
-                    {/* Ink from the bottom so the label reads on any frame. */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/25 to-transparent" />
-                    <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 p-4 md:p-5">
-                      <p className="font-display text-lg font-semibold leading-tight text-paper md:text-xl">
-                        {c.name}
-                      </p>
-                      <ArrowUpRight className="h-4 w-4 shrink-0 text-paper/70 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:text-paper" />
-                    </div>
-                  </Link>
-                </motion.div>
+            <div className="grid gap-12 text-center sm:grid-cols-3 sm:gap-8">
+              {[
+                { big: "Every stage", small: "is funded into escrow before the work on it starts" },
+                { big: "Both ways", small: "reviews, so reputation is earned by clients too" },
+                { big: "No one", small: "sits between you and the person doing the work" },
+              ].map((f) => (
+                <div key={f.big}>
+                  <p className="font-poster text-[clamp(1.75rem,3vw,2.5rem)] font-bold leading-none">
+                    {f.big}
+                  </p>
+                  <p className="mx-auto mt-3 max-w-[26ch] text-[15px] leading-relaxed text-muted-foreground">
+                    {f.small}
+                  </p>
+                </div>
               ))}
-            </motion.div>
+            </div>
           </div>
         </section>
 
@@ -311,7 +280,7 @@ export default function Home() {
                       <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#F0A868]">
                         For freelancers
                       </p>
-                      <p className="font-display text-2xl font-semibold">
+                      <p className="font-poster text-2xl font-bold">
                         Shoot. Deliver. Get paid.
                       </p>
                     </div>
@@ -379,7 +348,7 @@ export default function Home() {
                       <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#FFD9A0]">
                         For clients
                       </p>
-                      <p className="font-display text-2xl font-semibold">
+                      <p className="font-poster text-2xl font-bold">
                         Book with confidence.
                       </p>
                     </div>
@@ -442,12 +411,11 @@ export default function Home() {
               className="mb-10 flex flex-wrap items-end justify-between gap-4"
             >
               <div>
-                <p className="eyebrow mb-3">
-                  {openCount > 0
-                    ? `${openCount} open right now`
-                    : "Live on the marketplace"}
-                </p>
-                <h2 className="font-display text-4xl font-semibold tracking-tight md:text-5xl">
+                {/* The open-project counter is gone. It was honest and it was
+                    live, but with five test briefs it advertised an empty
+                    marketplace. It comes back when the number sells the page
+                    rather than undercutting it. */}
+                <h2 className="font-poster text-[clamp(1.9rem,3.2vw,2.5rem)] font-bold leading-tight">
                   Shoots looking for someone
                 </h2>
               </div>
@@ -455,7 +423,7 @@ export default function Home() {
                 href="/projects"
                 className="link-editorial hidden items-center gap-1 text-sm font-medium sm:flex"
               >
-                Browse all projects <ArrowUpRight className="h-4 w-4" />
+                Browse all projects
               </Link>
             </motion.div>
 
@@ -475,15 +443,15 @@ export default function Home() {
                       className="group flex h-full flex-col rounded-2xl border border-border bg-white p-6 transition-all duration-300 hover:-translate-y-1 hover:border-ink/25 hover:shadow-[0_24px_48px_-32px_rgba(23,20,16,0.5)]"
                     >
                       <div className="mb-3 flex items-center justify-between gap-3">
-                        <span className="eyebrow">
+                        <span className="text-[13px] text-muted-foreground">
                           {p.category?.name || "Project"}
                         </span>
-                        <span className="font-display text-lg font-semibold">
+                        <span className="font-poster text-lg font-bold tabular-nums">
                           {formatPrice(p.budget_total)}
                         </span>
                       </div>
 
-                      <h3 className="font-display mb-2 line-clamp-2 break-words text-xl font-semibold leading-snug transition-colors group-hover:text-brand">
+                      <h3 className="mb-2 line-clamp-2 break-words text-xl font-semibold leading-snug transition-colors group-hover:text-brand">
                         {p.title}
                       </h3>
                       <p className="mb-4 line-clamp-3 break-words text-sm leading-relaxed text-muted-foreground">
@@ -507,11 +475,11 @@ export default function Home() {
                         <span>
                           {p.bids_count} {p.bids_count === 1 ? "bid" : "bids"}
                           {p.milestones?.length
-                            ? ` · ${p.milestones.length} milestones`
+                            ? `, ${p.milestones.length} milestones`
                             : ""}
                         </span>
-                        <span className="inline-flex items-center gap-1 font-medium text-foreground opacity-0 transition-opacity group-hover:opacity-100">
-                          Sign in to view <ArrowRight className="h-3.5 w-3.5" />
+                        <span className="font-medium text-foreground opacity-0 transition-opacity group-hover:opacity-100">
+                          Sign in to view
                         </span>
                       </div>
                     </Link>
@@ -520,7 +488,7 @@ export default function Home() {
               </motion.div>
             ) : (
               <div className="rounded-2xl border border-dashed border-border bg-white px-6 py-16 text-center">
-                <p className="font-display mb-2 text-2xl font-semibold">
+                <p className="font-poster mb-2 text-2xl font-bold">
                   No open shoots right now
                 </p>
                 <p className="mx-auto mb-6 max-w-md text-muted-foreground">
@@ -541,8 +509,7 @@ export default function Home() {
         <section id="how-it-works" className="border-t border-border bg-white py-20 md:py-28">
           <div className="container mx-auto px-4 md:px-6">
             <motion.div {...fadeUp} className="mb-14 max-w-2xl">
-              <p className="eyebrow mb-3">How it works</p>
-              <h2 className="font-display text-4xl font-semibold tracking-tight md:text-5xl">
+              <h2 className="font-poster text-[clamp(1.9rem,3.2vw,2.5rem)] font-bold leading-tight">
                 Post. Pick. Pay in stages.
               </h2>
             </motion.div>
@@ -573,7 +540,7 @@ export default function Home() {
               ].map((step) => (
                 <div key={step.n} className="bg-background p-8 md:p-10">
                   <div className="mb-6 flex items-center justify-between">
-                    <span className="font-display text-5xl font-light text-foreground/15">
+                    <span className="font-poster text-5xl font-bold tabular-nums text-foreground/15">
                       {step.n}
                     </span>
                     <step.icon className="h-6 w-6 text-brand" />
@@ -593,7 +560,7 @@ export default function Home() {
               {...fadeUp}
               className="rounded-2xl border border-ink/15 bg-brand-soft px-8 py-16 text-center md:py-20"
             >
-              <h2 className="font-display mx-auto mb-6 max-w-2xl text-4xl font-semibold tracking-tight md:text-5xl">
+              <h2 className="font-poster mx-auto mb-6 max-w-2xl text-[clamp(1.9rem,3.4vw,2.75rem)] font-bold leading-tight">
                 Post a project, or find your next one
               </h2>
               <p className="mx-auto mb-10 max-w-xl text-lg text-muted-foreground">
