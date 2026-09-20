@@ -3,14 +3,12 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import { CraftDeck } from "@/components/shared/craft-deck";
+import { ProcessTimeline } from "@/components/shared/process-timeline";
 import {
   ArrowRight,
-  Search,
-  ShieldCheck,
   ListChecks,
-  Gavel,
   Check,
   Camera,
   Briefcase,
@@ -92,21 +90,13 @@ const CLIENT_BENEFITS = [
 ];
 
 export default function Home() {
-  const router = useRouter();
-  const [query, setQuery] = useState("");
   const [projects, setProjects] = useState<Project[]>([]);
-  const [openCount, setOpenCount] = useState(0);
 
   useEffect(() => {
-    searchProjects({ sortBy: "newest", page: 1 }).then(({ data, count }) => {
+    searchProjects({ sortBy: "newest", page: 1 }).then(({ data }) => {
       setProjects(data.slice(0, 6));
-      setOpenCount(count);
     });
   }, []);
-
-  const goSearch = (q: string) => {
-    router.push(q ? `/projects?q=${encodeURIComponent(q)}` : "/projects");
-  };
 
   return (
     <>
@@ -517,51 +507,58 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ============ How it works ============ */}
-        <section id="how-it-works" className="border-t border-border bg-white py-20 md:py-28">
+        {/* ============ How it works ============
+             Two halves of the same answer, side by side: what people hire for
+             on the left, how the money moves on the right. They were separate
+             full-width sections, which made the page repeat itself -- you
+             scrolled past a heading, then another heading, to learn two things
+             that belong together. */}
+        <section id="how-it-works" className="border-t border-border bg-white py-20 md:py-24">
           <div className="container mx-auto px-4 md:px-6">
-            <motion.div {...fadeUp} className="mb-14 max-w-2xl">
-              <h2 className="font-poster text-[clamp(1.9rem,3.2vw,2.5rem)] font-bold leading-tight">
-                Post. Pick. Pay in stages.
-              </h2>
-            </motion.div>
-
-            <motion.div
-              {...fadeUp}
-              className="grid gap-px overflow-hidden rounded-xl border border-border bg-border md:grid-cols-3"
-            >
-              {[
-                {
-                  n: "01",
-                  icon: ListChecks,
-                  title: "Post the work",
-                  text: "Write a brief, set a budget. That is all it takes to go live.",
-                },
-                {
-                  n: "02",
-                  icon: Gavel,
-                  title: "Pick your person",
-                  text: "Compare bids on price, approach and track record.",
-                },
-                {
-                  n: "03",
-                  icon: ShieldCheck,
-                  title: "Agree stages, then pay",
-                  text: "Split the work into stages. Fund each one, release it on approval.",
-                },
-              ].map((step) => (
-                <div key={step.n} className="bg-background p-8 md:p-10">
-                  <div className="mb-6 flex items-center justify-between">
-                    <span className="font-poster text-5xl font-bold tabular-nums text-foreground/15">
-                      {step.n}
-                    </span>
-                    <step.icon className="h-6 w-6 text-brand" />
-                  </div>
-                  <h3 className="mb-3 text-xl font-semibold tracking-tight">{step.title}</h3>
-                  <p className="text-[15px] leading-relaxed text-muted-foreground">{step.text}</p>
+            <div className="grid items-start gap-16 lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)] lg:gap-12">
+              {/* ---- What people hire for ---- */}
+              <div>
+                <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-foreground/45">
+                  Built for people who shoot
+                </p>
+                <h2 className="font-poster mt-3 text-[clamp(1.55rem,2.4vw,2rem)] font-bold leading-tight">
+                  What Roster does
+                </h2>
+                <div className="mt-7 rounded-2xl bg-[#e9e4db] px-4 py-6">
+                  <CraftDeck captureWheel={false} height="min(58vh, 520px)" />
                 </div>
-              ))}
-            </motion.div>
+              </div>
+
+              {/* ---- How the money moves ---- */}
+              <div>
+                <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-foreground/45">
+                  How it works
+                </p>
+                <h2 className="font-poster mt-3 text-[clamp(1.55rem,2.4vw,2rem)] font-bold leading-tight">
+                  Post. Pick. Pay in stages.
+                </h2>
+                <ProcessTimeline
+                  className="mt-7"
+                  steps={[
+                    {
+                      title: "Post the work",
+                      description:
+                        "Write a brief and set a budget. That is all it takes to go live.",
+                    },
+                    {
+                      title: "Pick your person",
+                      description:
+                        "Compare bids on price, approach and track record.",
+                    },
+                    {
+                      title: "Pay stage by stage",
+                      description:
+                        "Agree the split, fund each stage, release it on approval.",
+                    },
+                  ]}
+                />
+              </div>
+            </div>
           </div>
         </section>
 

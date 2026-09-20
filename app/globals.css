@@ -73,6 +73,15 @@
   to { transform: translateX(-50%); }
 }
 
+/* Dashes travel along the process connector. Offsetting by one dash+gap
+   cycle (8 + 6) means the loop restarts exactly on the next dash, so there is
+   no seam. Only the offset animates; the path itself never moves. */
+@keyframes dash-travel {
+  to {
+    stroke-dashoffset: -14;
+  }
+}
+
 @keyframes shimmer {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
