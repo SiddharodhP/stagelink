@@ -5,21 +5,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { CraftDeck } from "@/components/shared/craft-deck";
+import { ServiceSlider } from "@/components/shared/service-slider";
 import { ProcessTimeline } from "@/components/shared/process-timeline";
 import {
   ArrowRight,
-  ListChecks,
   Check,
-  Camera,
-  Briefcase,
-  Wallet,
-  FileText,
-  RefreshCw,
-  Star,
-  Video,
-  MapPin,
-  Lock,
-  Layers,
 } from "lucide-react";
 
 import { Navbar } from "@/components/layout/navbar";
@@ -42,52 +32,6 @@ import { formatPrice } from "@/lib/utils";
 const fadeUp = {};
 const stagger = {};
 const staggerItem = {};
-
-const FREELANCER_BENEFITS = [
-  {
-    icon: Wallet,
-    title: "Paid per stage",
-  },
-  {
-    icon: ListChecks,
-    title: "You agree the plan",
-  },
-  {
-    icon: FileText,
-    title: "Invoice in one click",
-  },
-  {
-    icon: RefreshCw,
-    title: "Recurring retainers",
-  },
-  {
-    icon: Star,
-    title: "A reputation you own",
-  },
-];
-
-const CLIENT_BENEFITS = [
-  {
-    icon: Layers,
-    title: "See the plan before you pay",
-  },
-  {
-    icon: Lock,
-    title: "Money moves on approval",
-  },
-  {
-    icon: MapPin,
-    title: "Browse by city and craft",
-  },
-  {
-    icon: Video,
-    title: "Talk before you commit",
-  },
-  {
-    icon: FileText,
-    title: "One paper trail",
-  },
-];
 
 export default function Home() {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -241,167 +185,74 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ============ Benefits, both sides ============ */}
-        <section
-          id="for-freelancers"
-          className="relative overflow-hidden py-20 md:py-28"
-        >
-          {/* Washes in the two panel colours, so the split is felt before
-              it is read. */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute -left-56 -top-40 h-[36rem] w-[36rem] rounded-full bg-[#0C2F2A]/[0.08] blur-3xl"
-          />
-          <div
-            aria-hidden
-            className="pointer-events-none absolute -right-56 top-24 h-[36rem] w-[36rem] rounded-full bg-brand/[0.10] blur-3xl"
-          />
-
+        {/* ============ Benefits, both sides ============
+             Two claims lists, each beside one sliding image track. Five bullets
+             a side became three: the last two on each were the weakest, and a
+             row that has to share height with a picture cannot carry five. */}
+        <section className="relative overflow-hidden border-b border-border bg-background py-20 md:py-24">
           <div className="container relative mx-auto px-4 md:px-6">
-            <div className="grid gap-5 lg:grid-cols-2 lg:gap-6">
-              {/* ---- Freelancers: deep teal, amber accents ---- */}
-              <motion.div
-                {...stagger}
-                className="group/panel relative overflow-hidden rounded-[1.75rem] bg-gradient-to-br from-[#0C2F2A] via-[#0A2622] to-[#061A17] p-8 text-[#F4EFE6] shadow-[0_40px_80px_-50px_rgba(6,26,23,0.95)] md:p-10"
-              >
-                <div
-                  aria-hidden
-                  className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[#F0A868]/20 blur-3xl"
+            <div className="grid gap-12 lg:grid-cols-2 lg:gap-14">
+              {/* ---- Freelancers ---- */}
+              <div className="rounded-[1.75rem] bg-gradient-to-br from-[#0C2F2A] via-[#0A2622] to-[#061A17] p-7 shadow-[0_40px_80px_-50px_rgba(6,26,23,0.95)] md:p-9">
+                <ServiceSlider
+                  tone="dark"
+                  eyebrow="For freelancers"
+                  heading="Shoot. Deliver. Get paid."
+                  items={[
+                    {
+                      title: "Paid per stage",
+                      img: "/marketing/svc-paid-per-stage.webp",
+                      alt: "A photographer packing a lens away at the end of a shoot",
+                    },
+                    {
+                      title: "You agree the plan",
+                      img: "/marketing/svc-agree-the-plan.webp",
+                      alt: "Two people going through a plan together at a table",
+                    },
+                    {
+                      title: "Invoice in one click",
+                      img: "/marketing/svc-invoice-one-click.webp",
+                      alt: "A hand resting on a laptop trackpad at a desk",
+                    },
+                  ]}
                 />
-                <div
-                  aria-hidden
-                  className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#F0A868]/50 to-transparent"
+              </div>
+
+              {/* ---- Clients ---- */}
+              <div className="rounded-[1.75rem] bg-gradient-to-br from-[#D6440F] via-[#C03A0B] to-[#8F2A06] p-7 shadow-[0_40px_80px_-50px_rgba(143,42,6,0.85)] md:p-9">
+                <ServiceSlider
+                  tone="dark"
+                  eyebrow="For clients"
+                  heading="Book with confidence."
+                  items={[
+                    {
+                      title: "See the plan before you pay",
+                      img: "/marketing/svc-see-the-plan.webp",
+                      alt: "Printed plan sheets laid out and squared up on a table",
+                    },
+                    {
+                      title: "Money moves on approval",
+                      img: "/marketing/svc-money-on-approval.webp",
+                      alt: "A photographic print held up to the window and examined",
+                    },
+                    {
+                      title: "Browse by city and craft",
+                      img: "/marketing/svc-browse-city-craft.webp",
+                      alt: "A camera bag on a rooftop ledge above a city at dusk",
+                    },
+                  ]}
                 />
-
-                <div className="relative">
-                  <div className="mb-8 flex items-center gap-3.5">
-                    <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#F0A868]/15 text-[#F0A868] ring-1 ring-inset ring-[#F0A868]/25">
-                      <Camera className="h-5 w-5" />
-                    </span>
-                    <div>
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#F0A868]">
-                        For freelancers
-                      </p>
-                      <p className="font-poster text-2xl font-bold">
-                        Shoot. Deliver. Get paid.
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Filled rows, not hairlines between them.
-
-                      A 1px rule was the obvious answer and it kept failing on
-                      this panel: identical markup and identical border colour
-                      to the client side, verified in the shipped CSS and in
-                      the served HTML, and still nothing readable against the
-                      near black ground. A row that is its own block does not
-                      depend on a single pixel surviving a gradient, a blurred
-                      glow behind it, and whatever the display does to it. */}
-                  <ul className="space-y-2">
-                    {FREELANCER_BENEFITS.map(({ icon: Icon, title }) => (
-                      <motion.li
-                        key={title}
-                        variants={staggerItem}
-                        className="group/row flex items-center gap-4 rounded-xl bg-white/[0.09] px-4 py-3.5 ring-1 ring-inset ring-white/[0.18] transition-colors duration-300 hover:bg-white/[0.16]"
-                      >
-                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/[0.07] text-[#F0A868] ring-1 ring-inset ring-white/10 transition-all duration-300 group-hover/row:bg-[#F0A868] group-hover/row:text-[#0A2622] group-hover/row:ring-[#F0A868]">
-                          <Icon className="h-4 w-4" />
-                        </span>
-                        <p className="text-[17px] font-semibold leading-snug">{title}</p>
-                      </motion.li>
-                    ))}
-                  </ul>
-
-                  <motion.div variants={staggerItem} className="mt-8">
-                    <Button
-                      asChild
-                      size="lg"
-                      className="w-full rounded-full bg-[#F0A868] px-8 text-base font-semibold text-[#0A2622] hover:bg-[#F5BC88] sm:w-auto"
-                    >
-                      <Link href="/login">
-                        Start as a freelancer
-                        <ArrowRight className="ml-2 h-5 w-5" />
-                      </Link>
-                    </Button>
-                  </motion.div>
-                </div>
-              </motion.div>
-
-              {/* ---- Clients: persimmon, the complement of that teal ---- */}
-              <motion.div
-                {...stagger}
-                className="group/panel relative overflow-hidden rounded-[1.75rem] bg-gradient-to-br from-[#D6440F] via-[#C03A0B] to-[#8F2A06] p-8 text-[#FDF3EC] shadow-[0_40px_80px_-50px_rgba(143,42,6,0.85)] md:p-10"
-              >
-                <div
-                  aria-hidden
-                  className="pointer-events-none absolute -left-24 -bottom-24 h-72 w-72 rounded-full bg-[#FFD9A0]/25 blur-3xl"
-                />
-                <div
-                  aria-hidden
-                  className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent"
-                />
-
-                <div className="relative">
-                  <div className="mb-8 flex items-center gap-3.5">
-                    <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/15 text-white ring-1 ring-inset ring-white/25">
-                      <Briefcase className="h-5 w-5" />
-                    </span>
-                    <div>
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#FFD9A0]">
-                        For clients
-                      </p>
-                      <p className="font-poster text-2xl font-bold">
-                        Book with confidence.
-                      </p>
-                    </div>
-                  </div>
-
-                  <ul className="space-y-2">
-                    {CLIENT_BENEFITS.map(({ icon: Icon, title }) => (
-                      <motion.li
-                        key={title}
-                        variants={staggerItem}
-                        className="group/row flex items-center gap-4 rounded-xl bg-white/[0.12] px-4 py-3.5 ring-1 ring-inset ring-white/25 transition-colors duration-300 hover:bg-white/[0.20]"
-                      >
-                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/15 text-white ring-1 ring-inset ring-white/20 transition-all duration-300 group-hover/row:bg-white group-hover/row:text-[#C03A0B]">
-                          <Icon className="h-4 w-4" />
-                        </span>
-                        <p className="text-[17px] font-semibold leading-snug">{title}</p>
-                      </motion.li>
-                    ))}
-                  </ul>
-
-                  <motion.div variants={staggerItem} className="mt-8">
-                    <Button
-                      asChild
-                      size="lg"
-                      className="w-full rounded-full bg-[#FDF3EC] px-8 text-base font-semibold text-[#8F2A06] hover:bg-white sm:w-auto"
-                    >
-                      <Link href="/login">
-                        Hire a creator
-                        <ArrowRight className="ml-2 h-5 w-5" />
-                      </Link>
-                    </Button>
-                  </motion.div>
-                </div>
-              </motion.div>
+              </div>
             </div>
 
-            <motion.div
-              {...fadeUp}
-              className="mt-8 flex flex-wrap items-center justify-center gap-x-7 gap-y-2 text-sm text-muted-foreground"
-            >
-              {[
-                "Escrow on every stage",
-                "No agency middlemen",
-                "Reviews both ways",
-              ].map((t) => (
+            <div className="mt-10 flex flex-wrap items-center justify-center gap-x-7 gap-y-2 text-sm text-muted-foreground">
+              {["Escrow on every stage", "No agency middlemen", "Reviews both ways"].map((t) => (
                 <span key={t} className="inline-flex items-center gap-2">
                   <Check className="h-4 w-4 text-brand" />
                   {t}
                 </span>
               ))}
-            </motion.div>
+            </div>
           </div>
         </section>
 

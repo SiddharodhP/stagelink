@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { getMyProfile, signOut } from "@/lib/services/auth";
 import { Profile } from "@/types/marketplace";
 import { NotificationBell } from "@/components/shared/notification-bell";
+import { NavSpotlight } from "@/components/layout/nav-spotlight";
 import { UserAvatar } from "@/components/shared/marketplace-ui";
 import {
   DropdownMenu,
@@ -106,22 +107,8 @@ export function Navbar() {
           <span className="mb-0.5 inline-block h-2 w-2 rounded-full bg-brand" aria-hidden />
         </Link>
 
-        <nav className="hidden items-center gap-8 md:flex">
-          {NAV_LINKS.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={`text-sm font-medium transition-colors hover:text-brand ${
-                pathname === link.href
-                  ? "text-brand"
-                  : onDarkHero
-                    ? "text-paper/75 hover:text-paper"
-                    : "text-foreground/70"
-              }`}
-            >
-              {link.label}
-            </Link>
-          ))}
+        <nav aria-label="Primary">
+          <NavSpotlight links={NAV_LINKS} onDark={onDarkHero} />
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">

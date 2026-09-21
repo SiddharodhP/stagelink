@@ -161,7 +161,7 @@ export default async function CityPage({ params }: Props) {
 
       <Navbar />
 
-      <main className="mx-auto max-w-4xl px-4 py-12">
+      <main className="mx-auto max-w-4xl px-4 pb-12 pt-28 md:pt-32">
         <p className="eyebrow mb-3 flex items-center gap-1.5">
           <MapPin className="h-3.5 w-3.5" /> {city.name}, {city.state}
         </p>

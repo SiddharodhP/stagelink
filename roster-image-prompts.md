@@ -443,3 +443,134 @@ swap in real work as soon as you have users who consent to it.
 **Save as** `.jpg` at quality 85 into `public/marketing/` using the exact
 filenames above. Anything over ~500 KB and I will compress it before wiring
 it in.
+
+---
+
+# SET F — SERVICE SLIDER
+
+Six landscape frames, one per claim in the two benefit sliders. They render at
+about 360px wide on desktop, so each one carries a single clear subject rather
+than a busy scene -- detail that needs looking for is detail nobody will see.
+
+All six are 1400 x 1186, a 1.18:1 landscape ratio, which is the aspect the
+slider frame uses. Drop them in `public/marketing/` under the filenames below
+and I will convert and swap them for the craft-tile placeholders currently
+standing in.
+
+**For freelancers**
+
+## F1 · Paid per stage · `svc-paid-per-stage.jpg` · 1400 x 1186
+
+```
+A photographer at the end of a shoot, crouched beside an open hard case on a
+pale studio floor, sliding a lens into its foam cut-out with both hands. Body
+language relaxed, the work finished. Warm late light from a window to the left
+rakes across the case lid. A burnt-orange camera strap is coiled beside the
+case. Head cropped above the frame. Horizontal composition, 1400x1186 pixels,
+1.18:1 aspect ratio, with the case and hands filling the lower two thirds.
+Shot on a full-frame camera with a 50mm lens at f/2 in natural light. Warm
+neutral grade, muted earthy palette of warm off-white (#f7f4ee) and deep warm
+black (#1a1713), with burnt orange (#d6440f) as the only strong colour and only
+on one small object. Soft fine film grain, gentle highlight roll-off, no HDR,
+no oversaturation. Candid and unposed, photorealistic, high detail. No text,
+letters, words, numbers, watermarks, logos or user interface anywhere in the
+image, and nothing readable on any screen or paper. Avoid deformed hands, extra
+fingers, plastic airbrushed skin, and anyone smiling at the camera.
+```
+
+## F2 · You agree the plan · `svc-agree-the-plan.jpg` · 1400 x 1186
+
+```
+Two people on the same side of a table, leaning over a sheet of paper between
+them, one pointing at it with a pen while the other rests a hand flat on the
+edge. Seen from across the table at chest height, both heads cropped out of
+frame. The paper carries loose pencil marks and boxes but nothing legible. A
+burnt-orange pen cap sits on the table. Bright diffused daylight. Horizontal
+composition, 1400x1186 pixels, 1.18:1 aspect ratio.
+Shot on a full-frame camera with a 50mm lens at f/2 in natural light. Warm
+neutral grade, muted earthy palette of warm off-white (#f7f4ee) and deep warm
+black (#1a1713), with burnt orange (#d6440f) as the only strong colour and only
+on one small object. Soft fine film grain, gentle highlight roll-off, no HDR,
+no oversaturation. Candid and unposed, photorealistic, high detail. No text,
+letters, words, numbers, watermarks, logos or user interface anywhere in the
+image, and nothing readable on any screen or paper. Avoid deformed hands, extra
+fingers, plastic airbrushed skin, and anyone smiling at the camera.
+```
+
+## F3 · Invoice in one click · `svc-invoice-one-click.jpg` · 1400 x 1186
+
+```
+A single hand resting on a laptop trackpad on a pale oak desk, caught in the
+small moment just after pressing. The laptop is seen from behind and to the
+side so the screen is angled away and nothing on it is visible. A closed
+notebook and a cup sit beside it, and a burnt-orange bookmark ribbon hangs from
+the notebook. Quiet morning light from the left, head not in frame. Horizontal
+composition, 1400x1186 pixels, 1.18:1 aspect ratio.
+Shot on a full-frame camera with a 50mm lens at f/2 in natural light. Warm
+neutral grade, muted earthy palette of warm off-white (#f7f4ee) and deep warm
+black (#1a1713), with burnt orange (#d6440f) as the only strong colour and only
+on one small object. Soft fine film grain, gentle highlight roll-off, no HDR,
+no oversaturation. Candid and unposed, photorealistic, high detail. No text,
+letters, words, numbers, watermarks, logos or user interface anywhere in the
+image, and nothing readable on any screen or paper. Avoid deformed hands, extra
+fingers, plastic airbrushed skin, and anyone smiling at the camera.
+```
+
+**For clients**
+
+## C1 · See the plan before you pay · `svc-see-the-plan.jpg` · 1400 x 1186
+
+```
+An overhead shot of a pale table with four printed sheets laid out in a row,
+their edges slightly overlapping, each carrying loose sketched boxes and pencil
+lines with no readable writing. A hand at the edge of the frame is squaring one
+sheet with the others. A burnt-orange marker rests across the corner. Soft even
+daylight with long gentle shadows. Horizontal composition, 1400x1186 pixels,
+1.18:1 aspect ratio.
+Shot on a full-frame camera with a 50mm lens at f/2 in natural light. Warm
+neutral grade, muted earthy palette of warm off-white (#f7f4ee) and deep warm
+black (#1a1713), with burnt orange (#d6440f) as the only strong colour and only
+on one small object. Soft fine film grain, gentle highlight roll-off, no HDR,
+no oversaturation. Candid and unposed, photorealistic, high detail. No text,
+letters, words, numbers, watermarks, logos or user interface anywhere in the
+image, and nothing readable on any screen or paper. Avoid deformed hands, extra
+fingers, plastic airbrushed skin, and anyone smiling at the camera.
+```
+
+## C2 · Money moves on approval · `svc-money-on-approval.jpg` · 1400 x 1186
+
+```
+Two hands holding a single photographic print up toward a window, examining it,
+the print catching the light from behind so its edges glow. The image on the
+print is a soft indistinct warm blur with nothing recognisable in it. A second
+small stack of prints rests on the sill below, one with a burnt-orange sticky
+tab on its edge. Head cropped out of frame. Horizontal composition, 1400x1186
+pixels, 1.18:1 aspect ratio.
+Shot on a full-frame camera with a 50mm lens at f/2 in natural light. Warm
+neutral grade, muted earthy palette of warm off-white (#f7f4ee) and deep warm
+black (#1a1713), with burnt orange (#d6440f) as the only strong colour and only
+on one small object. Soft fine film grain, gentle highlight roll-off, no HDR,
+no oversaturation. Candid and unposed, photorealistic, high detail. No text,
+letters, words, numbers, watermarks, logos or user interface anywhere in the
+image, and nothing readable on any screen or paper. Avoid deformed hands, extra
+fingers, plastic airbrushed skin, and anyone smiling at the camera.
+```
+
+## C3 · Browse by city and craft · `svc-browse-city-craft.jpg` · 1400 x 1186
+
+```
+A camera bag and a folded tripod resting on a low rooftop ledge at dusk, with a
+wide city skyline stretched out behind them, softly out of focus. Warm fading
+light along the horizon, cool blue shadow across the ledge. A burnt-orange strap
+hangs over the edge of the bag. No people in frame. Horizontal composition,
+1400x1186 pixels, 1.18:1 aspect ratio, with the bag in the lower left and the
+skyline filling the right.
+Shot on a full-frame camera with a 50mm lens at f/2 in natural light. Warm
+neutral grade, muted earthy palette of warm off-white (#f7f4ee) and deep warm
+black (#1a1713), with burnt orange (#d6440f) as the only strong colour and only
+on one small object. Soft fine film grain, gentle highlight roll-off, no HDR,
+no oversaturation. Candid and unposed, photorealistic, high detail. No text,
+letters, words, numbers, watermarks, logos or user interface anywhere in the
+image, and nothing readable on any screen or paper. Avoid deformed hands, extra
+fingers, plastic airbrushed skin, and anyone smiling at the camera.
+```
