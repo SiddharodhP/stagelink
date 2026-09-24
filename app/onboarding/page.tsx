@@ -29,7 +29,7 @@ import { CityCombobox } from "@/components/shared/city-combobox";
 import { getSkillsList } from "@/lib/services/projects";
 import { uploadFile } from "@/lib/services/storage";
 import { Profile } from "@/types/marketplace";
-import { APP_NAME } from "@/lib/constants";
+import { BRAND_NAME } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
 /**
@@ -207,7 +207,7 @@ export default function OnboardingPage() {
                   i < step
                     ? "bg-emerald-500 text-white"
                     : i === step
-                      ? "bg-ink text-paper"
+                      ? "bg-primary text-primary-foreground"
                       : "bg-secondary text-muted-foreground"
                 )}
               >
@@ -234,7 +234,7 @@ export default function OnboardingPage() {
         {step === 0 && (
           <>
             <h1 className="font-display mb-2 text-3xl font-semibold tracking-tight">
-              Let&apos;s set up your {APP_NAME} profile
+              Let&apos;s set up your {BRAND_NAME} profile
             </h1>
             <p className="mb-8 text-muted-foreground">
               {isFreelancer
@@ -556,7 +556,7 @@ export default function OnboardingPage() {
             {isLast ? "Finish later" : "Skip"}
           </button>
           <Button
-            className="rounded-full bg-ink text-paper hover:bg-ink-soft"
+            className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
             disabled={saving}
             onClick={next}
           >

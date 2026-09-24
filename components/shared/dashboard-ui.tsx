@@ -51,7 +51,7 @@ export function EmptyCard({
   onAction?: () => void;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border bg-white px-6 py-16 text-center">
+    <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border bg-card px-6 py-16 text-center">
       <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-secondary">
         <Icon className="h-6 w-6 text-muted-foreground" />
       </div>
@@ -60,14 +60,14 @@ export function EmptyCard({
         {description}
       </p>
       {actionLabel && actionHref && (
-        <Button asChild className="mt-6 rounded-full bg-ink text-paper hover:bg-ink-soft">
+        <Button asChild className="mt-6 rounded-full bg-primary text-primary-foreground hover:bg-primary/90">
           <Link href={actionHref}>{actionLabel}</Link>
         </Button>
       )}
       {actionLabel && onAction && !actionHref && (
         <Button
           onClick={onAction}
-          className="mt-6 rounded-full bg-ink text-paper hover:bg-ink-soft"
+          className="mt-6 rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
         >
           {actionLabel}
         </Button>
@@ -91,7 +91,7 @@ export function StatTile({
   href?: string;
 }) {
   const body = (
-    <div className={cn("rounded-xl border border-border bg-white p-5", href && "card-lift")}>
+    <div className={cn("rounded-xl border border-border bg-card p-5", href && "card-lift")}>
       <div className="mb-4 flex items-center justify-between">
         <span className="eyebrow">{label}</span>
         <Icon className="h-4 w-4 text-brand" />
@@ -144,7 +144,7 @@ export function SectionCard({
   className?: string;
 }) {
   return (
-    <section className={cn("rounded-xl border border-border bg-white", className)}>
+    <section className={cn("rounded-xl border border-border bg-card", className)}>
       <div className="flex items-center justify-between gap-4 border-b border-border px-6 py-5">
         <div>
           <h2 className="font-display text-xl font-semibold">{title}</h2>
@@ -179,12 +179,12 @@ export const blurOnWheel = (e: React.WheelEvent<HTMLInputElement>) =>
   e.currentTarget.blur();
 
 export const inputClass =
-  "flex h-11 w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-foreground placeholder:text-foreground/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50";
+  "flex h-11 w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground placeholder:text-foreground/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50";
 
 export const selectClass = inputClass;
 
 export const textareaClass =
-  "flex min-h-[120px] w-full resize-none rounded-md border border-border bg-white px-3 py-2.5 text-sm text-foreground placeholder:text-foreground/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+  "flex min-h-[120px] w-full resize-none rounded-md border border-border bg-card px-3 py-2.5 text-sm text-foreground placeholder:text-foreground/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
 /** Multi-select chip group used for skills. */
 export function ChipToggle({
@@ -203,8 +203,8 @@ export function ChipToggle({
       className={cn(
         "rounded-full border px-3.5 py-1.5 text-[13px] font-medium transition-all",
         active
-          ? "border-ink bg-ink text-paper"
-          : "border-border bg-white text-foreground/70 hover:border-ink/40"
+          ? "border-foreground bg-primary text-primary-foreground"
+          : "border-border bg-card text-foreground/70 hover:border-foreground/40"
       )}
     >
       {children}

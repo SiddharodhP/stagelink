@@ -91,7 +91,7 @@ function Dashboard({ profile }: { profile: Profile }) {
         }
         description="Your projects, bids, and milestone approvals in one place."
         action={
-          <Button asChild className="rounded-full bg-ink px-6 text-paper hover:bg-ink-soft">
+          <Button asChild className="rounded-full bg-primary px-6 text-primary-foreground hover:bg-primary/90">
             <Link href="/projects/new">
               <PlusCircle className="mr-2 h-4 w-4" /> Post a project
             </Link>
@@ -137,7 +137,7 @@ function Dashboard({ profile }: { profile: Profile }) {
                 <li key={c.id}>
                   <Link
                     href={`/contracts/${c.id}`}
-                    className="flex items-center justify-between gap-4 rounded-lg bg-white px-4 py-3 transition-colors hover:bg-white/70"
+                    className="flex items-center justify-between gap-4 rounded-lg bg-card px-4 py-3 transition-colors hover:bg-card/70"
                   >
                     <span className="min-w-0">
                       <span className="block truncate text-sm font-medium">
@@ -159,7 +159,7 @@ function Dashboard({ profile }: { profile: Profile }) {
               <li key={c.id}>
                 <Link
                   href={`/contracts/${c.id}`}
-                  className="flex items-center justify-between gap-4 rounded-lg bg-white px-4 py-3 transition-colors hover:bg-white/70"
+                  className="flex items-center justify-between gap-4 rounded-lg bg-card px-4 py-3 transition-colors hover:bg-card/70"
                 >
                   <span className="min-w-0">
                     <span className="block truncate text-sm font-medium">
@@ -180,7 +180,7 @@ function Dashboard({ profile }: { profile: Profile }) {
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Still hiring — drafts and projects collecting bids. Awarded work
             lives in Contracts, so a project never appears in both cards. */}
-        <section className="rounded-xl border border-border bg-white">
+        <section className="rounded-xl border border-border bg-card">
           <div className="flex items-center justify-between border-b border-border px-6 py-5">
             <div>
               <h2 className="font-display text-xl font-semibold">Still hiring</h2>
@@ -239,7 +239,7 @@ function Dashboard({ profile }: { profile: Profile }) {
         </section>
 
         {/* Awarded work — the same project never appears in "Still hiring". */}
-        <section className="rounded-xl border border-border bg-white">
+        <section className="rounded-xl border border-border bg-card">
           <div className="flex items-center justify-between border-b border-border px-6 py-5">
             <div>
               <h2 className="font-display text-xl font-semibold">Awarded work</h2>

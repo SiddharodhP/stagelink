@@ -14,7 +14,7 @@ import Image from "next/image";
  *
  * ADAPTATIONS FROM THE BRIEF
  *
- * Three rows a side rather than the five that were here, and the copy is this
+ * Four rows a side rather than the five that were here, and the copy is this
  * project's own. The brief's Pexels URLs are not used: remote images would be
  * the only ones on a site that serves everything from its own /public, and
  * would bypass next/image entirely.
@@ -36,6 +36,7 @@ export function ServiceSlider({
   heading,
   items,
   tone = "light",
+  accent,
   className,
 }: {
   eyebrow: string;
@@ -43,6 +44,12 @@ export function ServiceSlider({
   items: ServiceItem[];
   /** Which ground it sits on; drives the text and rule colours. */
   tone?: "light" | "dark";
+  /**
+   * The side's colour, as a CSS colour. The panel behind carries it as a
+   * wash; this is the same colour at full strength, for the two marks that
+   * have to hold it -- the eyebrow and the active row's rule.
+   */
+  accent?: string;
   className?: string;
 }) {
   // Second row on load, so the track starts mid-travel.
@@ -54,8 +61,9 @@ export function ServiceSlider({
     <div className={className}>
       <p
         className={`font-mono text-[11px] uppercase tracking-[0.14em] ${
-          dark ? "text-paper/45" : "text-foreground/45"
+          accent ? "" : dark ? "text-paper/45" : "text-foreground/45"
         }`}
+        style={accent ? { color: accent } : undefined}
       >
         {eyebrow}
       </p>
@@ -67,9 +75,9 @@ export function ServiceSlider({
         {heading}
       </h3>
 
-      <div className="mt-6 flex items-stretch gap-4 md:gap-5">
+      <div className="mt-6 flex flex-col gap-5 sm:flex-row sm:items-stretch sm:gap-4 md:gap-5">
         {/* ---- Claims ---- */}
-        <ul className="flex w-[42%] shrink-0 flex-col">
+        <ul className="flex w-full flex-col sm:w-[46%] sm:shrink-0">
           {items.map((item, i) => {
             const on = i === active;
             return (
@@ -80,7 +88,7 @@ export function ServiceSlider({
                   onFocus={() => setActive(i)}
                   onClick={() => setActive(i)}
                   aria-pressed={on}
-                  className={`group relative flex h-full w-full items-center gap-2.5 pl-4 pr-1 text-left focus:outline-none ${
+                  className={`group relative flex h-full w-full items-center gap-2.5 py-2.5 pl-4 pr-1 text-left focus:outline-none sm:py-0 ${
                     i > 0 ? (dark ? "border-t border-white/10" : "border-t border-border") : ""
                   }`}
                 >
@@ -88,8 +96,9 @@ export function ServiceSlider({
                   <span
                     aria-hidden
                     className={`absolute left-0 top-1/2 w-px -translate-y-1/2 transition-[height] duration-500 ease-out motion-reduce:transition-none ${
-                      dark ? "bg-paper" : "bg-foreground"
+                      accent ? "" : dark ? "bg-paper" : "bg-foreground"
                     } ${on ? "h-full" : "h-3 opacity-40"}`}
+                    style={accent ? { backgroundColor: accent } : undefined}
                   />
                   <span
                     className={`font-mono text-[10px] tabular-nums ${
@@ -119,7 +128,7 @@ export function ServiceSlider({
 
         {/* ---- One moving strip, not three swapped pictures ---- */}
         <div
-          className="relative w-[58%] overflow-hidden rounded-[12px]"
+          className="relative w-full overflow-hidden rounded-[12px] sm:w-[54%]"
           style={{ aspectRatio: "1.18" }}
         >
           <div

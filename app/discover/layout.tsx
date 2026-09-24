@@ -4,7 +4,7 @@ import { buildMetadata } from "@/lib/seo";
 export const metadata: Metadata = buildMetadata({
   title: "Freelance & Contract Work From Around The Web",
   description:
-    "Live freelance and contract listings aggregated from Remotive, alongside Roster's own escrow-protected milestone projects. Full-time roles are filtered out.",
+    "Live freelance and contract listings aggregated from Remotive, alongside Jayree's own escrow-protected milestone projects. Full-time roles are filtered out.",
   path: "/discover",
   keywords: [
     "freelance contract work",

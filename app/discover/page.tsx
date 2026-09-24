@@ -81,23 +81,23 @@ export default function DiscoverPage() {
             </p>
           </div>
 
-          {/* These are not Roster projects — say so plainly. */}
-          <div className="mb-8 flex flex-col items-start justify-between gap-3 rounded-xl border border-border bg-white p-5 sm:flex-row sm:items-center">
+          {/* These are not Jayree projects — say so plainly. */}
+          <div className="mb-8 flex flex-col items-start justify-between gap-3 rounded-xl border border-border bg-card p-5 sm:flex-row sm:items-center">
             <p className="text-sm leading-relaxed text-muted-foreground">
               These listings are hosted on other job boards — you apply there
-              directly, and they aren&apos;t covered by Roster&apos;s milestone
+              directly, and they aren&apos;t covered by Jayree&apos;s milestone
               escrow.
             </p>
             <Link
               href="/projects"
               className="flex shrink-0 items-center gap-1 text-sm font-semibold text-brand hover:text-brand-deep"
             >
-              Browse escrow-protected Roster projects
+              Browse escrow-protected Jayree projects
               <ArrowUpRight className="h-3.5 w-3.5" />
             </Link>
           </div>
 
-          <div className="mb-4 flex items-center gap-2 rounded-full border border-border bg-white px-4 focus-within:border-ink/50">
+          <div className="mb-4 flex items-center gap-2 rounded-full border border-border bg-card px-4 focus-within:border-foreground/50">
             <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
             <input
               value={searchInput}
@@ -138,7 +138,7 @@ export default function DiscoverPage() {
                   href={job.applyUrl}
                   target="_blank"
                   rel="noopener"
-                  className="card-lift group block rounded-xl border border-border bg-white p-5 md:p-6"
+                  className="card-lift group block rounded-xl border border-border bg-card p-5 md:p-6"
                 >
                   <div className="flex items-start gap-4">
                     <UserAvatar name={job.company} src={job.companyLogo || undefined} size={48} />

@@ -28,12 +28,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const title = isFreelancer
     ? `${name}${profile.headline ? ` — ${profile.headline}` : " — Freelancer"}`
-    : `${profile.company_name || name} — Client on Roster`;
+    : `${profile.company_name || name} — Client on Jayree`;
 
   const description = isFreelancer
     ? (profile.bio?.replace(/\s+/g, " ").slice(0, 150) ||
         `Hire ${name}${skills ? `, freelancer skilled in ${skills}` : ""}. Milestone-based contracts with escrow-protected payments.`)
-    : `${profile.company_name || name} hires freelancers on Roster with milestone-based, escrow-protected contracts.`;
+    : `${profile.company_name || name} hires freelancers on Jayree with milestone-based, escrow-protected contracts.`;
 
   // Thin, unfilled profiles hurt more than they help — keep them out of
   // the index until there's real content to rank.

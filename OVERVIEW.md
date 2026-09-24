@@ -1,4 +1,4 @@
-# Roster — Freelance Marketplace Architecture
+# jayree.io — Freelance Marketplace Architecture
 
 ## What It Is
 

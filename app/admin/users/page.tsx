@@ -53,7 +53,7 @@ function AdminUsers() {
       <PageHeader eyebrow="Admin" title="Users" description="Verify, suspend, and inspect accounts." />
 
       <div className="mb-6 flex flex-col gap-3 sm:flex-row">
-        <div className="flex flex-1 items-center gap-2 rounded-full border border-border bg-white px-4">
+        <div className="flex flex-1 items-center gap-2 rounded-full border border-border bg-card px-4">
           <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
           <input
             value={search}
@@ -70,8 +70,8 @@ function AdminUsers() {
               className={cn(
                 "rounded-full px-4 py-2 text-sm font-medium capitalize transition-colors",
                 roleFilter === r
-                  ? "bg-ink text-paper"
-                  : "border border-border bg-white text-muted-foreground hover:text-foreground"
+                  ? "bg-primary text-primary-foreground"
+                  : "border border-border bg-card text-muted-foreground hover:text-foreground"
               )}
             >
               {r}
@@ -83,7 +83,7 @@ function AdminUsers() {
       {loading ? (
         <SkeletonRows count={5} height={72} />
       ) : filtered.length > 0 ? (
-        <div className="overflow-x-auto rounded-xl border border-border bg-white">
+        <div className="overflow-x-auto rounded-xl border border-border bg-card">
           <table className="w-full min-w-[720px] text-sm">
             <thead>
               <tr className="border-b border-border text-left">
@@ -115,12 +115,12 @@ function AdminUsers() {
                   <td className="px-5 py-4">
                     <div className="flex flex-wrap gap-1.5">
                       {u.is_verified && (
-                        <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-emerald-800">
+                        <span className="rounded-full border border-emerald-200 dark:border-emerald-500/30 bg-emerald-50 dark:bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-emerald-800 dark:text-emerald-300">
                           Verified
                         </span>
                       )}
                       {u.is_suspended && (
-                        <span className="rounded-full border border-red-200 bg-red-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-red-700">
+                        <span className="rounded-full border border-red-200 dark:border-red-500/30 bg-red-50 dark:bg-red-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-red-700 dark:text-red-300">
                           Suspended
                         </span>
                       )}
@@ -145,7 +145,7 @@ function AdminUsers() {
                         variant="ghost"
                         className={cn(
                           "rounded-full",
-                          u.is_suspended ? "text-emerald-700" : "text-muted-foreground hover:text-red-600"
+                          u.is_suspended ? "text-emerald-700 dark:text-emerald-300" : "text-muted-foreground hover:text-red-600 dark:hover:text-red-400"
                         )}
                         onClick={() => toggle(u, "is_suspended")}
                       >

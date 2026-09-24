@@ -42,7 +42,7 @@ the actual answer to the query.
 
 ### Tier 1 — Differentiator keywords (your best shot)
 
-These describe what makes Roster different. Low volume, but low competition and
+These describe what makes Jayree different. Low volume, but low competition and
 **very high intent** — someone searching this has been burned by non-payment
 and is actively looking for a solution you literally provide.
 

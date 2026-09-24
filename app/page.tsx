@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { CraftDeck } from "@/components/shared/craft-deck";
+import { CraftCarousel } from "@/components/shared/craft-carousel";
 import { ServiceSlider } from "@/components/shared/service-slider";
 import { ProcessTimeline } from "@/components/shared/process-timeline";
 import {
@@ -64,11 +64,11 @@ export default function Home() {
               instead of ending at a hard line. */}
           <div
             aria-hidden
-            className="absolute inset-0 -z-20 bg-[linear-gradient(to_bottom,#171410_0%,#171410_30%,#241f19_46%,#584e42_68%,#cfc6b8_86%,#f7f4ee_100%)]"
+            className="absolute inset-0 -z-20 bg-[image:var(--hero-gradient)]"
           />
 
           <div className="container relative mx-auto px-4 md:px-6">
-            <div className="mx-auto max-w-3xl pt-32 text-center md:pt-36">
+            <div className="mx-auto max-w-4xl pt-32 text-center md:pt-36">
               <motion.div
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -79,15 +79,20 @@ export default function Home() {
                   className="inline-flex items-center gap-2 rounded-md bg-paper/10 px-3 py-2 font-mono text-[11px] uppercase tracking-[0.14em] text-paper/80 ring-1 ring-inset ring-paper/15 transition-colors hover:bg-paper/15 hover:text-paper"
                 >
                   <span className="h-2 w-2 bg-brand" />
-                  See what is open right now
+                  Work without the wait
                 </Link>
 
-                <h1 className="font-poster mt-7 text-[clamp(2.5rem,6.4vw,4.75rem)] font-bold leading-[0.98] text-paper">
-                  Get paid without chasing
+                {/* The second sentence is a block from md up, which is what puts
+                    the break after "Get it done." rather than wherever the line
+                    happens to run out. Inline below that, so a narrow screen
+                    wraps it on its own terms. */}
+                <h1 className="font-poster mt-7 text-balance text-[clamp(2.25rem,5.2vw,4rem)] font-bold leading-[1.02] text-paper">
+                  Find work. Get it done.{" "}
+                  <span className="md:block">Get paid faster.</span>
                 </h1>
 
                 <p className="mx-auto mt-6 max-w-xl text-[17px] leading-[1.6] text-paper/70">
-                  Roster splits every shoot into stages. The client funds each one
+                  Jayree splits every shoot into stages. The client funds each one
                   before it starts, you deliver, and the money is released when it
                   is approved. No invoicing into silence.
                 </p>
@@ -95,15 +100,15 @@ export default function Home() {
                 <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
                   <Button
                     asChild
-                    className="h-12 rounded-md bg-paper/10 px-7 font-mono text-[12px] uppercase tracking-[0.12em] text-paper ring-1 ring-inset ring-paper/20 hover:bg-paper/20"
+                    className="h-12 rounded-md bg-brand px-7 font-mono text-[12px] uppercase tracking-[0.12em] text-white hover:bg-brand-deep"
                   >
-                    <Link href="/projects">Browse the work</Link>
+                    <Link href="/projects">Find work</Link>
                   </Button>
                   <Button
                     asChild
-                    className="h-12 rounded-md bg-brand px-7 font-mono text-[12px] uppercase tracking-[0.12em] text-white hover:bg-brand-deep"
+                    className="h-12 rounded-md bg-paper/10 px-7 font-mono text-[12px] uppercase tracking-[0.12em] text-paper ring-1 ring-inset ring-paper/20 hover:bg-paper/20"
                   >
-                    <Link href="/login">Create a profile</Link>
+                    <Link href="/projects/new">Post a job</Link>
                   </Button>
                 </div>
               </motion.div>
@@ -159,7 +164,7 @@ export default function Home() {
 
         {/* ============ Three facts ============
              Ballance runs 82% / 10x / 54% here. Those are measurements, and
-             Roster has not measured anything yet -- inventing them would be
+             Jayree has not measured anything yet -- inventing them would be
              putting fabricated evidence on the front page of a product about
              trust. These are three things that are true by construction, set at
              the same weight, and they become real numbers the day there is
@@ -185,60 +190,119 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ============ Benefits, both sides ============
-             Two claims lists, each beside one sliding image track. Five bullets
-             a side became three: the last two on each were the weakest, and a
-             row that has to share height with a picture cannot carry five. */}
+        {/* ============ Both sides ============
+             Two claims lists, each beside one sliding image track. Four a side:
+             the list shares its height with the picture, so the rows have to
+             stay tall enough to read -- five was too many, three left the
+             column short beside a 1.18 frame.
+
+             Orange for freelancers, blue for clients. Both were solid slabs
+             of their colour, which put two of the loudest surfaces on the
+             site side by side and left the photographs inside fighting the
+             panel. They are dark cards now, each lit from its top corner by
+             its own colour -- the colour still says whose side you are on,
+             but the pictures and the type are what you look at.
+
+             Blue is the first cool colour on a deliberately warm site, so it
+             is kept deep: it has to read as the other half of a pair with the
+             persimmon, not as a different website. */}
         <section className="relative overflow-hidden border-b border-border bg-background py-20 md:py-24">
           <div className="container relative mx-auto px-4 md:px-6">
+            <div className="mx-auto mb-14 max-w-3xl text-center">
+              <span className="inline-flex items-center gap-2 rounded-md bg-secondary px-3 py-2 font-mono text-[11px] uppercase tracking-[0.14em] text-foreground/70 ring-1 ring-inset ring-border">
+                <span className="h-2 w-2 bg-brand" aria-hidden />
+                Built for both sides
+              </span>
+              <h2 className="font-poster mt-6 text-balance text-[clamp(1.9rem,3.4vw,2.75rem)] font-bold leading-tight tracking-tight">
+                Everything you need to make work happen.
+              </h2>
+              <p className="mx-auto mt-5 max-w-xl text-[17px] leading-[1.6] text-muted-foreground">
+                Whether you are a freelancer looking for the next opportunity or
+                a business that needs great work done, Jayree gives you the tools
+                to make it happen.
+              </p>
+            </div>
+
             <div className="grid gap-12 lg:grid-cols-2 lg:gap-14">
               {/* ---- Freelancers ---- */}
-              <div className="rounded-[1.75rem] bg-gradient-to-br from-[#0C2F2A] via-[#0A2622] to-[#061A17] p-7 shadow-[0_40px_80px_-50px_rgba(6,26,23,0.95)] md:p-9">
+              <div
+                className="rounded-[1.75rem] p-7 shadow-[0_40px_80px_-50px_rgba(0,0,0,0.9)] ring-1 ring-inset ring-white/10 md:p-9"
+                style={{
+                  background:
+                    "radial-gradient(120% 95% at 0% 0%, rgba(214,68,17,0.38), transparent 62%)," +
+                    "linear-gradient(158deg, #1e1711 0%, #16120e 56%, #100e0c 100%)",
+                }}
+              >
                 <ServiceSlider
                   tone="dark"
+                  accent="#f2703c"
                   eyebrow="For freelancers"
-                  heading="Shoot. Deliver. Get paid."
+                  heading="Find meaningful work and get paid without the chase."
                   items={[
                     {
-                      title: "Paid per stage",
-                      img: "/marketing/svc-paid-per-stage.webp",
-                      alt: "A photographer packing a lens away at the end of a shoot",
+                      title: "Discover relevant projects",
+                      img: "/marketing/svc-browse-city-craft.webp",
+                      alt: "A camera bag on a rooftop ledge above a city at dusk",
                     },
                     {
-                      title: "You agree the plan",
-                      img: "/marketing/svc-agree-the-plan.webp",
-                      alt: "Two people going through a plan together at a table",
+                      // STAND-IN. Swap for /marketing/svc-reusable-proposals.webp
+                      // once that image exists -- prompt G1 in
+                      // jayree-image-prompts.md.
+                      title: "Apply with reusable proposals",
+                      img: "/marketing/svc-see-the-plan.webp",
+                      alt: "Printed plan sheets laid out and squared up on a table",
                     },
                     {
-                      title: "Invoice in one click",
+                      title: "Manage work in one place",
                       img: "/marketing/svc-invoice-one-click.webp",
                       alt: "A hand resting on a laptop trackpad at a desk",
+                    },
+                    {
+                      title: "Get paid by milestone",
+                      img: "/marketing/svc-paid-per-stage.webp",
+                      alt: "A photographer packing a lens away at the end of a shoot",
                     },
                   ]}
                 />
               </div>
 
               {/* ---- Clients ---- */}
-              <div className="rounded-[1.75rem] bg-gradient-to-br from-[#D6440F] via-[#C03A0B] to-[#8F2A06] p-7 shadow-[0_40px_80px_-50px_rgba(143,42,6,0.85)] md:p-9">
+              <div
+                className="rounded-[1.75rem] p-7 shadow-[0_40px_80px_-50px_rgba(0,0,0,0.9)] ring-1 ring-inset ring-white/10 md:p-9"
+                style={{
+                  background:
+                    "radial-gradient(120% 95% at 0% 0%, rgba(29,111,184,0.42), transparent 62%)," +
+                    "linear-gradient(158deg, #111820 0%, #0e1319 56%, #0b0f13 100%)",
+                }}
+              >
                 <ServiceSlider
                   tone="dark"
+                  accent="#54a2ea"
                   eyebrow="For clients"
-                  heading="Book with confidence."
+                  heading="Find the right talent and get work done with confidence."
                   items={[
                     {
-                      title: "See the plan before you pay",
+                      title: "Post jobs in minutes",
                       img: "/marketing/svc-see-the-plan.webp",
                       alt: "Printed plan sheets laid out and squared up on a table",
                     },
                     {
-                      title: "Money moves on approval",
+                      title: "Review proposals and portfolios",
                       img: "/marketing/svc-money-on-approval.webp",
                       alt: "A photographic print held up to the window and examined",
                     },
                     {
-                      title: "Browse by city and craft",
-                      img: "/marketing/svc-browse-city-craft.webp",
-                      alt: "A camera bag on a rooftop ledge above a city at dusk",
+                      title: "Work with confidence using milestones",
+                      img: "/marketing/svc-agree-the-plan.webp",
+                      alt: "Two people going through a plan together at a table",
+                    },
+                    {
+                      // STAND-IN. Swap for /marketing/svc-everything-one-place.webp
+                      // once that image exists -- prompt G2 in
+                      // jayree-image-prompts.md.
+                      title: "Keep everything in one place",
+                      img: "/marketing/svc-invoice-one-click.webp",
+                      alt: "A hand resting on a laptop trackpad at a desk",
                     },
                   ]}
                 />
@@ -293,7 +357,7 @@ export default function Home() {
                         had seen anything. */}
                     <Link
                       href={`/projects/${p.id}`}
-                      className="group flex h-full flex-col rounded-2xl border border-border bg-white p-6 transition-all duration-300 hover:-translate-y-1 hover:border-ink/25 hover:shadow-[0_24px_48px_-32px_rgba(23,20,16,0.5)]"
+                      className="group flex h-full flex-col rounded-2xl border border-border bg-card p-6 transition-all duration-300 hover:-translate-y-1 hover:border-foreground/25 hover:shadow-[0_24px_48px_-32px_rgba(23,20,16,0.5)]"
                     >
                       <div className="mb-3 flex items-center justify-between gap-3">
                         <span className="text-[13px] text-muted-foreground">
@@ -340,7 +404,7 @@ export default function Home() {
                 ))}
               </motion.div>
             ) : (
-              <div className="rounded-2xl border border-dashed border-border bg-white px-6 py-16 text-center">
+              <div className="rounded-2xl border border-dashed border-border bg-card px-6 py-16 text-center">
                 <p className="font-poster mb-2 text-2xl font-bold">
                   No open shoots right now
                 </p>
@@ -349,7 +413,7 @@ export default function Home() {
                 </p>
                 <Button
                   asChild
-                  className="rounded-full bg-ink text-paper hover:bg-ink-soft"
+                  className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
                 >
                   <Link href="/login">Get started</Link>
                 </Button>
@@ -358,58 +422,98 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ============ How it works ============
-             Two halves of the same answer, side by side: what people hire for
-             on the left, how the money moves on the right. They were separate
-             full-width sections, which made the page repeat itself -- you
-             scrolled past a heading, then another heading, to learn two things
-             that belong together. */}
-        <section id="how-it-works" className="border-t border-border bg-white py-20 md:py-24">
-          <div className="container mx-auto px-4 md:px-6">
-            <div className="grid items-start gap-16 lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)] lg:gap-12">
-              {/* ---- What people hire for ---- */}
-              <div>
-                <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-foreground/45">
-                  Built for people who shoot
-                </p>
-                <h2 className="font-poster mt-3 text-[clamp(1.55rem,2.4vw,2rem)] font-bold leading-tight">
-                  What Roster does
-                </h2>
-                <div className="mt-7 rounded-2xl bg-[#e9e4db] px-4 py-6">
-                  <CraftDeck captureWheel={false} height="min(58vh, 520px)" />
-                </div>
-              </div>
+        {/* ============ What people hire for ============
+             A full-viewport band, so the cylinder has room to turn. It sits
+             directly above the process because the two answer different
+             questions in order: what people are hired for, then how the job
+             runs. */}
+        <CraftCarousel
+          className="border-t border-border"
+          eyebrow="Built for people who shoot"
+          heading="What Jayree does"
+          description="Drag to explore. Select an image to expand."
+          images={[
+            {
+              src: "/marketing/cat-photography.webp",
+              alt: "A photographer shooting handheld in available light",
+              caption: "Photography",
+            },
+            {
+              src: "/marketing/cat-videography.webp",
+              alt: "A camera operator filming with a rig on location",
+              caption: "Videography",
+            },
+            {
+              src: "/marketing/cat-video-editing.webp",
+              alt: "An editor cutting footage at a colour-graded desk",
+              caption: "Video editing",
+            },
+            {
+              src: "/marketing/cat-photo-editing.webp",
+              alt: "A retoucher culling and grading stills on screen",
+              caption: "Photo editing",
+            },
+            {
+              src: "/marketing/cat-motion-graphics.webp",
+              alt: "A motion designer building titles and lower thirds",
+              caption: "Motion graphics",
+            },
+            {
+              src: "/marketing/cat-drone-aerial.webp",
+              alt: "A drone pilot flying for an aerial shot at golden hour",
+              caption: "Drone & aerial",
+            },
+          ]}
+        />
 
-              {/* ---- How the money moves ---- */}
-              <div>
-                <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-foreground/45">
-                  How it works
-                </p>
-                <h2 className="font-poster mt-3 text-[clamp(1.55rem,2.4vw,2rem)] font-bold leading-tight">
-                  Post. Pick. Pay in stages.
-                </h2>
-                <ProcessTimeline
-                  className="mt-7"
-                  steps={[
-                    {
-                      title: "Post the work",
-                      description:
-                        "Write a brief and set a budget. That is all it takes to go live.",
-                    },
-                    {
-                      title: "Pick your person",
-                      description:
-                        "Compare bids on price, approach and track record.",
-                    },
-                    {
-                      title: "Pay stage by stage",
-                      description:
-                        "Agree the split, fund each stage, release it on approval.",
-                    },
-                  ]}
-                />
-              </div>
+        {/* ============ How it works ============
+             Five steps in a row rather than a zigzag down the page. Both
+             audiences are named in the first step, because the process is one
+             process and it starts from either end. */}
+        <section id="how-it-works" className="border-t border-border bg-card py-20 md:py-24">
+          <div className="container mx-auto px-4 md:px-6">
+            <div className="mx-auto max-w-2xl text-center">
+              <span className="inline-flex items-center gap-2 rounded-md bg-secondary px-3 py-2 font-mono text-[11px] uppercase tracking-[0.14em] text-foreground/70 ring-1 ring-inset ring-border">
+                <span className="h-2 w-2 bg-brand" aria-hidden />
+                How it works
+              </span>
+              <h2 className="font-poster mt-6 text-balance text-[clamp(1.75rem,3.2vw,2.6rem)] font-bold leading-tight tracking-tight">
+                From brief to payment, all in one place.
+              </h2>
+              <p className="mx-auto mt-5 max-w-xl text-[17px] leading-[1.6] text-muted-foreground">
+                Jayree makes it easy to go from idea to completion, with a clear
+                process for both freelancers and clients.
+              </p>
             </div>
+            <ProcessTimeline
+              className="mt-14"
+              steps={[
+                {
+                  title: "Post or find work",
+                  description:
+                    "Freelancers browse opportunities, or clients post a job.",
+                },
+                {
+                  title: "Agree on milestones",
+                  description:
+                    "Set clear deliverables, timelines and payment stages.",
+                },
+                {
+                  title: "Get to work",
+                  description:
+                    "Collaborate, share files and track progress in one place.",
+                },
+                {
+                  title: "Review and approve",
+                  description:
+                    "Clients review the work and approve each milestone.",
+                },
+                {
+                  title: "Get paid",
+                  description: "Funds are released securely, on time.",
+                },
+              ]}
+            />
           </div>
         </section>
 
@@ -418,7 +522,7 @@ export default function Home() {
           <div className="container mx-auto px-4 md:px-6">
             <motion.div
               {...fadeUp}
-              className="rounded-2xl border border-ink/15 bg-brand-soft px-8 py-16 text-center md:py-20"
+              className="rounded-2xl border border-foreground/15 bg-brand-soft px-8 py-16 text-center md:py-20"
             >
               <h2 className="font-poster mx-auto mb-6 max-w-2xl text-[clamp(1.9rem,3.4vw,2.75rem)] font-bold leading-tight">
                 Post a project, or find your next one
@@ -430,7 +534,7 @@ export default function Home() {
                 <Button
                   asChild
                   size="lg"
-                  className="h-14 rounded-full bg-ink px-10 text-base text-paper hover:bg-ink-soft"
+                  className="h-14 rounded-full bg-primary px-10 text-base text-primary-foreground hover:bg-primary/90"
                 >
                   <Link href="/login">
                     Get started <ArrowRight className="ml-2 h-5 w-5" />
@@ -440,7 +544,7 @@ export default function Home() {
                   asChild
                   size="lg"
                   variant="outline"
-                  className="h-14 rounded-full border-ink/20 px-10 text-base"
+                  className="h-14 rounded-full border-foreground/20 px-10 text-base"
                 >
                   <Link href="/projects">Browse projects</Link>
                 </Button>

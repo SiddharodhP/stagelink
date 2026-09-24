@@ -1,4 +1,4 @@
-# Roster
+# jayree.io
 
 A freelance marketplace built on **structured milestones, competitive bidding,
 and escrow-protected payments**.

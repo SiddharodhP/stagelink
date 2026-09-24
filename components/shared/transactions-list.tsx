@@ -17,9 +17,9 @@ const TYPE_META: Record<
   string,
   { label: string; icon: typeof Wallet; tone: string }
 > = {
-  escrow_fund: { label: "Funded into escrow", icon: ArrowUpRight, tone: "text-amber-700" },
-  release: { label: "Released", icon: ArrowDownLeft, tone: "text-emerald-700" },
-  refund: { label: "Refunded", icon: RotateCcw, tone: "text-sky-700" },
+  escrow_fund: { label: "Funded into escrow", icon: ArrowUpRight, tone: "text-amber-700 dark:text-amber-300" },
+  release: { label: "Released", icon: ArrowDownLeft, tone: "text-emerald-700 dark:text-emerald-300" },
+  refund: { label: "Refunded", icon: RotateCcw, tone: "text-sky-700 dark:text-sky-300" },
 };
 
 /** Shared payment ledger — labelled from the viewer's perspective. */
@@ -102,7 +102,7 @@ export function TransactionsList({ profile }: { profile: Profile }) {
       {loading ? (
         <SkeletonRows count={4} height={72} />
       ) : transactions.length > 0 ? (
-        <div className="overflow-hidden rounded-xl border border-border bg-white">
+        <div className="overflow-hidden rounded-xl border border-border bg-card">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border text-left">
@@ -136,7 +136,7 @@ export function TransactionsList({ profile }: { profile: Profile }) {
                     <td
                       className={cn(
                         "whitespace-nowrap px-5 py-4 text-right font-display text-base font-semibold",
-                        incoming ? "text-emerald-700" : ""
+                        incoming ? "text-emerald-700 dark:text-emerald-300" : ""
                       )}
                     >
                       {incoming ? "+" : ""}

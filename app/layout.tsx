@@ -11,6 +11,8 @@ import {
   websiteJsonLd,
 } from "@/lib/seo";
 import { JsonLd } from "@/components/shared/json-ld";
+import { ThemeScript } from "@/components/theme/theme-script";
+import { ThemeProvider } from "@/components/theme/theme-provider";
 
 const instrument = Instrument_Sans({
   variable: "--font-instrument",
@@ -93,26 +95,36 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
+    // suppressHydrationWarning because the theme script may add `light`
+    // to this element before React hydrates, which React would otherwise
+    // report as a server/client mismatch on the class attribute.
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${instrument.variable} ${fraunces.variable} ${archivo.variable}`}
     >
       <head>
+        {/* First thing in <head>: it has to run before the first paint. */}
+        <ThemeScript />
         <JsonLd data={[organizationJsonLd(), websiteJsonLd()]} />
       </head>
       <body className="min-h-screen bg-background text-foreground font-sans antialiased">
-        {children}
-        <Toaster
-          position="bottom-right"
-          toastOptions={{
-            style: {
-              background: "#ffffff",
-              border: "1px solid rgba(26, 23, 19, 0.12)",
-              color: "#1a1713",
-              boxShadow: "0 18px 40px -18px rgba(26, 23, 19, 0.25)",
-            },
-          }}
-        />
+        <ThemeProvider>
+          {children}
+          {/* Sonner renders outside the app tree and takes inline styles, so
+              it reads the raw variables rather than Tailwind utilities. */}
+          <Toaster
+            position="bottom-right"
+            toastOptions={{
+              style: {
+                background: "var(--popover)",
+                border: "1px solid var(--border)",
+                color: "var(--popover-fg)",
+                boxShadow: "0 18px 40px -18px var(--card-shadow)",
+              },
+            }}
+          />
+        </ThemeProvider>
       </body>
     </html>
   );

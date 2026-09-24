@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
-import { APP_NAME } from "@/lib/constants";
+import { APP_NAME, BRAND_NAME } from "@/lib/constants";
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
@@ -54,7 +54,7 @@ export function Footer() {
             <h3 className="eyebrow mb-4 !text-white/40">For freelancers</h3>
             <ul className="space-y-3">
               <li><Link href="/projects" className="text-sm text-white/60 transition-colors hover:text-white">Find work</Link></li>
-              <li><Link href="/#for-freelancers" className="text-sm text-white/60 transition-colors hover:text-white">Why {APP_NAME}</Link></li>
+              <li><Link href="/#for-freelancers" className="text-sm text-white/60 transition-colors hover:text-white">Why {BRAND_NAME}</Link></li>
               <li><Link href="/login" className="text-sm text-white/60 transition-colors hover:text-white">Freelancer login</Link></li>
             </ul>
           </div>
@@ -71,7 +71,7 @@ export function Footer() {
 
         <div className="flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 md:flex-row">
           <p className="text-xs text-white/40">
-            &copy; {currentYear} {APP_NAME} Inc. All rights reserved.
+            &copy; {currentYear} {APP_NAME}. All rights reserved.
           </p>
           <div className="flex gap-6">
             <Link href="/terms" className="text-xs text-white/40 transition-colors hover:text-white">Terms of Service</Link>

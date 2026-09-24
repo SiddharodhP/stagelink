@@ -17,8 +17,8 @@ import nodemailer from "nodemailer";
 
 const GMAIL_USER = process.env.GMAIL_USER;
 const GMAIL_APP_PASSWORD = process.env.GMAIL_APP_PASSWORD;
-/** Optional display name, e.g. "Roster Invoices". Falls back to the address. */
-const MAIL_FROM_NAME = process.env.MAIL_FROM_NAME || "Roster";
+/** Optional display name, e.g. "jayree.io Invoices". Falls back to the address. */
+const MAIL_FROM_NAME = process.env.MAIL_FROM_NAME || "jayree.io";
 
 export function isMailConfigured() {
   return Boolean(GMAIL_USER && GMAIL_APP_PASSWORD);

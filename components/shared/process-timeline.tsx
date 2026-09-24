@@ -1,12 +1,8 @@
-"use client";
-
-import { useCallback, useEffect, useRef, useState } from "react";
-
 /**
  * Pinned-note process timeline.
  *
- * Steps as note cards tacked to a ruled board, staggered left and right, joined
- * by one curved dashed route whose dashes travel along it.
+ * Steps as note cards tacked in a row to a ruled board, all hanging off one
+ * dashed line whose dashes travel along it.
  *
  * ADAPTATIONS FROM THE BRIEF
  *
@@ -19,10 +15,31 @@ import { useCallback, useEffect, useRef, useState } from "react";
  * Step numbers are set in the poster face rather than a handwritten one. A
  * third typeface for a decorative numeral is a lot to carry for one component;
  * the pinned-note character comes from the pin, the tilt, the pale panels and
- * the dashed route.
+ * the dashed line.
  *
- * No dark mode. This project sets color-scheme: light and defines no dark
- * theme, so dark: variants here would be code nobody could see or test.
+ * The notes follow the theme. They were pale paper in both, on the argument
+ * that a pinned note is paper -- but five cream rectangles are the brightest
+ * thing on a near-black page by a wide margin, and they read as cut-outs
+ * pasted over the site rather than as part of it. Dark tints of the same
+ * three accents keep each step's colour doing its job at a fraction of the
+ * glare.
+ *
+ * Dark values are the base and light ones sit behind the `light:` variant,
+ * because dark is this site's default -- see app/globals.css.
+ *
+ * HORIZONTAL, AND WHY THE FIXED STAGE WENT
+ *
+ * The notes used to zigzag down a 1000x1130 coordinate space, scaled as a
+ * whole to fit its column, so that a hand-drawn curve could meet each card
+ * exactly. In a row that space would have to be 1400 wide and would scale
+ * down to about 0.75 in a real container -- which shrinks the 14px note text
+ * to 10px, because scaling a stage scales its type too.
+ *
+ * So the row is an ordinary flex row that reflows, and the connector is one
+ * straight dashed line at pin height rather than a curve between each pair.
+ * With five notes across, the gaps are about 24px wide; a curve drawn through
+ * one of those is not a curve anybody can see. A single line the notes are
+ * pegged to is legible at any width and needs no coordinate space at all.
  */
 
 export type TimelineStep = {
@@ -39,58 +56,36 @@ const ACCENTS: Record<
   { panel: string; border: string; ink: string }
 > = {
   brand: {
-    panel: "bg-[#fbe9e0]",
-    border: "border-[#e8c4b3]",
-    ink: "text-[#c23d0d]",
+    panel: "bg-[#2a1610] light:bg-[#fbe9e0]",
+    border: "border-[#6b3420] light:border-[#e8c4b3]",
+    ink: "text-[#f0703c] light:text-[#c23d0d]",
   },
   amber: {
-    panel: "bg-[#fbf0dd]",
-    border: "border-[#e6cfa6]",
-    ink: "text-[#96500a]",
+    panel: "bg-[#2a2011] light:bg-[#fbf0dd]",
+    border: "border-[#67512a] light:border-[#e6cfa6]",
+    ink: "text-[#e0a13f] light:text-[#96500a]",
   },
   green: {
-    panel: "bg-[#e6f0e9]",
-    border: "border-[#bcd6c5]",
-    ink: "text-[#1d6b41]",
+    panel: "bg-[#13261c] light:bg-[#e6f0e9]",
+    border: "border-[#33614a] light:border-[#bcd6c5]",
+    ink: "text-[#56b27e] light:text-[#1d6b41]",
   },
 };
 
 const ORDER: AccentName[] = ["brand", "amber", "green"];
 
-/** The coordinate space the board and its curve are drawn in. */
-const STAGE_WIDTH = 1000;
-
-/** Desktop stage height grows with the number of steps. */
-const STAGE_HEIGHT: Record<number, number> = {
-  1: 400,
-  2: 450,
-  3: 800,
-  4: 900,
-  5: 1130,
-};
+/**
+ * Tilts, in degrees. Not strictly alternating: five identical mirror images in
+ * a row reads as a pattern rather than as notes somebody pinned up.
+ */
+const TILT = [-3, 2.5, -2, 3, -2.5];
 
 /**
- * Desktop placement, in the 1000x1130 coordinate space the connector is drawn
- * in. Left cards lean clockwise, right cards lean back, both by 8 degrees.
+ * Distance from the top of a card to the middle of its pin -- half of the
+ * 32px pin, now that nothing sits above it. The dashed line runs at this
+ * height, so the pins land on it.
  */
-const SLOTS = [
-  { side: "left" as const, x: 70, y: 20, rotate: 8 },
-  { side: "right" as const, x: 650, y: 280, rotate: -8 },
-  { side: "left" as const, x: 130, y: 540, rotate: 8 },
-  { side: "right" as const, x: 640, y: 790, rotate: -8 },
-  { side: "left" as const, x: 90, y: 1040, rotate: 8 },
-];
-
-/**
- * One continuous route, cut to the number of steps in play. Each entry is the
- * curve reaching the next card, so n steps use the first n-1 of them.
- */
-const LEGS = [
-  "M 348 232 C 470 292 548 296 652 372",
-  "C 612 482 502 548 412 638",
-  "C 520 700 580 730 640 838",
-  "C 540 930 400 960 300 1046",
-];
+const PIN_CENTRE = 16;
 
 function PushPin({ className }: { className?: string }) {
   return (
@@ -120,17 +115,19 @@ function Card({
   const a = ACCENTS[accent];
   return (
     <>
-      <PushPin className={`mx-auto mb-6 ${a.ink}`} />
-      <div className={`rounded-[15px] border p-[15px] ${a.panel} ${a.border}`}>
+      <PushPin className={`mx-auto mb-5 ${a.ink}`} />
+      <div
+        className={`flex flex-1 flex-col rounded-[15px] border p-[15px] shadow-[0_18px_36px_-16px_var(--card-shadow)] ${a.panel} ${a.border}`}
+      >
         <p
-          className={`font-poster text-[36px] font-bold leading-none tabular-nums ${a.ink}`}
+          className={`font-poster text-[32px] font-bold leading-none tabular-nums ${a.ink}`}
         >
           {String(index + 1).padStart(2, "0")}
         </p>
-        <h3 className="mt-5 text-[24px] font-semibold leading-tight tracking-tight text-foreground">
+        <h3 className="mt-4 text-balance text-[19px] font-semibold leading-tight tracking-tight text-foreground">
           {step.title}
         </h3>
-        <p className="mt-2 text-[14px] leading-[20px] tracking-[-0.01em] text-muted-foreground">
+        <p className="mt-2 text-[13.5px] leading-[19px] tracking-[-0.01em] text-muted-foreground">
           {step.description}
         </p>
       </div>
@@ -146,128 +143,85 @@ export function ProcessTimeline({
   className?: string;
 }) {
   const list = steps.slice(0, 5);
-  const height = STAGE_HEIGHT[list.length] ?? 800;
-  const path = LEGS.slice(0, Math.max(0, list.length - 1)).join(" ");
 
-  /**
-   * The desktop board is laid out in a fixed 1000px coordinate space, which is
-   * what lets the cards and the curve share one set of numbers. To live in a
-   * column narrower than that it scales as a whole rather than reflowing, so
-   * the curve still meets the cards exactly.
-   */
-  const fitRef = useRef<HTMLDivElement | null>(null);
-  const [scale, setScale] = useState(1);
-
-  const fit = useCallback(() => {
-    const el = fitRef.current;
-    if (!el) return;
-    setScale(Math.min(1, el.clientWidth / STAGE_WIDTH));
-  }, []);
-
-  useEffect(() => {
-    fit();
-    const el = fitRef.current;
-    if (!el) return;
-    const ro = new ResizeObserver(fit);
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, [fit]);
-
-  const shell =
-    "rounded-[25px] border border-border bg-white p-[8px] shadow-[0_10px_24px_-12px_rgba(23,20,16,0.28)]";
+  // Each note used to sit on a rounded `bg-card` mount. On a light page that
+  // read as white board-backing behind a coloured note. On a dark one the
+  // mount is the same colour as the section it sits in, so five of them in a
+  // row merged into a single black bar with the notes stuck to it, and the
+  // pin floated in dead space above each one. The note is pinned straight to
+  // the board now -- which is what a pinned note is -- and carries its own
+  // shadow.
+  const mount = "flex h-full flex-col";
 
   return (
     <section className={className}>
-      <div className="relative overflow-hidden">
+      <div className="relative overflow-hidden py-2">
         {/* Ruled board */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 bg-[repeating-linear-gradient(to_bottom,rgba(26,23,19,0.055)_0px,rgba(26,23,19,0.055)_1px,transparent_1px,transparent_32px)]"
+          className="pointer-events-none absolute inset-0 bg-[repeating-linear-gradient(to_bottom,var(--board-rule)_0px,var(--board-rule)_1px,transparent_1px,transparent_32px)]"
         />
-        {/* Edges fade so the ruling does not run into the page */}
+        {/* Edges fade so the ruling does not run into the page. They fade to
+            `card` because that is the section's own ground -- fading to
+            `background` laid a subtly wrong colour down both sides. No
+            z-index: they must stay under the notes, which a row pushes right
+            up to both edges. */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-y-0 left-0 w-28 bg-gradient-to-r from-white to-transparent"
+          className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-card to-transparent"
         />
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-y-0 right-0 w-28 bg-gradient-to-l from-white to-transparent"
+          className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-card to-transparent"
         />
 
         <div className="relative">
-          {/* ---------- Mobile: a plain column ---------- */}
-          <ol className="flex flex-col gap-8 lg:hidden">
+          {/* The line the notes hang from. Behind them, so it shows only in
+              the gaps and appears to run through each card at pin height. */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute left-0 right-0 hidden h-px motion-safe:animate-[dash-slide_1.6s_linear_infinite] lg:block"
+            style={{
+              top: PIN_CENTRE,
+              backgroundImage:
+                "repeating-linear-gradient(to right, var(--board-route) 0 8px, transparent 8px 14px)",
+            }}
+          />
+
+          {/* ---------- Mobile and tablet: a plain column ---------- */}
+          <ol className="relative flex flex-col gap-8 lg:hidden">
             {list.map((step, i) => (
-              <li key={step.title} className={shell}>
-                <Card
-                  step={step}
-                  index={i}
-                  accent={step.accent ?? ORDER[i % ORDER.length]}
-                />
+              <li key={step.title}>
+                <div className={mount}>
+                  <Card
+                    step={step}
+                    index={i}
+                    accent={step.accent ?? ORDER[i % ORDER.length]}
+                  />
+                </div>
               </li>
             ))}
           </ol>
 
-          {/* ---------- Desktop: pinned to the board ---------- */}
-          <div
-            ref={fitRef}
-            className="relative mx-auto hidden overflow-hidden lg:block"
-            style={{ height: height * scale }}
-          >
-            <div
-              className="absolute left-1/2 top-0 origin-top"
-              style={{
-                width: STAGE_WIDTH,
-                height,
-                transform: `translateX(-50%) scale(${scale})`,
-              }}
-            >
-            <svg
-              aria-hidden
-              focusable="false"
-              viewBox={`0 0 1000 ${height}`}
-              className="pointer-events-none absolute inset-0 h-full w-full"
-            >
-              {path && (
-                <path
-                  d={path}
-                  fill="none"
-                  stroke="rgba(26,23,19,0.22)"
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                  strokeDasharray="8 6"
-                  /* 14 = dash + gap, so one cycle lands exactly on the next
-                     dash and the loop has no visible seam. */
-                  className="motion-safe:[animation:dash-travel_3s_linear_infinite]"
-                />
-              )}
-            </svg>
-
-            <ol className="contents">
-              {list.map((step, i) => {
-                const slot = SLOTS[i];
-                return (
-                  <li
-                    key={step.title}
-                    className="absolute w-[280px]"
-                    style={{ left: slot.x, top: slot.y }}
-                  >
-                    <article
-                      className={`${shell} origin-center transition-transform duration-300 ease-out hover:z-20 motion-safe:hover:scale-[1.05]`}
-                      style={{ rotate: `${slot.rotate}deg` }}
-                    >
-                      <Card
-                        step={step}
-                        index={i}
-                        accent={step.accent ?? ORDER[i % ORDER.length]}
-                      />
-                    </article>
-                  </li>
-                );
-              })}
-            </ol>
-            </div>
-          </div>
+          {/* ---------- Desktop: pinned across the board ----------
+               items-stretch, so five notes with one, two and three line
+               titles still end level with each other. */}
+          <ol className="relative hidden items-stretch gap-6 lg:flex">
+            {list.map((step, i) => (
+              <li key={step.title} className="min-w-0 flex-1">
+                <article
+                  className={`${mount} origin-center transition-transform duration-300 ease-out hover:z-20 motion-safe:hover:scale-[1.05]`}
+                  style={{ rotate: `${TILT[i % TILT.length]}deg` }}
+                >
+                  <Card
+                    step={step}
+                    index={i}
+                    accent={step.accent ?? ORDER[i % ORDER.length]}
+                  />
+                </article>
+              </li>
+            ))}
+          </ol>
         </div>
       </div>
     </section>

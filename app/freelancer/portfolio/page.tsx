@@ -97,7 +97,7 @@ function PortfolioPage({ profile }: { profile: Profile }) {
         description="Proof of what you can do — clients look here before awarding work."
         action={
           <Button
-            className="rounded-full bg-ink px-6 text-paper hover:bg-ink-soft"
+            className="rounded-full bg-primary px-6 text-primary-foreground hover:bg-primary/90"
             onClick={() => setOpen(true)}
           >
             <Plus className="mr-2 h-4 w-4" /> Add work
@@ -112,7 +112,7 @@ function PortfolioPage({ profile }: { profile: Profile }) {
           {items.map((item) => (
             <article
               key={item.id}
-              className="card-lift group overflow-hidden rounded-xl border border-border bg-white"
+              className="card-lift group overflow-hidden rounded-xl border border-border bg-card"
             >
               {item.image_url ? (
                 <div className="relative aspect-[4/3] overflow-hidden bg-secondary">
@@ -135,7 +135,7 @@ function PortfolioPage({ profile }: { profile: Profile }) {
                   <button
                     onClick={() => remove(item.id)}
                     aria-label="Delete portfolio item"
-                    className="shrink-0 text-muted-foreground opacity-0 transition-opacity hover:text-red-600 group-hover:opacity-100"
+                    className="shrink-0 text-muted-foreground opacity-0 transition-opacity hover:text-red-600 dark:hover:text-red-400 group-hover:opacity-100"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
@@ -256,7 +256,7 @@ function PortfolioPage({ profile }: { profile: Profile }) {
               Cancel
             </Button>
             <Button
-              className="rounded-full bg-ink text-paper hover:bg-ink-soft"
+              className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
               onClick={save}
               disabled={saving}
             >

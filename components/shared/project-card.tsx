@@ -97,7 +97,7 @@ export function ProjectCard({ project, saved, onToggleSave, showSave }: ProjectC
             onToggleSave?.(project.id, !saved);
           }}
           aria-label={saved ? "Unsave project" : "Save project"}
-          className="absolute right-4 top-4 z-20 rounded-full border border-border bg-white p-2 shadow-sm transition-colors hover:border-ink/40"
+          className="absolute right-4 top-4 z-20 rounded-full border border-border bg-card p-2 shadow-sm transition-colors hover:border-foreground/40"
         >
           <Heart className={cn("h-4 w-4", saved ? "fill-brand text-brand" : "text-foreground/50")} />
         </button>

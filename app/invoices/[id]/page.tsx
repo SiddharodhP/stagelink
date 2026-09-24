@@ -218,7 +218,7 @@ function InvoiceDetail({ profile }: { profile: Profile }) {
 
           {canPay && (
             <Button
-              className="rounded-full bg-ink text-paper hover:bg-ink-soft"
+              className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
               disabled={busy}
               onClick={() =>
                 run(
@@ -239,7 +239,7 @@ function InvoiceDetail({ profile }: { profile: Profile }) {
           {canCancel && (
             <Button
               variant="ghost"
-              className="rounded-full text-muted-foreground hover:text-red-600"
+              className="rounded-full text-muted-foreground hover:text-red-600 dark:hover:text-red-400"
               disabled={busy}
               onClick={() => run(() => cancelInvoice(invoice.id), "Invoice withdrawn")}
             >
@@ -250,7 +250,7 @@ function InvoiceDetail({ profile }: { profile: Profile }) {
       </div>
 
       {/* The document itself */}
-      <article className="rounded-xl border border-border bg-white p-8 md:p-12 print:border-0 print:p-0">
+      <article className="rounded-xl border border-border bg-card p-8 md:p-12 print:border-0 print:p-0">
         <header className="mb-10 flex flex-wrap items-start justify-between gap-6 border-b border-border pb-8">
           <div>
             <div className="mb-3 flex items-baseline gap-1.5">
@@ -281,7 +281,7 @@ function InvoiceDetail({ profile }: { profile: Profile }) {
               {invoice.paid_at && (
                 <div className="flex justify-end gap-3">
                   <dt className="text-muted-foreground">Paid</dt>
-                  <dd className="font-medium text-emerald-700">
+                  <dd className="font-medium text-emerald-700 dark:text-emerald-300">
                     {formatDate(invoice.paid_at)}
                   </dd>
                 </div>
@@ -452,7 +452,7 @@ function InvoiceDetail({ profile }: { profile: Profile }) {
               Cancel
             </Button>
             <Button
-              className="rounded-full bg-ink text-paper hover:bg-ink-soft"
+              className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
               disabled={sending}
               onClick={sendEmail}
             >

@@ -81,7 +81,7 @@ export function buildOverdueEmail(invoice: Invoice) {
     ``,
     `Pay it here: ${url}`,
     ``,
-    `Payment is collected and passed on by Roster — you are not sending money directly to the freelancer.`,
+    `Payment is collected and passed on by Jayree — you are not sending money directly to the freelancer.`,
     ``,
     `If you believe this invoice is wrong, open it and raise a dispute instead of ignoring it.`,
   ]
@@ -102,7 +102,7 @@ export function buildOverdueEmail(invoice: Invoice) {
 
           <tr>
             <td style="padding:26px 32px 0 32px;">
-              <span style="font-size:20px;font-weight:700;letter-spacing:-0.3px;">Roster</span><span style="color:#d6440f;">&nbsp;&bull;</span>
+              <span style="font-size:20px;font-weight:700;letter-spacing:-0.3px;">jayree.io</span><span style="color:#d6440f;">&nbsp;&bull;</span>
             </td>
           </tr>
 
@@ -151,7 +151,7 @@ export function buildOverdueEmail(invoice: Invoice) {
           <tr>
             <td style="padding:24px 32px 30px 32px;">
               <p style="margin:0;padding-top:18px;border-top:1px solid rgba(26,23,19,0.12);font-size:13px;line-height:1.55;color:#6f695e;">
-                Payment is collected and passed on by Roster — you are not sending
+                Payment is collected and passed on by Jayree — you are not sending
                 money directly to ${fromName}. If you believe this invoice is wrong,
                 open it and raise a dispute rather than ignoring it; reminders stop
                 either way.
@@ -161,7 +161,7 @@ export function buildOverdueEmail(invoice: Invoice) {
         </table>
 
         <p style="max-width:560px;margin:16px auto 0 auto;font-size:12px;color:#9a9488;text-align:center;">
-          Sent via Roster &middot; <a href="${SITE_URL}" style="color:#9a9488;">${SITE_URL.replace(/^https?:\/\//, "")}</a>
+          Sent via <a href="${SITE_URL}" style="color:#9a9488;">${SITE_URL.replace(/^https?:\/\//, "")}</a>
         </p>
       </td>
     </tr>

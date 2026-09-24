@@ -73,7 +73,7 @@ try {
     aud: "jitsi",
     iss: "chat",
     sub: APP_ID,
-    room: "roster-verify-only",
+    room: "jayree-verify-only",
     context: {
       user: { id: "verify", name: "Verification", moderator: "true" },
       features: { recording: false, livestreaming: false },

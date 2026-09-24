@@ -66,7 +66,7 @@ function Dashboard({ profile }: { profile: Profile }) {
       setStats({ rating: p.data?.avg_rating || 0, reviews: p.data?.total_reviews || 0 });
       setLoading(false);
 
-      // Only reach out to the external board when Roster has nothing to
+      // Only reach out to the external board when Jayree has nothing to
       // show — no wasted request on an active marketplace.
       if (r.data.length === 0) {
         setLoadingExternal(true);
@@ -127,7 +127,7 @@ function Dashboard({ profile }: { profile: Profile }) {
         }
         description="Your bids, active work, and what needs delivering next."
         action={
-          <Button asChild className="rounded-full bg-ink px-6 text-paper hover:bg-ink-soft">
+          <Button asChild className="rounded-full bg-primary px-6 text-primary-foreground hover:bg-primary/90">
             <Link href="/projects">
               <Compass className="mr-2 h-4 w-4" /> Find work
             </Link>
@@ -136,9 +136,9 @@ function Dashboard({ profile }: { profile: Profile }) {
       />
 
       {completion < 100 && (
-        <div className="mb-8 flex flex-col items-start justify-between gap-4 rounded-xl border border-amber-200 bg-amber-50 p-6 md:flex-row md:items-center">
+        <div className="mb-8 flex flex-col items-start justify-between gap-4 rounded-xl border border-amber-200 dark:border-amber-500/30 bg-amber-50 dark:bg-amber-500/15 p-6 md:flex-row md:items-center">
           <div className="flex items-start gap-4">
-            <div className="rounded-full bg-amber-100 p-2.5 text-amber-700">
+            <div className="rounded-full bg-amber-100 dark:bg-amber-500/20 p-2.5 text-amber-700 dark:text-amber-300">
               <AlertTriangle className="h-5 w-5" />
             </div>
             <div>
@@ -151,7 +151,7 @@ function Dashboard({ profile }: { profile: Profile }) {
               </p>
             </div>
           </div>
-          <Button asChild className="rounded-full bg-ink text-paper hover:bg-ink-soft">
+          <Button asChild className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90">
             <Link href="/settings/profile">Finish profile</Link>
           </Button>
         </div>
@@ -196,7 +196,7 @@ function Dashboard({ profile }: { profile: Profile }) {
               <li key={c.id}>
                 <Link
                   href={`/contracts/${c.id}`}
-                  className="flex items-center justify-between gap-4 rounded-lg bg-white px-4 py-3 transition-colors hover:bg-white/70"
+                  className="flex items-center justify-between gap-4 rounded-lg bg-card px-4 py-3 transition-colors hover:bg-card/70"
                 >
                   <span className="min-w-0">
                     <span className="block truncate text-sm font-medium">
@@ -214,7 +214,7 @@ function Dashboard({ profile }: { profile: Profile }) {
               <li key={milestone.id}>
                 <Link
                   href={`/contracts/${contract.id}`}
-                  className="flex items-center justify-between gap-4 rounded-lg bg-white px-4 py-3 transition-colors hover:bg-white/70"
+                  className="flex items-center justify-between gap-4 rounded-lg bg-card px-4 py-3 transition-colors hover:bg-card/70"
                 >
                   <span className="min-w-0">
                     <span className="block truncate text-sm font-medium">
@@ -238,7 +238,7 @@ function Dashboard({ profile }: { profile: Profile }) {
 
       <div className="mb-6 grid gap-6 lg:grid-cols-2">
         {/* Bids */}
-        <section className="rounded-xl border border-border bg-white">
+        <section className="rounded-xl border border-border bg-card">
           <div className="flex items-center justify-between border-b border-border px-6 py-5">
             <h2 className="font-display text-xl font-semibold">Recent bids</h2>
             <Link
@@ -284,7 +284,7 @@ function Dashboard({ profile }: { profile: Profile }) {
         </section>
 
         {/* Profile strength */}
-        <section className="rounded-xl border border-border bg-white p-6">
+        <section className="rounded-xl border border-border bg-card p-6">
           <h2 className="font-display mb-1 text-xl font-semibold">Profile strength</h2>
           <p className="mb-5 text-sm text-muted-foreground">
             The first thing a client checks after your price.
@@ -307,7 +307,7 @@ function Dashboard({ profile }: { profile: Profile }) {
             {checklist.map((item) => (
               <li key={item.label} className="flex items-center gap-3 text-sm">
                 <CheckCircle2
-                  className={cn("h-4 w-4", item.done ? "text-emerald-600" : "text-border")}
+                  className={cn("h-4 w-4", item.done ? "text-emerald-600 dark:text-emerald-400" : "text-border")}
                 />
                 <span className={item.done ? "text-foreground/80" : "text-muted-foreground"}>
                   {item.label}
@@ -324,7 +324,7 @@ function Dashboard({ profile }: { profile: Profile }) {
         </section>
       </div>
 
-      {/* Recommended projects. With nothing to match on Roster yet, fall back
+      {/* Recommended projects. With nothing to match on Jayree yet, fall back
           to real external freelance listings rather than a dead-end empty
           state — showing work beats announcing there is none. */}
       {recommended.length > 0 ? (
@@ -362,7 +362,7 @@ function Dashboard({ profile }: { profile: Profile }) {
                 Freelance work elsewhere
               </h2>
               <p className="mt-1 text-sm text-muted-foreground">
-                Nothing on Roster matches your skills yet — here&apos;s live
+                Nothing on Jayree matches your skills yet — here&apos;s live
                 contract work from around the web.
               </p>
             </div>
@@ -378,7 +378,7 @@ function Dashboard({ profile }: { profile: Profile }) {
             <SkeletonRows count={3} height={92} />
           ) : externalJobs.length > 0 ? (
             <>
-              <div className="overflow-hidden rounded-xl border border-border bg-white">
+              <div className="overflow-hidden rounded-xl border border-border bg-card">
                 {externalJobs.map((job) => (
                   <a
                     key={job.id}
@@ -399,14 +399,14 @@ function Dashboard({ profile }: { profile: Profile }) {
               </div>
               <p className="mt-3 text-xs text-muted-foreground">
                 These are hosted on other job boards and aren&apos;t covered by
-                Roster&apos;s milestone escrow.
+                Jayree&apos;s milestone escrow.
               </p>
             </>
           ) : (
             <EmptyCard
               icon={Compass}
               title="Find work while the board fills up"
-              description="Browse live freelance and contract listings pulled from other job boards, or check every open Roster project."
+              description="Browse live freelance and contract listings pulled from other job boards, or check every open Jayree project."
               actionLabel="Open Discover"
               actionHref="/discover"
             />

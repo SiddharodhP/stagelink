@@ -49,7 +49,7 @@ function AdminOverview() {
         />
       </div>
 
-      <div className="rounded-xl border border-border bg-white p-6 text-sm leading-relaxed text-muted-foreground">
+      <div className="rounded-xl border border-border bg-card p-6 text-sm leading-relaxed text-muted-foreground">
         <p className="mb-1 font-semibold text-foreground">Moderation notes</p>
         Admin actions are enforced database-side: only accounts with the{" "}
         <code className="rounded bg-secondary px-1.5 py-0.5 text-xs">admin</code>{" "}

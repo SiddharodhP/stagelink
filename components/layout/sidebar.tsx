@@ -72,7 +72,7 @@ export function Sidebar({ role, className }: SidebarProps) {
   return (
     <div
       className={cn(
-        "flex h-screen w-64 flex-col border-r border-border bg-white",
+        "flex h-screen w-64 flex-col border-r border-border bg-card",
         className
       )}
     >
@@ -99,7 +99,7 @@ export function Sidebar({ role, className }: SidebarProps) {
                 className={cn(
                   "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                   isActive
-                    ? "bg-ink text-paper"
+                    ? "bg-primary text-primary-foreground"
                     : "text-foreground/65 hover:bg-secondary hover:text-foreground"
                 )}
               >
@@ -131,7 +131,7 @@ export function Sidebar({ role, className }: SidebarProps) {
       <div className="border-t border-border p-4">
         <button
           onClick={() => signOut()}
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-foreground/65 transition-colors hover:bg-red-50 hover:text-red-600"
+          className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-foreground/65 transition-colors hover:bg-red-50 dark:hover:bg-red-500/15 hover:text-red-600 dark:hover:text-red-400"
         >
           <LogOut className="h-[18px] w-[18px]" />
           Log out

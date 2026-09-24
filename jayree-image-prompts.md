@@ -1,4 +1,4 @@
-# Roster — homepage image prompts
+# jayree.io — homepage image prompts
 
 **17 prompts, each complete on its own.** Copy one code block, paste it into
 your image generator, done. The style, the palette, the negatives and the
@@ -565,6 +565,70 @@ light along the horizon, cool blue shadow across the ledge. A burnt-orange strap
 hangs over the edge of the bag. No people in frame. Horizontal composition,
 1400x1186 pixels, 1.18:1 aspect ratio, with the bag in the lower left and the
 skyline filling the right.
+Shot on a full-frame camera with a 50mm lens at f/2 in natural light. Warm
+neutral grade, muted earthy palette of warm off-white (#f7f4ee) and deep warm
+black (#1a1713), with burnt orange (#d6440f) as the only strong colour and only
+on one small object. Soft fine film grain, gentle highlight roll-off, no HDR,
+no oversaturation. Candid and unposed, photorealistic, high detail. No text,
+letters, words, numbers, watermarks, logos or user interface anywhere in the
+image, and nothing readable on any screen or paper. Avoid deformed hands, extra
+fingers, plastic airbrushed skin, and anyone smiling at the camera.
+```
+
+---
+
+# SET G — THE TWO MISSING SLIDER FRAMES
+
+The both-sides section went from three points a side to four, so it needs eight
+frames and six exist. These are the two with nothing to reuse. Everything else
+was remapped: `svc-browse-city-craft` now carries "Discover relevant projects",
+`svc-see-the-plan` carries "Post jobs in minutes", `svc-agree-the-plan` carries
+"Work with confidence using milestones", and `svc-money-on-approval` carries
+"Review proposals and portfolios".
+
+Same 1400 x 1186 (1.18:1) as Set F, and the same grade -- the eight read as one
+set, and the panel behind them is the only thing that changes colour. Drop them
+in `public/marketing/` under these filenames and I will convert them to WebP
+and swap out the two stand-ins.
+
+## G1 - Apply with reusable proposals - `svc-reusable-proposals.jpg` - 1400 x 1186
+
+Currently standing in: `svc-see-the-plan.webp`, which is also doing its own job
+on the client side. Two panels showing the same picture is the thing to fix.
+
+```
+A person at a desk assembling a proposal from parts they already have: one
+printed page squared in front of them, a near-identical second page set beside
+it, and a hand drawing a third from an open card folder to join the pair. Seen
+from across the desk at chest height, head cropped out of frame. The pages
+carry loose grey typographic blocks and a small sketched thumbnail grid, none
+of it readable. A burnt-orange paperclip holds two of them together. Warm
+window light from the left, quiet and unhurried. Horizontal composition,
+1400x1186 pixels, 1.18:1 aspect ratio, with the pages and hands filling the
+lower two thirds.
+Shot on a full-frame camera with a 50mm lens at f/2 in natural light. Warm
+neutral grade, muted earthy palette of warm off-white (#f7f4ee) and deep warm
+black (#1a1713), with burnt orange (#d6440f) as the only strong colour and only
+on one small object. Soft fine film grain, gentle highlight roll-off, no HDR,
+no oversaturation. Candid and unposed, photorealistic, high detail. No text,
+letters, words, numbers, watermarks, logos or user interface anywhere in the
+image, and nothing readable on any screen or paper. Avoid deformed hands, extra
+fingers, plastic airbrushed skin, and anyone smiling at the camera.
+```
+
+## G2 - Keep everything in one place - `svc-everything-one-place.jpg` - 1400 x 1186
+
+Currently standing in: `svc-invoice-one-click.webp`, which is also carrying
+"Manage work in one place" in the orange panel.
+
+```
+An overhead shot of one tidy desk holding an entire job at once: a closed
+laptop, a contact sheet of small photographs, a folded document, a lens cap and
+a notebook, every edge squared to the same invisible grid on pale oak. Nothing
+scattered, nothing stacked at an angle, nothing readable on any surface. A
+burnt-orange elastic band is around the notebook. Soft even daylight with long
+gentle shadows, no people in frame. Horizontal composition, 1400x1186 pixels,
+1.18:1 aspect ratio, with the desk filling the frame edge to edge.
 Shot on a full-frame camera with a 50mm lens at f/2 in natural light. Warm
 neutral grade, muted earthy palette of warm off-white (#f7f4ee) and deep warm
 black (#1a1713), with burnt orange (#d6440f) as the only strong colour and only

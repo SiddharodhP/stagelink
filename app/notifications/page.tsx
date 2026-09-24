@@ -53,7 +53,7 @@ function NotificationsPage({ profile }: { profile: Profile }) {
       {loading ? (
         <SkeletonRows count={5} height={80} />
       ) : items.length > 0 ? (
-        <div className="overflow-hidden rounded-xl border border-border bg-white">
+        <div className="overflow-hidden rounded-xl border border-border bg-card">
           {items.map((n) => {
             const inner = (
               <div

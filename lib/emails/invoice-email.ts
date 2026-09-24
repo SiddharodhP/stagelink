@@ -78,7 +78,7 @@ export function buildInvoiceEmail(invoice: Invoice, note?: string) {
 
           <tr>
             <td style="padding:28px 32px 0 32px;">
-              <span style="font-size:20px;font-weight:700;letter-spacing:-0.3px;">Roster</span><span style="color:#d6440f;">&nbsp;&bull;</span>
+              <span style="font-size:20px;font-weight:700;letter-spacing:-0.3px;">jayree.io</span><span style="color:#d6440f;">&nbsp;&bull;</span>
             </td>
           </tr>
 
@@ -156,7 +156,7 @@ export function buildInvoiceEmail(invoice: Invoice, note?: string) {
         </table>
 
         <p style="max-width:560px;margin:16px auto 0 auto;font-size:12px;color:#9a9488;text-align:center;">
-          Sent via Roster &middot; <a href="${SITE_URL}" style="color:#9a9488;">${SITE_URL.replace(/^https?:\/\//, "")}</a>
+          Sent via <a href="${SITE_URL}" style="color:#9a9488;">${SITE_URL.replace(/^https?:\/\//, "")}</a>
         </p>
       </td>
     </tr>

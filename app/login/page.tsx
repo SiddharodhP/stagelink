@@ -55,7 +55,7 @@ function LoginInner() {
         transition={{ duration: 0.5, ease: "easeOut" }}
         className="w-full max-w-md"
       >
-        <div className="flex flex-col rounded-2xl border border-border bg-white p-8 shadow-[0_24px_60px_-30px_rgba(26,23,19,0.3)] sm:p-10">
+        <div className="flex flex-col rounded-2xl border border-border bg-card p-8 shadow-[0_24px_60px_-30px_rgba(26,23,19,0.3)] sm:p-10">
           <div className="mb-8 flex flex-col items-center text-center">
             <Link href="/" className="mb-3 inline-flex items-baseline gap-1.5">
               <span className="font-display text-4xl font-bold tracking-tight">
@@ -100,7 +100,7 @@ function LoginInner() {
                 <span className="w-full border-t border-border" />
               </div>
               <div className="relative flex justify-center text-xs uppercase tracking-wider">
-                <span className="bg-white px-2 text-muted-foreground">or</span>
+                <span className="bg-card px-2 text-muted-foreground">or</span>
               </div>
             </div>
 
@@ -123,7 +123,7 @@ function LoginInner() {
 
               <Button
                 type="submit"
-                className="h-12 w-full rounded-full bg-ink text-paper hover:bg-ink-soft"
+                className="h-12 w-full rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
                 disabled={isLoading}
               >
                 {isLoading ? (

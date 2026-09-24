@@ -82,7 +82,7 @@ export function ContractsList({
             className={cn(
               "rounded-full px-4 py-2 text-sm font-medium transition-colors",
               tab === t.key
-                ? "bg-ink text-paper"
+                ? "bg-primary text-primary-foreground"
                 : "text-muted-foreground hover:bg-secondary hover:text-foreground"
             )}
           >
@@ -111,7 +111,7 @@ export function ContractsList({
               <Link
                 key={c.id}
                 href={`/contracts/${c.id}`}
-                className="card-lift block rounded-xl border border-border bg-white p-5 md:p-6"
+                className="card-lift block rounded-xl border border-border bg-card p-5 md:p-6"
               >
                 <div className="mb-4 flex flex-wrap items-start justify-between gap-4">
                   <div className="min-w-0">

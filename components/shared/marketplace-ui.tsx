@@ -12,11 +12,11 @@ import {
 
 const TONE: Record<string, string> = {
   neutral: "bg-secondary text-foreground/70 border-border",
-  info: "bg-sky-50 text-sky-800 border-sky-200",
-  wait: "bg-amber-50 text-amber-800 border-amber-200",
-  good: "bg-emerald-50 text-emerald-800 border-emerald-200",
-  bad: "bg-red-50 text-red-700 border-red-200",
-  ink: "bg-ink text-paper border-ink",
+  info: "bg-sky-50 dark:bg-sky-500/15 text-sky-800 dark:text-sky-300 border-sky-200 dark:border-sky-500/30",
+  wait: "bg-amber-50 dark:bg-amber-500/15 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-500/30",
+  good: "bg-emerald-50 dark:bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border-emerald-200 dark:border-emerald-500/30",
+  bad: "bg-red-50 dark:bg-red-500/15 text-red-700 dark:text-red-300 border-red-200 dark:border-red-500/30",
+  ink: "bg-primary text-primary-foreground border-foreground",
 };
 
 const PROJECT_TONES: Record<string, string> = {

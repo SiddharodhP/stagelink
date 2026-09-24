@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils"
  * Dialog shell, on paper rather than ink.
  *
  * This arrived as the stock shadcn dark theme — zinc-950 panel, white
- * title, purple focus ring — while the rest of Roster is a light editorial
+ * title, purple focus ring — while the rest of Jayree is a light editorial
  * template. Nothing overrode it, so every dialog rendered dark while the
  * form controls inside it (Field, inputClass, textareaClass) stayed light:
  * labels came out near-black on near-black and the textarea sat there as a
@@ -36,7 +36,7 @@ const DialogOverlay = React.forwardRef<
     className={cn(
       // Ink rather than pure black — warmer, and the same colour the dark
       // page sections use, so the scrim reads as part of the palette.
-      "fixed inset-0 z-50 bg-ink/50 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+      "fixed inset-0 z-50 bg-black/60 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
       className
     )}
     {...props}

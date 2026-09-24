@@ -1,7 +1,7 @@
 # Competitive Analysis — Freelance Marketplaces
 
 How Upwork, Fiverr, Toptal, and Freelancer.com differentiate themselves and
-optimize their marketplaces, and what it means for Roster.
+optimize their marketplaces, and what it means for Jayree.
 
 ---
 
@@ -14,7 +14,7 @@ optimize their marketplaces, and what it means for Roster.
 | **Toptal** | Client requests talent → human matcher shortlists pre-vetted freelancers | High-stakes engineering/design/finance work; speed over price |
 | **Freelancer.com** | Client posts a project → freelancers bid, or run a design **contest** | Price-sensitive, high-volume, global/multilingual work |
 
-Roster's model — **client defines milestones → freelancers bid with full visibility → freelancer explicitly confirms the plan → escrow releases per milestone** — sits closest to Upwork/Freelancer.com's bid model, but makes the milestone structure mandatory and pre-negotiated rather than optional, which none of the four do by default.
+Jayree's model — **client defines milestones → freelancers bid with full visibility → freelancer explicitly confirms the plan → escrow releases per milestone** — sits closest to Upwork/Freelancer.com's bid model, but makes the milestone structure mandatory and pre-negotiated rather than optional, which none of the four do by default.
 
 ---
 
@@ -63,14 +63,14 @@ Roster's model — **client defines milestones → freelancers bid with full vis
 - Toptal optimizes **trust before the first message** (skip vetting the freelancer yourself).
 - Freelancer.com optimizes **price and access** (lowest fees, most bidders, most countries).
 
-None of them optimize hard for **payment safety mid-project** — milestone escrow exists on Freelancer.com and Upwork, but it's a feature *inside* the flow, not the flow's organizing principle. That's the gap Roster is built to fill.
+None of them optimize hard for **payment safety mid-project** — milestone escrow exists on Freelancer.com and Upwork, but it's a feature *inside* the flow, not the flow's organizing principle. That's the gap Jayree is built to fill.
 
 ---
 
-## 4. What Roster Already Does Differently
+## 4. What Jayree Already Does Differently
 
-- **Milestones are mandatory, not optional.** On Upwork and Freelancer.com, milestone structuring is something a client *can* set up; on Roster it's required before a project can even be published (`publishProject` is DB-blocked without ≥1 milestone).
-- **The freelancer must explicitly agree to the milestone plan** before work starts (`respond_contract`) — none of the four platforms above have a distinct "confirm the plan" step separate from "accept the job." On Upwork/Freelancer.com, accepting a contract *is* agreeing to its terms implicitly; Roster makes it two deliberate steps, which is closer to how real contracting works.
+- **Milestones are mandatory, not optional.** On Upwork and Freelancer.com, milestone structuring is something a client *can* set up; on Jayree it's required before a project can even be published (`publishProject` is DB-blocked without ≥1 milestone).
+- **The freelancer must explicitly agree to the milestone plan** before work starts (`respond_contract`) — none of the four platforms above have a distinct "confirm the plan" step separate from "accept the job." On Upwork/Freelancer.com, accepting a contract *is* agreeing to its terms implicitly; Jayree makes it two deliberate steps, which is closer to how real contracting works.
 - **Escrow-in-sequence is enforced server-side.** `fund_milestone` refuses to fund milestone 3 while milestone 2 is unsettled — this ordering isn't something any of the four platforms guarantee at the database level; it's usually just a UI convention.
 - **Bid comparison design explicitly resists "lowest wins."** The comparison view is sorted by a blended score (rating, proposal effort, price competitiveness), with the lowest bid merely labeled, not defaulted to the top — closer to Toptal's philosophy (quality over price) delivered through Freelancer.com/Upwork's open-bidding mechanic.
 
@@ -78,10 +78,10 @@ None of them optimize hard for **payment safety mid-project** — milestone escr
 
 Ranked by leverage relative to effort:
 
-1. **A visible reputation ladder** (Fiverr's Seller Levels) — Roster has `avg_rating`/`total_reviews`/`total_earned` but no tiering. A simple "Rising / Established / Top Rated" band computed from completed contracts + rating would give freelancers a loss-averse reason to stay and perform, the same lever Fiverr leans on hardest.
+1. **A visible reputation ladder** (Fiverr's Seller Levels) — Jayree has `avg_rating`/`total_reviews`/`total_earned` but no tiering. A simple "Rising / Established / Top Rated" band computed from completed contracts + rating would give freelancers a loss-averse reason to stay and perform, the same lever Fiverr leans on hardest.
 2. **A "Best Match" feed for freelancers** — currently freelancers filter manually; a lightweight score (skill overlap + past category performance) surfaced on `/freelancer/dashboard` would mirror Upwork's highest-retention feature without needing an LLM.
 3. **Contest mode for design/creative categories** — Freelancer.com's contests are a genuinely different demand shape (many submissions, one winner) that the current bid model doesn't serve; worth a dedicated `contests` table rather than bending `projects`/`bids` to fit.
-4. **A visible, tiered take-rate** — Upwork's declining fee by relationship depth is a strong repeat-client incentive; Roster doesn't yet model or display any commission, so this is a monetization decision more than a technical one.
+4. **A visible, tiered take-rate** — Upwork's declining fee by relationship depth is a strong repeat-client incentive; Jayree doesn't yet model or display any commission, so this is a monetization decision more than a technical one.
 
 ---
 

@@ -3,7 +3,7 @@ export type ExternalSource = "ProductionHUB";
 /**
  * A freelance/contract listing pulled live from an external board and shown
  * read-only, with an outbound link to apply at the source. These never enter
- * Roster's bidding/escrow system.
+ * Jayree's bidding/escrow system.
  *
  * Only genuinely freelance/contract work is surfaced — see the filters in
  * app/api/external-jobs/route.ts. Full-time roles are excluded on purpose.

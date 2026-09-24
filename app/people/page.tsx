@@ -125,12 +125,12 @@ function DirectoryInner() {
         description={
           isFreelancerView
             ? "Browse photographers, videographers and editors by city, craft and availability. Every profile shows real work, real ratings and what they charge."
-            : "Browse the companies and people hiring on Roster. See who's posting work right now and what they've paid out."
+            : "Browse the companies and people hiring on Jayree. See who's posting work right now and what they've paid out."
         }
       />
 
       {/* Which side of the marketplace you're looking at. */}
-      <div className="mb-6 inline-flex rounded-full border border-border bg-white p-1">
+      <div className="mb-6 inline-flex rounded-full border border-border bg-card p-1">
         {ROLES.map((r) => (
           <button
             key={r.key}
@@ -138,7 +138,7 @@ function DirectoryInner() {
             className={cn(
               "rounded-full px-5 py-2 text-sm font-medium transition-colors",
               filters.role === r.key
-                ? "bg-ink text-paper"
+                ? "bg-primary text-primary-foreground"
                 : "text-muted-foreground hover:text-foreground"
             )}
           >
@@ -191,7 +191,7 @@ function DirectoryInner() {
           <SlidersHorizontal className="mr-2 h-4 w-4" />
           Filters
           {activeCount > 0 && (
-            <span className="ml-2 rounded-full bg-ink px-1.5 text-[11px] text-paper">
+            <span className="ml-2 rounded-full bg-primary px-1.5 text-[11px] text-primary-foreground">
               {activeCount}
             </span>
           )}
@@ -199,7 +199,7 @@ function DirectoryInner() {
       </div>
 
       {showFilters && (
-        <div className="mb-6 grid grid-cols-1 gap-4 rounded-xl border border-border bg-white p-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mb-6 grid grid-cols-1 gap-4 rounded-xl border border-border bg-card p-5 sm:grid-cols-2 lg:grid-cols-4">
           <Field label="City" htmlFor="f_city">
             <CityCombobox
               id="f_city"

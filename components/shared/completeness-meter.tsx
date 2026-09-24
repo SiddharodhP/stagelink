@@ -51,7 +51,7 @@ export function CompletenessMeter({
     pct >= 70 ? "bg-emerald-500" : pct >= 40 ? "bg-amber-500" : "bg-brand";
 
   return (
-    <div className={cn("rounded-xl border border-border bg-white p-5", className)}>
+    <div className={cn("rounded-xl border border-border bg-card p-5", className)}>
       <div className="mb-2 flex items-baseline justify-between gap-3">
         <p className="font-semibold">Your profile is {pct}% complete</p>
         <Link

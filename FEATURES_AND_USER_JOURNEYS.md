@@ -1,4 +1,4 @@
-# Roster — Features & User Journeys
+# jayree.io — Features & User Journeys
 
 A complete feature inventory and page-by-page walkthrough of both the client
 and freelancer experience.

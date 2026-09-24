@@ -11,7 +11,7 @@ export const SITE_URL = (
   process.env.NEXT_PUBLIC_SITE_URL || "https://jayree.io"
 ).replace(/\/$/, "");
 
-export const SITE_NAME = "Roster";
+export const SITE_NAME = "jayree.io";
 
 export const DEFAULT_DESCRIPTION =
   "Hire photographers, videographers and editors, or find paid photo and video work. Shoots are split into milestones with fixed prices, and every payment is held in escrow until you approve the work.";

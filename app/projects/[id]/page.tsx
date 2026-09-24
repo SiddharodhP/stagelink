@@ -172,7 +172,7 @@ export default function ProjectDetailPage() {
               </h1>
 
               {/* Key facts strip */}
-              <dl className="mb-8 grid grid-cols-2 gap-4 rounded-xl border border-border bg-white p-5 sm:grid-cols-4">
+              <dl className="mb-8 grid grid-cols-2 gap-4 rounded-xl border border-border bg-card p-5 sm:grid-cols-4">
                 <div>
                   <dt className="eyebrow mb-1">Budget</dt>
                   <dd className="font-display text-xl font-semibold">
@@ -258,7 +258,7 @@ export default function ProjectDetailPage() {
                 {milestones.length > 0 ? (
                   <MilestoneList milestones={milestones} />
                 ) : (
-                  <p className="rounded-xl border border-dashed border-border bg-white p-6 text-sm leading-relaxed text-muted-foreground">
+                  <p className="rounded-xl border border-dashed border-border bg-card p-6 text-sm leading-relaxed text-muted-foreground">
                     Milestones aren&apos;t set yet. Once the client picks a
                     freelancer, the two of them talk the work through and the
                     client breaks it into stages — each funded in escrow and
@@ -314,7 +314,7 @@ export default function ProjectDetailPage() {
             {/* ---------- Sidebar ---------- */}
             <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
               {isOwner && (
-                <div className="rounded-xl border border-border bg-white p-6">
+                <div className="rounded-xl border border-border bg-card p-6">
                   <h2 className="font-display mb-1 text-xl font-semibold">Your project</h2>
                   <p className="mb-4 text-sm text-muted-foreground">
                     {project.bids_count} freelancer{project.bids_count === 1 ? " has" : "s have"} bid
@@ -322,7 +322,7 @@ export default function ProjectDetailPage() {
                   </p>
                   <Button
                     asChild
-                    className="w-full rounded-full bg-ink text-paper hover:bg-ink-soft"
+                    className="w-full rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
                   >
                     <Link href="/client/projects">Manage projects</Link>
                   </Button>
@@ -330,7 +330,7 @@ export default function ProjectDetailPage() {
               )}
 
               {/* Client card */}
-              <div className="rounded-xl border border-border bg-white p-6">
+              <div className="rounded-xl border border-border bg-card p-6">
                 <h2 className="eyebrow mb-4">About the client</h2>
                 <Link
                   href={`/u/${project.client_id}`}
@@ -406,7 +406,7 @@ export default function ProjectDetailPage() {
                     "flex w-full items-center justify-center gap-2 rounded-full border px-5 py-3 text-sm font-medium transition-colors",
                     saved
                       ? "border-brand bg-brand-soft text-brand-deep"
-                      : "border-border bg-white hover:border-ink/40"
+                      : "border-border bg-card hover:border-foreground/40"
                   )}
                 >
                   <Heart className={cn("h-4 w-4", saved && "fill-brand text-brand")} />

@@ -34,7 +34,7 @@ const CRAFTS = [
  */
 export function CraftGrid({
   eyebrow = "Built for people who shoot",
-  heading = "What Roster does",
+  heading = "What Jayree does",
   className,
 }: {
   eyebrow?: string;

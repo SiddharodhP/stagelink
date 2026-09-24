@@ -1,42 +1,197 @@
 @import "tailwindcss";
 
 /* ============================================
-   Roster — Editorial Creator Marketplace
+   jayree.io — Editorial Creator Marketplace
    Warm paper, ink typography, single accent.
+
+   TWO THEMES, ONE SET OF TOKENS
+
+   Every colour is declared twice below -- once on :root, once on
+   html.light -- and the Tailwind theme points at those variables rather
+   than at hex. That indirection is the whole mechanism: `bg-card`
+   compiles to `background-color: var(--card)`, so flipping the class on
+   <html> re-colours the site without a single utility changing.
+
+   It has to be written this way round. `@theme inline` bakes a literal
+   value into the utility, so `--color-card: #ffffff` compiled to
+   `.bg-card{background-color:#fff}` and no amount of redefining
+   --color-card afterwards could move it. Pointing the theme at var(--card)
+   is what makes the value late-bound.
+
+   Dark is the default and lives on :root. Light is a class an inline
+   script adds before first paint (components/theme/theme-script.tsx), so
+   a returning visitor who chose light never sees a dark frame first.
    ============================================ */
 
+/* ---- Variants ----
+
+   Tailwind's stock `dark:` keys off prefers-color-scheme, which this site
+   does not use: the theme is a class and dark is the default. So dark is
+   redefined as "no .light on <html>" -- a negation, because the default
+   state carries no class at all -- and `light:` is added as its opposite. */
+@custom-variant dark (html:not(.light) &);
+@custom-variant light (html.light &);
+
+/* ---- Dark is the default, which is why it sits on :root rather than
+        behind a class. A browser with JavaScript disabled never runs the
+        pre-paint script, so whichever theme lives here is what those
+        visitors get -- and the default should not depend on JS. Light is
+        the opt-in, added as a class when someone chooses it.
+
+        Warm, not blue: the photographs are graded to a warm ground and a
+        cool grey theme would orphan every one of them. ---- */
+:root {
+  color-scheme: dark;
+
+  --bg: #12100d;
+  --fg: #ece7dd;
+  --muted: #7d7568;
+  --muted-fg: #a59c8d;
+  --border: rgba(236, 231, 221, 0.14);
+  --input: #1b1714;
+  --ring: rgba(239, 98, 48, 0.5);
+  --card: #1a1613;
+  --card-fg: #ece7dd;
+  --primary: #ece7dd;
+  --primary-fg: #17130f;
+  --secondary: rgba(236, 231, 221, 0.08);
+  --secondary-fg: #ece7dd;
+  --accent: rgba(236, 231, 221, 0.06);
+  --accent-fg: #ece7dd;
+  --destructive: #e2563a;
+  --destructive-fg: #ffffff;
+  --success: #4fa872;
+  --warning: #d99a3a;
+  --popover: #1b1714;
+  --popover-fg: #ece7dd;
+
+  /* Persimmon lifted for legibility. #d6440f on this ground is 3.6:1 --
+     fine behind white button text, short of AA as link text. #ef6230 is
+     5.8:1 and reads as the same colour. */
+  --brand: #ef6230;
+  --brand-deep: #d6440f;
+  --brand-soft: #2c1811;
+
+  /* Ink panels invert their role: on a light page they are the dark
+     block, on a dark page they are the raised one. Slightly lighter than
+     the ground rather than darker, which is how elevation reads. */
+  --ink: #1e1a15;
+  --ink-soft: #282218;
+  --paper: #f7f4ee;
+
+  --hairline: rgba(236, 231, 221, 0.14);
+  --board-rule: rgba(236, 231, 221, 0.06);
+  --board-route: rgba(236, 231, 221, 0.22);
+  --wash-weak: rgba(236, 231, 221, 0.06);
+  --wash-strong: rgba(236, 231, 221, 0.12);
+  --scrollbar: rgba(236, 231, 221, 0.2);
+  --scrollbar-hover: rgba(236, 231, 221, 0.32);
+  --placeholder: rgba(236, 231, 221, 0.35);
+  --card-shadow: rgba(0, 0, 0, 0.6);
+  --card-hover-border: rgba(236, 231, 221, 0.28);
+  --select-bg: rgba(239, 98, 48, 0.3);
+  --select-fg: #ece7dd;
+
+  /* Same shape as the light one -- ink, a warm swell behind the figure,
+     then the page ground. It simply never reaches paper. */
+  --hero-gradient: linear-gradient(
+    to bottom,
+    #171410 0%, #171410 30%, #1d1812 46%,
+    #2b241b 68%, #1a1611 86%, #12100d 100%
+  );
+}
+
+/* ---- Light: the original editorial palette, unchanged ---- */
+html.light {
+  color-scheme: light;
+
+  --bg: #f7f4ee;
+  --fg: #1a1713;
+  --muted: #8a8375;
+  --muted-fg: #6f695e;
+  --border: rgba(26, 23, 19, 0.12);
+  --input: #ffffff;
+  --ring: rgba(214, 68, 17, 0.45);
+  --card: #ffffff;
+  --card-fg: #1a1713;
+  --primary: #1a1713;
+  --primary-fg: #f7f4ee;
+  --secondary: rgba(26, 23, 19, 0.06);
+  --secondary-fg: #1a1713;
+  --accent: rgba(26, 23, 19, 0.05);
+  --accent-fg: #1a1713;
+  --destructive: #c2270a;
+  --destructive-fg: #ffffff;
+  --success: #1d7a45;
+  --warning: #b45309;
+  --popover: #ffffff;
+  --popover-fg: #1a1713;
+
+  --brand: #d6440f;
+  --brand-deep: #a83407;
+  --brand-soft: #fbe9e0;
+
+  /* Ink panels: sections that are deliberately dark on a light page. */
+  --ink: #171410;
+  --ink-soft: #221e18;
+  --paper: #f7f4ee;
+
+  /* Greys used by the plain CSS further down, which cannot reach the
+     Tailwind theme and would otherwise be stuck light. */
+  --hairline: rgba(26, 23, 19, 0.12);
+  --board-rule: rgba(26, 23, 19, 0.055);
+  --board-route: rgba(26, 23, 19, 0.22);
+  --wash-weak: rgba(26, 23, 19, 0.05);
+  --wash-strong: rgba(26, 23, 19, 0.1);
+  --scrollbar: rgba(26, 23, 19, 0.18);
+  --scrollbar-hover: rgba(26, 23, 19, 0.3);
+  --placeholder: rgba(26, 23, 19, 0.35);
+  --card-shadow: rgba(26, 23, 19, 0.28);
+  --card-hover-border: rgba(26, 23, 19, 0.25);
+  --select-bg: rgba(214, 68, 17, 0.2);
+  --select-fg: #1a1713;
+
+  /* The homepage hero. Ink at the top for the headline, resolving to the
+     page ground at the bottom so the section joins what follows. */
+  --hero-gradient: linear-gradient(
+    to bottom,
+    #171410 0%, #171410 30%, #241f19 46%,
+    #584e42 68%, #cfc6b8 86%, #f7f4ee 100%
+  );
+}
+
 @theme inline {
-  --color-background: #f7f4ee;
-  --color-foreground: #1a1713;
-  --color-muted: #8a8375;
-  --color-muted-foreground: #6f695e;
-  --color-border: rgba(26, 23, 19, 0.12);
-  --color-input: #ffffff;
-  --color-ring: rgba(214, 68, 17, 0.45);
-  --color-card: #ffffff;
-  --color-card-foreground: #1a1713;
-  --color-primary: #1a1713;
-  --color-primary-foreground: #f7f4ee;
-  --color-secondary: rgba(26, 23, 19, 0.06);
-  --color-secondary-foreground: #1a1713;
-  --color-accent: rgba(26, 23, 19, 0.05);
-  --color-accent-foreground: #1a1713;
-  --color-destructive: #c2270a;
-  --color-destructive-foreground: #ffffff;
-  --color-success: #1d7a45;
-  --color-warning: #b45309;
-  --color-popover: #ffffff;
-  --color-popover-foreground: #1a1713;
+  --color-background: var(--bg);
+  --color-foreground: var(--fg);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-fg);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-fg);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-fg);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-fg);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-fg);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-fg);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-fg);
 
   /* Brand accent — persimmon */
-  --color-brand: #d6440f;
-  --color-brand-deep: #a83407;
-  --color-brand-soft: #fbe9e0;
+  --color-brand: var(--brand);
+  --color-brand-deep: var(--brand-deep);
+  --color-brand-soft: var(--brand-soft);
 
   /* Ink panel (dark editorial sections) */
-  --color-ink: #171410;
-  --color-ink-soft: #221e18;
-  --color-paper: #f7f4ee;
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-paper: var(--paper);
 
   --font-sans: var(--font-instrument), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-fraunces), Georgia, "Times New Roman", serif;
@@ -82,6 +237,12 @@
   }
 }
 
+@keyframes dash-slide {
+  to {
+    background-position-x: 14px;
+  }
+}
+
 @keyframes shimmer {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
@@ -89,17 +250,16 @@
 
 /* Base styles */
 * {
-  border-color: var(--color-border);
+  border-color: var(--hairline);
 }
 
 html {
-  color-scheme: light;
   scroll-behavior: smooth;
 }
 
 body {
-  background: var(--color-background);
-  color: var(--color-foreground);
+  background: var(--bg);
+  color: var(--fg);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -131,18 +291,18 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(26, 23, 19, 0.18);
+  background: var(--scrollbar);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(26, 23, 19, 0.3);
+  background: var(--scrollbar-hover);
 }
 
 /* Selection */
 ::selection {
-  background: rgba(214, 68, 17, 0.2);
-  color: #1a1713;
+  background: var(--select-bg);
+  color: var(--select-fg);
 }
 
 /* Micro label — uppercase editorial eyebrow */
@@ -151,7 +311,7 @@ body {
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--color-muted-foreground);
+  color: var(--muted-fg);
 }
 
 /* Card treatment */
@@ -161,14 +321,14 @@ body {
 
 .card-lift:hover {
   transform: translateY(-4px);
-  box-shadow: 0 18px 40px -18px rgba(26, 23, 19, 0.28);
-  border-color: rgba(26, 23, 19, 0.25);
+  box-shadow: 0 18px 40px -18px var(--card-shadow);
+  border-color: var(--card-hover-border);
 }
 
 /* Hairline rules */
 .rule {
   height: 1px;
-  background: rgba(26, 23, 19, 0.12);
+  background: var(--hairline);
 }
 
 /* Underlined editorial link */
@@ -176,22 +336,22 @@ body {
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 4px;
-  text-decoration-color: rgba(26, 23, 19, 0.3);
+  text-decoration-color: color-mix(in srgb, var(--fg) 30%, transparent);
   transition: text-decoration-color 0.2s ease, color 0.2s ease;
 }
 
 .link-editorial:hover {
-  color: var(--color-brand);
-  text-decoration-color: var(--color-brand);
+  color: var(--brand);
+  text-decoration-color: var(--brand);
 }
 
 /* Skeleton loading */
 .skeleton {
   background: linear-gradient(
     90deg,
-    rgba(26, 23, 19, 0.05) 0%,
-    rgba(26, 23, 19, 0.1) 50%,
-    rgba(26, 23, 19, 0.05) 100%
+    var(--wash-weak) 0%,
+    var(--wash-strong) 50%,
+    var(--wash-weak) 100%
   );
   background-size: 200% 100%;
   animation: shimmer 2s ease-in-out infinite;
@@ -200,14 +360,14 @@ body {
 
 /* Focus styles */
 :focus-visible {
-  outline: 2px solid rgba(214, 68, 17, 0.55);
+  outline: 2px solid var(--ring);
   outline-offset: 2px;
 }
 
 /* Form elements */
 input::placeholder,
 textarea::placeholder {
-  color: rgba(26, 23, 19, 0.35);
+  color: var(--placeholder);
 }
 
 /* Prevent background scroll when modal is open */
@@ -217,33 +377,33 @@ body.modal-open {
 
 /* ---- Legacy utility classes (kept for older dashboard pages) ---- */
 .glass {
-  background: #ffffff;
-  border: 1px solid rgba(26, 23, 19, 0.12);
+  background: var(--card);
+  border: 1px solid var(--hairline);
 }
 
 .glass-strong {
-  background: #ffffff;
-  border: 1px solid rgba(26, 23, 19, 0.16);
+  background: var(--card);
+  border: 1px solid var(--hairline);
 }
 
 .glass-card {
-  background: #ffffff;
-  border: 1px solid rgba(26, 23, 19, 0.12);
+  background: var(--card);
+  border: 1px solid var(--hairline);
   border-radius: 1.25rem;
   transition: all 0.3s ease;
 }
 
 .glass-card:hover {
-  border-color: rgba(26, 23, 19, 0.25);
-  box-shadow: 0 18px 40px -18px rgba(26, 23, 19, 0.25);
+  border-color: var(--card-hover-border);
+  box-shadow: 0 18px 40px -18px var(--card-shadow);
 }
 
 .gradient-text {
-  color: var(--color-brand);
+  color: var(--brand);
 }
 
 .gradient-text-blue {
-  color: var(--color-brand);
+  color: var(--brand);
 }
 
 .glow-purple,
@@ -265,8 +425,29 @@ body.modal-open {
    print:hidden; these are the page-canvas fallbacks.
    ============================================ */
 @media print {
+  /* An invoice printed from the dark theme would be light text on white
+     paper. Print is always the light palette, whatever is on screen. */
+  :root {
+    color-scheme: light;
+    --bg: #ffffff;
+    --fg: #1a1713;
+    --muted-fg: #6f695e;
+    --card: #ffffff;
+    --card-fg: #1a1713;
+      --popover: #ffffff;
+    --popover-fg: #1a1713;
+    --input: #ffffff;
+    --border: rgba(26, 23, 19, 0.12);
+    --hairline: rgba(26, 23, 19, 0.12);
+    --brand: #d6440f;
+    --brand-soft: #fbe9e0;
+    --ink: #171410;
+    --paper: #f7f4ee;
+  }
+
   body {
     background: #ffffff !important;
+    color: #1a1713 !important;
     overflow: visible !important;
   }
 

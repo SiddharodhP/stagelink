@@ -1,4 +1,11 @@
-export const APP_NAME = 'Roster';
+/** The wordmark: the logo, page titles, metadata and the legal footer. */
+export const APP_NAME = 'jayree.io';
+/**
+ * The same brand as an ordinary word, for running prose. A lowercase
+ * domain cannot open a sentence, so copy uses this and only the wordmark
+ * carries the .io.
+ */
+export const BRAND_NAME = 'Jayree';
 export const APP_DESCRIPTION =
   'The freelance marketplace where clients structure work into milestones, freelancers compete on merit, and every payment is protected by escrow.';
 export const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';

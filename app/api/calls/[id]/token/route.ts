@@ -68,7 +68,7 @@ export async function POST(
   const name =
     profile?.company_name?.trim() ||
     profile?.full_name?.trim() ||
-    "Roster user";
+    "Jayree user";
 
   try {
     const token = await mintJaasToken(call.room_name, {

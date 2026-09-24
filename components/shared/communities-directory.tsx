@@ -18,7 +18,7 @@ const FILTERS: { key: CommunityFocus | "all"; label: string }[] = [
 
 const PLATFORM_TONE: Record<string, string> = {
   Reddit: "bg-brand-soft text-brand-deep border-brand/20",
-  "Job board": "bg-sky-50 text-sky-800 border-sky-200",
+  "Job board": "bg-sky-50 dark:bg-sky-500/15 text-sky-800 dark:text-sky-300 border-sky-200 dark:border-sky-500/30",
   Network: "bg-secondary text-foreground/70 border-border",
 };
 
@@ -71,7 +71,7 @@ export function CommunitiesDirectory({
             href={c.url}
             target="_blank"
             rel="noopener"
-            className="card-lift group flex flex-col rounded-xl border border-border bg-white p-5"
+            className="card-lift group flex flex-col rounded-xl border border-border bg-card p-5"
           >
             <div className="mb-2 flex items-start justify-between gap-3">
               <h3 className="font-display flex items-center gap-1.5 text-lg font-semibold leading-snug">

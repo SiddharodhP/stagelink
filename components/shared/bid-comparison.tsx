@@ -156,7 +156,7 @@ export function BidComparison({
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value as SortKey)}
-            className="rounded-full border border-border bg-white px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            className="rounded-full border border-border bg-card px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
           >
             <option value="recommended">Recommended</option>
             <option value="price_asc">Lowest price</option>
@@ -169,7 +169,7 @@ export function BidComparison({
 
       {/* Price context strip */}
       {live.length > 1 && (
-        <dl className="mb-5 grid grid-cols-3 gap-4 rounded-xl border border-border bg-white p-5">
+        <dl className="mb-5 grid grid-cols-3 gap-4 rounded-xl border border-border bg-card p-5">
           {[
             ["Lowest bid", lowest],
             ["Average bid", average],
@@ -193,11 +193,11 @@ export function BidComparison({
             <article
               key={bid.id}
               className={cn(
-                "rounded-xl border bg-white p-5 md:p-6",
+                "rounded-xl border bg-card p-5 md:p-6",
                 bid.status === "accepted"
-                  ? "border-emerald-300 bg-emerald-50/40"
+                  ? "border-emerald-300 dark:border-emerald-500/40 bg-emerald-50/40 dark:bg-emerald-500/10"
                   : bid.status === "shortlisted"
-                    ? "border-ink/40"
+                    ? "border-foreground/40"
                     : "border-border",
                 dimmed && "opacity-55"
               )}
@@ -245,7 +245,7 @@ export function BidComparison({
                     <div className="flex flex-wrap items-center gap-2">
                       <BidStatusPill status={bid.status} />
                       {isLowest && (
-                        <span className="rounded-full border border-sky-200 bg-sky-50 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-sky-800">
+                        <span className="rounded-full border border-sky-200 dark:border-sky-500/30 bg-sky-50 dark:bg-sky-500/15 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-sky-800 dark:text-sky-300">
                           Lowest bid
                         </span>
                       )}
@@ -270,7 +270,7 @@ export function BidComparison({
                   {!dimmed && bid.status !== "accepted" && project.status === "open" && (
                     <div className="flex flex-wrap gap-2">
                       <Button
-                        className="rounded-full bg-ink text-paper hover:bg-ink-soft"
+                        className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
                         onClick={() => setAwardTarget(bid)}
                       >
                         <Award className="mr-2 h-4 w-4" /> Award project
@@ -299,7 +299,7 @@ export function BidComparison({
                   )}
 
                   {bid.status === "accepted" && (
-                    <p className="flex items-center gap-1.5 text-sm font-medium text-emerald-800">
+                    <p className="flex items-center gap-1.5 text-sm font-medium text-emerald-800 dark:text-emerald-300">
                       <Check className="h-4 w-4" /> Awarded to this freelancer
                     </p>
                   )}
@@ -352,7 +352,7 @@ export function BidComparison({
               Cancel
             </Button>
             <Button
-              className="rounded-full bg-ink text-paper hover:bg-ink-soft"
+              className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
               onClick={award}
               disabled={isAwarding}
             >

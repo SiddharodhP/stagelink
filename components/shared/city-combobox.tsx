@@ -145,7 +145,7 @@ export function CityCombobox({
         <ul
           id={`${id}-listbox`}
           role="listbox"
-          className="absolute z-30 mt-1.5 max-h-72 w-full overflow-y-auto rounded-xl border border-border bg-white py-1.5 shadow-lg"
+          className="absolute z-30 mt-1.5 max-h-72 w-full overflow-y-auto rounded-xl border border-border bg-card py-1.5 shadow-lg"
         >
           {!tooShort && results.length > 0 ? (
             results.map((c, i) => (

@@ -222,7 +222,7 @@ export default function PublicProfilePage() {
                     {portfolio.map((item) => (
                       <article
                         key={item.id}
-                        className="overflow-hidden rounded-xl border border-border bg-white"
+                        className="overflow-hidden rounded-xl border border-border bg-card"
                       >
                         {item.image_url && (
                           <div className="aspect-[4/3] overflow-hidden bg-secondary">
@@ -267,7 +267,7 @@ export default function PublicProfilePage() {
                 {reviews.length > 0 ? (
                   <div className="space-y-3">
                     {reviews.map((r) => (
-                      <article key={r.id} className="rounded-xl border border-border bg-white p-5">
+                      <article key={r.id} className="rounded-xl border border-border bg-card p-5">
                         <div className="mb-2 flex items-start justify-between gap-3">
                           <div className="flex items-center gap-2.5">
                             <UserAvatar
@@ -298,7 +298,7 @@ export default function PublicProfilePage() {
                     ))}
                   </div>
                 ) : (
-                  <div className="rounded-xl border border-dashed border-border bg-white p-6 text-sm text-muted-foreground">
+                  <div className="rounded-xl border border-dashed border-border bg-card p-6 text-sm text-muted-foreground">
                     No reviews yet — reviews appear here once a contract with this{" "}
                     {isFreelancer ? "freelancer" : "client"} is completed.
                   </div>
@@ -308,7 +308,7 @@ export default function PublicProfilePage() {
 
             {/* Sidebar */}
             <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
-              <div className="rounded-xl border border-border bg-white p-6">
+              <div className="rounded-xl border border-border bg-card p-6">
                 <h2 className="eyebrow mb-4">
                   {isFreelancer ? "Freelancer stats" : "Client stats"}
                 </h2>
@@ -347,7 +347,7 @@ export default function PublicProfilePage() {
                         <dd
                           className={cn(
                             "font-medium",
-                            profile.availability === "available" && "text-emerald-700"
+                            profile.availability === "available" && "text-emerald-700 dark:text-emerald-300"
                           )}
                         >
                           {availability?.label}
@@ -387,7 +387,7 @@ export default function PublicProfilePage() {
                   completed, paid contracts.
                 </div>
               ) : (
-                <div className="rounded-xl border border-border bg-white p-5 text-sm leading-relaxed text-muted-foreground">
+                <div className="rounded-xl border border-border bg-card p-5 text-sm leading-relaxed text-muted-foreground">
                   <p className="mb-1 font-semibold text-foreground">Not yet verified</p>
                   This account hasn&apos;t completed identity verification. Reviews
                   still come only from completed, paid contracts.
@@ -397,7 +397,7 @@ export default function PublicProfilePage() {
               {viewer && !isSelf && (
                 <button
                   onClick={() => setReportOpen(true)}
-                  className="flex w-full items-center justify-center gap-2 rounded-full border border-border bg-white px-5 py-2.5 text-sm text-muted-foreground transition-colors hover:border-red-200 hover:text-red-600"
+                  className="flex w-full items-center justify-center gap-2 rounded-full border border-border bg-card px-5 py-2.5 text-sm text-muted-foreground transition-colors hover:border-red-200 dark:hover:border-red-500/30 hover:text-red-600 dark:hover:text-red-400"
                 >
                   <Flag className="h-3.5 w-3.5" /> Report this user
                 </button>

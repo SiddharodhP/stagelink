@@ -234,7 +234,7 @@ function InvoicesList({ profile }: { profile: Profile }) {
         }
         action={
           !isClient ? (
-            <Button className="rounded-full bg-ink text-paper hover:bg-ink-soft" onClick={openSetup}>
+            <Button className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90" onClick={openSetup}>
               <Plus className="mr-2 h-4 w-4" /> New retainer
             </Button>
           ) : undefined
@@ -279,7 +279,7 @@ function InvoicesList({ profile }: { profile: Profile }) {
             className={cn(
               "rounded-full px-4 py-2 text-sm font-medium transition-colors",
               tab === t.key
-                ? "bg-ink text-paper"
+                ? "bg-primary text-primary-foreground"
                 : "text-muted-foreground hover:bg-secondary hover:text-foreground"
             )}
           >
@@ -290,7 +290,7 @@ function InvoicesList({ profile }: { profile: Profile }) {
               <span
                 className={cn(
                   "ml-1.5 rounded-full px-1.5 py-0.5 text-[11px] font-semibold",
-                  tab === t.key ? "bg-paper/20 text-paper" : "bg-red-50 text-red-700"
+                  tab === t.key ? "bg-paper/20 text-paper" : "bg-red-50 dark:bg-red-500/15 text-red-700 dark:text-red-300"
                 )}
               >
                 {overdueCount} overdue
@@ -304,7 +304,7 @@ function InvoicesList({ profile }: { profile: Profile }) {
         <SkeletonRows count={3} height={92} />
       ) : tab === "retainers" ? (
         retainers.length > 0 ? (
-          <div className="overflow-hidden rounded-xl border border-border bg-white">
+          <div className="overflow-hidden rounded-xl border border-border bg-card">
             {retainers.map((r) => {
               const other = isClient ? r.freelancer : r.client;
               const gross = r.amount + Math.round((r.amount * r.tax_percent) / 100);
@@ -359,7 +359,7 @@ function InvoicesList({ profile }: { profile: Profile }) {
           />
         )
       ) : sorted.length > 0 ? (
-        <div className="overflow-hidden rounded-xl border border-border bg-white">
+        <div className="overflow-hidden rounded-xl border border-border bg-card">
           {sorted.map((inv) => {
             const other = isClient ? inv.freelancer : inv.client;
             return (
@@ -580,7 +580,7 @@ function InvoicesList({ profile }: { profile: Profile }) {
               Cancel
             </Button>
             <Button
-              className="rounded-full bg-ink text-paper hover:bg-ink-soft"
+              className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
               disabled={saving || contracts.length === 0}
               onClick={submitRetainer}
             >

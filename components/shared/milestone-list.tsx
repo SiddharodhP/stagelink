@@ -37,10 +37,10 @@ export function MilestoneList({
                   className={cn(
                     "flex h-9 w-9 shrink-0 items-center justify-center rounded-full border text-sm font-semibold",
                     done
-                      ? "border-ink bg-ink text-paper"
+                      ? "border-foreground bg-primary text-primary-foreground"
                       : isActive
                         ? "border-brand bg-brand-soft text-brand-deep"
-                        : "border-border bg-white text-foreground/60"
+                        : "border-border bg-card text-foreground/60"
                   )}
                 >
                   {done ? <Check className="h-4 w-4" /> : m.seq}
@@ -81,7 +81,7 @@ export function MilestoneList({
                   </p>
                 )}
                 {m.revision_note && m.status === "revision_requested" && (
-                  <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
+                  <div className="mt-3 rounded-lg border border-amber-200 dark:border-amber-500/30 bg-amber-50 dark:bg-amber-500/15 p-3 text-sm text-amber-900 dark:text-amber-300">
                     <span className="font-semibold">Revision requested: </span>
                     {m.revision_note}
                   </div>

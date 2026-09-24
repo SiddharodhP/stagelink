@@ -282,7 +282,7 @@ function Workspace({ profile }: { profile: Profile }) {
         {invoice && (
           <Link
             href={`/invoices/${invoice.id}`}
-            className="flex items-center justify-between gap-3 rounded-lg border border-border bg-white p-3 transition-colors hover:border-ink/40"
+            className="flex items-center justify-between gap-3 rounded-lg border border-border bg-card p-3 transition-colors hover:border-foreground/40"
           >
             <span className="flex min-w-0 items-center gap-2.5">
               <Receipt className="h-4 w-4 shrink-0 text-brand" />
@@ -323,7 +323,7 @@ function Workspace({ profile }: { profile: Profile }) {
           {isClient && m.status === "pending" && (
             <Button
               size="sm"
-              className="rounded-full bg-ink text-paper hover:bg-ink-soft"
+              className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
               disabled={busy}
               onClick={() =>
                 run(() => fundMilestone(m.id), `${formatPrice(m.amount)} moved into escrow`)
@@ -336,7 +336,7 @@ function Workspace({ profile }: { profile: Profile }) {
           {!isClient && ["in_progress", "revision_requested"].includes(m.status) && (
             <Button
               size="sm"
-              className="rounded-full bg-ink text-paper hover:bg-ink-soft"
+              className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
               onClick={() => setDialog({ kind: "submit", milestone: m })}
             >
               <Upload className="mr-1.5 h-3.5 w-3.5" /> Submit work
@@ -353,7 +353,7 @@ function Workspace({ profile }: { profile: Profile }) {
                 variant={m.status === "paid" ? "outline" : "default"}
                 className={cn(
                   "rounded-full",
-                  m.status !== "paid" && "bg-ink text-paper hover:bg-ink-soft"
+                  m.status !== "paid" && "bg-primary text-primary-foreground hover:bg-primary/90"
                 )}
                 disabled={busy}
                 onClick={() =>
@@ -377,7 +377,7 @@ function Workspace({ profile }: { profile: Profile }) {
             <>
               <Button
                 size="sm"
-                className="rounded-full bg-ink text-paper hover:bg-ink-soft"
+                className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
                 disabled={busy}
                 onClick={() =>
                   run(
@@ -403,7 +403,7 @@ function Workspace({ profile }: { profile: Profile }) {
             <Button
               size="sm"
               variant="ghost"
-              className="rounded-full text-muted-foreground hover:text-red-600"
+              className="rounded-full text-muted-foreground hover:text-red-600 dark:hover:text-red-400"
               onClick={() => setDialog({ kind: "dispute", milestone: m })}
             >
               <AlertTriangle className="mr-1.5 h-3.5 w-3.5" /> Raise dispute
@@ -455,7 +455,7 @@ function Workspace({ profile }: { profile: Profile }) {
           {(isActive || isPending) && (
             <Button
               variant="ghost"
-              className="rounded-full text-muted-foreground hover:text-red-600"
+              className="rounded-full text-muted-foreground hover:text-red-600 dark:hover:text-red-400"
               onClick={() => setDialog({ kind: "cancel" })}
             >
               <XCircle className="mr-2 h-4 w-4" /> Cancel
@@ -471,7 +471,7 @@ function Workspace({ profile }: { profile: Profile }) {
             "mb-6 flex items-start gap-3 rounded-xl border p-4",
             nextAction.who === "you"
               ? "border-brand/30 bg-brand-soft"
-              : "border-border bg-white"
+              : "border-border bg-card"
           )}
         >
           <span
@@ -548,7 +548,7 @@ function Workspace({ profile }: { profile: Profile }) {
               <MilestoneList milestones={milestones} />
               <div className="mt-6 flex flex-wrap gap-3">
                 <Button
-                  className="rounded-full bg-ink px-8 text-paper hover:bg-ink-soft"
+                  className="rounded-full bg-primary px-8 text-primary-foreground hover:bg-primary/90"
                   disabled={busy}
                   onClick={() =>
                     run(() => respondContract(contract.id, true), "Milestones confirmed — work can begin")
@@ -610,7 +610,7 @@ function Workspace({ profile }: { profile: Profile }) {
               description="Reviews are public and build reputation on both sides of the marketplace."
             >
               <Button
-                className="rounded-full bg-ink text-paper hover:bg-ink-soft"
+                className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
                 onClick={() => setDialog({ kind: "review" })}
               >
                 <Star className="mr-2 h-4 w-4" /> Write a review
@@ -619,7 +619,7 @@ function Workspace({ profile }: { profile: Profile }) {
           )}
 
           {isOver && hasReviewed && (
-            <div className="rounded-xl border border-border bg-white p-5 text-sm text-muted-foreground">
+            <div className="rounded-xl border border-border bg-card p-5 text-sm text-muted-foreground">
               You&apos;ve already reviewed this contract. Thanks for keeping the
               marketplace honest.
             </div>
@@ -628,7 +628,7 @@ function Workspace({ profile }: { profile: Profile }) {
 
         {/* Sidebar */}
         <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
-          <div className="rounded-xl border border-border bg-white p-6">
+          <div className="rounded-xl border border-border bg-card p-6">
             <h2 className="eyebrow mb-4">Progress</h2>
             <div className="mb-2 flex items-baseline justify-between">
               <span className="font-display text-3xl font-semibold">{progress}%</span>
@@ -667,7 +667,7 @@ function Workspace({ profile }: { profile: Profile }) {
             </dl>
           </div>
 
-          <div className="rounded-xl border border-border bg-white p-6">
+          <div className="rounded-xl border border-border bg-card p-6">
             <h2 className="eyebrow mb-4">{isClient ? "Freelancer" : "Client"}</h2>
             <Link
               href={`/u/${other?.id}`}
@@ -745,7 +745,7 @@ function Workspace({ profile }: { profile: Profile }) {
               Cancel
             </Button>
             <Button
-              className="rounded-full bg-ink text-paper hover:bg-ink-soft"
+              className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
               disabled={busy || note.trim().length === 0}
               onClick={() =>
                 dialog?.kind === "submit" &&
@@ -784,7 +784,7 @@ function Workspace({ profile }: { profile: Profile }) {
               Cancel
             </Button>
             <Button
-              className="rounded-full bg-ink text-paper hover:bg-ink-soft"
+              className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
               disabled={busy || note.trim().length === 0}
               onClick={() =>
                 dialog?.kind === "revision" &&
@@ -880,7 +880,7 @@ function Workspace({ profile }: { profile: Profile }) {
               Cancel
             </Button>
             <Button
-              className="rounded-full bg-ink text-paper hover:bg-ink-soft"
+              className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
               disabled={busy || rating === 0}
               onClick={() =>
                 run(() => createReview(contract.id, rating, note.trim()), "Review published")

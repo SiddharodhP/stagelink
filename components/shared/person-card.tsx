@@ -8,8 +8,8 @@ import { Profile } from "@/types/marketplace";
 import { formatPrice, cn, displayName, partyName } from "@/lib/utils";
 
 const AVAILABILITY_TONE: Record<string, string> = {
-  available: "bg-emerald-50 text-emerald-800 border-emerald-200",
-  limited: "bg-amber-50 text-amber-800 border-amber-200",
+  available: "bg-emerald-50 dark:bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border-emerald-200 dark:border-emerald-500/30",
+  limited: "bg-amber-50 dark:bg-amber-500/15 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-500/30",
   unavailable: "bg-secondary text-foreground/60 border-border",
 };
 
@@ -35,7 +35,7 @@ export function FreelancerCard({ profile }: { profile: Profile }) {
   return (
     <Link
       href={`/u/${profile.id}`}
-      className="group flex h-full flex-col rounded-xl border border-border bg-white p-5 transition-all hover:-translate-y-0.5 hover:border-foreground/20 hover:shadow-sm"
+      className="group flex h-full flex-col rounded-xl border border-border bg-card p-5 transition-all hover:-translate-y-0.5 hover:border-foreground/20 hover:shadow-sm"
     >
       <div className="flex items-start gap-3.5">
         <UserAvatar
@@ -130,7 +130,7 @@ export function ClientCard({
   return (
     <Link
       href={`/u/${profile.id}`}
-      className="group flex h-full flex-col rounded-xl border border-border bg-white p-5 transition-all hover:-translate-y-0.5 hover:border-foreground/20 hover:shadow-sm"
+      className="group flex h-full flex-col rounded-xl border border-border bg-card p-5 transition-all hover:-translate-y-0.5 hover:border-foreground/20 hover:shadow-sm"
     >
       <div className="flex items-start gap-3.5">
         <UserAvatar name={name} src={profile.avatar_url} size={52} />
@@ -169,7 +169,7 @@ export function ClientCard({
 
       <div className="mt-auto flex items-center justify-between gap-3 pt-4">
         {openProjects > 0 ? (
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-emerald-800">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 dark:border-emerald-500/30 bg-emerald-50 dark:bg-emerald-500/15 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-emerald-800 dark:text-emerald-300">
             <Briefcase className="h-3 w-3" />
             {openProjects} hiring
           </span>

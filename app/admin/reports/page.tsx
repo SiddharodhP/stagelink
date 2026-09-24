@@ -52,7 +52,7 @@ function AdminReports() {
       ) : reports.length > 0 ? (
         <div className="space-y-4">
           {reports.map((r) => (
-            <article key={r.id} className="rounded-xl border border-border bg-white p-6">
+            <article key={r.id} className="rounded-xl border border-border bg-card p-6">
               <div className="mb-3 flex flex-wrap items-start justify-between gap-3">
                 <div className="min-w-0">
                   <div className="mb-2 flex items-center gap-2.5">
@@ -60,7 +60,7 @@ function AdminReports() {
                       className={cn(
                         "rounded-full border px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.08em]",
                         r.status === "open"
-                          ? "border-red-200 bg-red-50 text-red-700"
+                          ? "border-red-200 dark:border-red-500/30 bg-red-50 dark:bg-red-500/15 text-red-700 dark:text-red-300"
                           : "border-border bg-secondary text-foreground/70"
                       )}
                     >
@@ -79,7 +79,7 @@ function AdminReports() {
                   </p>
                 </div>
                 {r.reported?.is_suspended && (
-                  <span className="rounded-full border border-red-200 bg-red-50 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-red-700">
+                  <span className="rounded-full border border-red-200 dark:border-red-500/30 bg-red-50 dark:bg-red-500/15 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-red-700 dark:text-red-300">
                     Suspended
                   </span>
                 )}

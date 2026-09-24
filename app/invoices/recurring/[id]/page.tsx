@@ -105,7 +105,7 @@ function RetainerDetail({ profile }: { profile: Profile }) {
         <p className="mb-6 text-muted-foreground">
           It may have been removed, or it isn&apos;t yours to view.
         </p>
-        <Button asChild className="rounded-full bg-ink text-paper hover:bg-ink-soft">
+        <Button asChild className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90">
           <Link href="/invoices">Back to invoices</Link>
         </Button>
       </div>
@@ -170,7 +170,7 @@ function RetainerDetail({ profile }: { profile: Profile }) {
           {canEnd && (
             <Button
               variant="outline"
-              className="rounded-full text-rose-700 hover:text-rose-800"
+              className="rounded-full text-rose-700 dark:text-rose-300 hover:text-rose-800 dark:hover:text-rose-300"
               disabled={busy}
               onClick={() => setEndOpen(true)}
             >
@@ -180,7 +180,7 @@ function RetainerDetail({ profile }: { profile: Profile }) {
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-border bg-white">
+      <div className="overflow-hidden rounded-xl border border-border bg-card">
         <div className="border-b border-border px-6 py-6">
           <div className="mb-3 flex flex-wrap items-center gap-2">
             <RefreshCw className="h-4 w-4 text-muted-foreground" />
@@ -210,13 +210,13 @@ function RetainerDetail({ profile }: { profile: Profile }) {
 
         {/* What the client is agreeing to — stated before they can accept. */}
         {needsApproval && (
-          <div className="border-b border-border bg-amber-50/60 px-6 py-5">
+          <div className="border-b border-border bg-amber-50/60 dark:bg-amber-500/10 px-6 py-5">
             <p className="mb-2 flex items-center gap-2 text-sm font-semibold">
               <CalendarClock className="h-4 w-4" />
               {other?.full_name || "Your freelancer"} is proposing an ongoing retainer
             </p>
             <p className="mb-4 text-sm leading-relaxed text-foreground/80">
-              If you approve, Roster will issue an invoice for{" "}
+              If you approve, Jayree will issue an invoice for{" "}
               <strong>{formatPrice(gross)}</strong> every {per}
               {retainer.max_occurrences
                 ? `, up to ${retainer.max_occurrences} times`
@@ -228,7 +228,7 @@ function RetainerDetail({ profile }: { profile: Profile }) {
             </p>
             <div className="flex flex-wrap gap-2">
               <Button
-                className="rounded-full bg-ink text-paper hover:bg-ink-soft"
+                className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
                 disabled={busy}
                 onClick={() =>
                   run(
@@ -300,7 +300,7 @@ function RetainerDetail({ profile }: { profile: Profile }) {
             label="Outstanding"
             value={
               outstanding > 0 ? (
-                <span className="text-rose-700">{formatPrice(outstanding)}</span>
+                <span className="text-rose-700 dark:text-rose-300">{formatPrice(outstanding)}</span>
               ) : (
                 formatPrice(0)
               )
@@ -347,7 +347,7 @@ function RetainerDetail({ profile }: { profile: Profile }) {
         <div className="flex items-start gap-2.5 px-6 py-5 text-sm text-muted-foreground">
           <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0" />
           <p className="leading-relaxed">
-            Payment is collected and passed on by Roster. Each invoice moves
+            Payment is collected and passed on by Jayree. Each invoice moves
             money from the client to the platform and on to the freelancer, so
             neither side is transferring funds directly.
           </p>
@@ -364,7 +364,7 @@ function RetainerDetail({ profile }: { profile: Profile }) {
         </h2>
 
         {history.length > 0 ? (
-          <div className="overflow-hidden rounded-xl border border-border bg-white">
+          <div className="overflow-hidden rounded-xl border border-border bg-card">
             {history.map((inv) => (
               <Link
                 key={inv.id}
@@ -396,7 +396,7 @@ function RetainerDetail({ profile }: { profile: Profile }) {
             ))}
           </div>
         ) : (
-          <div className="rounded-xl border border-dashed border-border bg-white px-6 py-10 text-center text-sm text-muted-foreground">
+          <div className="rounded-xl border border-dashed border-border bg-card px-6 py-10 text-center text-sm text-muted-foreground">
             {retainer.status === "pending_approval"
               ? "Nothing has been billed yet — the first invoice goes out once the client approves."
               : `The first invoice will be issued on ${formatDate(retainer.next_run_on)}.`}

@@ -142,7 +142,7 @@ function WorkPage({ profile }: { profile: Profile }) {
         title="My work"
         description="Bids you've sent and contracts you're delivering, in one place."
         action={
-          <Button asChild className="rounded-full bg-ink px-6 text-paper hover:bg-ink-soft">
+          <Button asChild className="rounded-full bg-primary px-6 text-primary-foreground hover:bg-primary/90">
             <Link href="/projects">
               <Search className="mr-2 h-4 w-4" /> Find work
             </Link>
@@ -169,7 +169,7 @@ function WorkPage({ profile }: { profile: Profile }) {
             className={cn(
               "rounded-full px-4 py-2 text-sm font-medium transition-colors",
               tab === t.key
-                ? "bg-ink text-paper"
+                ? "bg-primary text-primary-foreground"
                 : "text-muted-foreground hover:bg-secondary hover:text-foreground"
             )}
           >
@@ -200,7 +200,7 @@ function WorkPage({ profile }: { profile: Profile }) {
               return (
                 <article
                   key={c.id}
-                  className="rounded-xl border border-border bg-white p-5 md:p-6"
+                  className="rounded-xl border border-border bg-card p-5 md:p-6"
                 >
                   <div className="mb-2.5 flex flex-wrap items-center gap-2">
                     <ContractStatusPill status={c.status} planSent={planSent} />
@@ -259,7 +259,7 @@ function WorkPage({ profile }: { profile: Profile }) {
                     <Button
                       asChild
                       size="sm"
-                      className="rounded-full bg-ink text-paper hover:bg-ink-soft"
+                      className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
                     >
                       <Link href={`/contracts/${c.id}`}>
                         <FileSignature className="mr-1.5 h-3.5 w-3.5" />
@@ -286,7 +286,7 @@ function WorkPage({ profile }: { profile: Profile }) {
             return (
               <article
                 key={b.id}
-                className="rounded-xl border border-border bg-white p-5 md:p-6"
+                className="rounded-xl border border-border bg-card p-5 md:p-6"
               >
                 <div className="mb-2.5 flex flex-wrap items-center gap-2">
                   <BidStatusPill status={b.status} />

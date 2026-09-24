@@ -190,7 +190,7 @@ function MessagesInner({ profile }: { profile: Profile }) {
       {/* List */}
       <div
         className={cn(
-          "flex w-full shrink-0 flex-col rounded-xl border border-border bg-white md:h-full md:w-80",
+          "flex w-full shrink-0 flex-col rounded-xl border border-border bg-card md:h-full md:w-80",
           mobileShowThread ? "hidden md:flex" : "flex h-full"
         )}
       >
@@ -202,7 +202,7 @@ function MessagesInner({ profile }: { profile: Profile }) {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search conversations…"
-              className="h-9 w-full rounded-md border border-border bg-white pl-9 pr-3 text-sm outline-none focus:ring-2 focus:ring-ring"
+              className="h-9 w-full rounded-md border border-border bg-card pl-9 pr-3 text-sm outline-none focus:ring-2 focus:ring-ring"
             />
           </div>
         </div>
@@ -230,7 +230,7 @@ function MessagesInner({ profile }: { profile: Profile }) {
                   }}
                   className={cn(
                     "flex w-full gap-3 rounded-lg p-3 text-left transition-colors",
-                    isActive ? "bg-ink text-paper" : "hover:bg-secondary"
+                    isActive ? "bg-primary text-primary-foreground" : "hover:bg-secondary"
                   )}
                 >
                   <UserAvatar
@@ -290,7 +290,7 @@ function MessagesInner({ profile }: { profile: Profile }) {
       {/* Thread */}
       <div
         className={cn(
-          "flex flex-1 flex-col rounded-xl border border-border bg-white",
+          "flex flex-1 flex-col rounded-xl border border-border bg-card",
           mobileShowThread ? "h-full" : "hidden md:flex"
         )}
       >
@@ -348,7 +348,7 @@ function MessagesInner({ profile }: { profile: Profile }) {
               call.status === "ringing" &&
               call.callee_id === profile.id &&
               !inCall && (
-                <div className="flex flex-wrap items-center gap-3 border-b border-border bg-emerald-50 px-4 py-3">
+                <div className="flex flex-wrap items-center gap-3 border-b border-border bg-emerald-50 dark:bg-emerald-500/15 px-4 py-3">
                   <span className="relative flex h-2.5 w-2.5 shrink-0">
                     <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-75" />
                     <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-600" />
@@ -407,7 +407,7 @@ function MessagesInner({ profile }: { profile: Profile }) {
                 <div className="mt-3 flex justify-center">
                   <Button
                     variant="outline"
-                    className="rounded-full text-rose-700 hover:text-rose-800"
+                    className="rounded-full text-rose-700 dark:text-rose-300 hover:text-rose-800 dark:hover:text-rose-300"
                     onClick={hangUp}
                   >
                     <PhoneOff className="mr-2 h-4 w-4" /> Leave call
@@ -430,8 +430,8 @@ function MessagesInner({ profile }: { profile: Profile }) {
                         className={cn(
                           "max-w-[80%] break-words rounded-2xl px-4 py-2.5 text-sm leading-relaxed",
                           mine
-                            ? "rounded-br-sm bg-ink text-paper"
-                            : "rounded-bl-sm border border-border bg-white"
+                            ? "rounded-br-sm bg-primary text-primary-foreground"
+                            : "rounded-bl-sm border border-border bg-card"
                         )}
                       >
                         {m.body}
@@ -459,13 +459,13 @@ function MessagesInner({ profile }: { profile: Profile }) {
                   onChange={(e) => setDraft(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && send()}
                   placeholder="Type your message…"
-                  className="h-12 w-full rounded-full border border-border bg-white pl-5 pr-14 text-sm outline-none focus:ring-2 focus:ring-ring"
+                  className="h-12 w-full rounded-full border border-border bg-card pl-5 pr-14 text-sm outline-none focus:ring-2 focus:ring-ring"
                 />
                 <button
                   onClick={send}
                   disabled={!draft.trim()}
                   aria-label="Send message"
-                  className="absolute right-1.5 top-1.5 flex h-9 w-9 items-center justify-center rounded-full bg-ink text-paper transition-colors hover:bg-ink-soft disabled:opacity-40"
+                  className="absolute right-1.5 top-1.5 flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-40"
                 >
                   <Send className="h-4 w-4" />
                 </button>

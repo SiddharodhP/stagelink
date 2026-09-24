@@ -156,16 +156,16 @@ export function MilestonePlanner({
 
       <div className="space-y-4">
         {rows.map((r, i) => (
-          <div key={r.key} className="rounded-xl border border-border bg-white p-5">
+          <div key={r.key} className="rounded-xl border border-border bg-card p-5">
             <div className="mb-4 flex items-center justify-between gap-3">
-              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-ink text-xs font-semibold text-paper">
+              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
                 {i + 1}
               </span>
               {rows.length > 1 && (
                 <button
                   type="button"
                   onClick={() => setRows((rs) => rs.filter((x) => x.key !== r.key))}
-                  className="text-muted-foreground transition-colors hover:text-rose-600"
+                  className="text-muted-foreground transition-colors hover:text-rose-600 dark:hover:text-rose-400"
                   aria-label={`Remove milestone ${i + 1}`}
                 >
                   <Trash2 className="h-4 w-4" />
@@ -233,7 +233,7 @@ export function MilestonePlanner({
         <Plus className="mr-2 h-4 w-4" /> Add another milestone
       </Button>
 
-      <div className="rounded-xl border border-border bg-white p-5">
+      <div className="rounded-xl border border-border bg-card p-5">
         <div className="flex items-baseline justify-between gap-3">
           <span className="text-sm text-muted-foreground">Plan total</span>
           <span className="font-display text-2xl font-semibold">
@@ -246,7 +246,7 @@ export function MilestonePlanner({
             {drift === 0 ? (
               "The plan matches."
             ) : (
-              <span className={drift > 0 ? "text-amber-700" : "text-emerald-700"}>
+              <span className={drift > 0 ? "text-amber-700 dark:text-amber-300" : "text-emerald-700 dark:text-emerald-300"}>
                 This plan is {formatPrice(Math.abs(drift))}{" "}
                 {drift > 0 ? "above" : "below"} their bid — worth agreeing in
                 chat first.
@@ -258,7 +258,7 @@ export function MilestonePlanner({
 
       <div className="flex flex-wrap gap-3">
         <Button
-          className="rounded-full bg-ink px-8 text-paper hover:bg-ink-soft"
+          className="rounded-full bg-primary px-8 text-primary-foreground hover:bg-primary/90"
           disabled={sending || saving}
           onClick={send}
         >

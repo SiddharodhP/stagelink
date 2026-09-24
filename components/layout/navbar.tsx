@@ -12,6 +12,7 @@ import { getMyProfile, signOut } from "@/lib/services/auth";
 import { Profile } from "@/types/marketplace";
 import { NotificationBell } from "@/components/shared/notification-bell";
 import { NavSpotlight } from "@/components/layout/nav-spotlight";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { UserAvatar } from "@/components/shared/marketplace-ui";
 import {
   DropdownMenu,
@@ -112,6 +113,7 @@ export function Navbar() {
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
+          <ThemeToggle onDark={onDarkHero} />
           {profile ? (
             <>
               <NotificationBell userId={profile.id} />
@@ -174,7 +176,7 @@ export function Navbar() {
                 className={
                   onDarkHero
                     ? "rounded-full bg-paper px-6 text-ink hover:bg-white"
-                    : "rounded-full bg-ink px-6 text-paper hover:bg-ink-soft"
+                    : "rounded-full bg-primary px-6 text-primary-foreground hover:bg-primary/90"
                 }
               >
                 <Link href="/login">Get started</Link>
@@ -183,17 +185,21 @@ export function Navbar() {
           )}
         </div>
 
-        <button
-          className={`md:hidden ${
-            onDarkHero
-              ? "text-paper/80 hover:text-paper"
-              : "text-foreground/70 hover:text-foreground"
-          }`}
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          aria-label="Toggle menu"
-        >
-          {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-        </button>
+        {/* The toggle sits outside the menu so it is one tap on mobile too. */}
+        <div className="flex items-center gap-1 md:hidden">
+          <ThemeToggle onDark={onDarkHero} />
+          <button
+            className={
+              onDarkHero
+                ? "text-paper/80 hover:text-paper"
+                : "text-foreground/70 hover:text-foreground"
+            }
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Toggle menu"
+          >
+            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
+        </div>
       </div>
 
       <AnimatePresence>
@@ -236,7 +242,7 @@ export function Navbar() {
                     <Button variant="outline" asChild className="w-full">
                       <Link href="/login" onClick={() => setMobileMenuOpen(false)}>Log in</Link>
                     </Button>
-                    <Button asChild className="w-full rounded-full bg-ink text-paper hover:bg-ink-soft">
+                    <Button asChild className="w-full rounded-full bg-primary text-primary-foreground hover:bg-primary/90">
                       <Link href="/login" onClick={() => setMobileMenuOpen(false)}>Get started</Link>
                     </Button>
                   </>

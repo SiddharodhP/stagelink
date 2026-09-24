@@ -27,8 +27,8 @@ import { Dispute } from "@/types/marketplace";
 import { formatPrice, formatDate, cn, displayName } from "@/lib/utils";
 
 const STATUS_TONE: Record<string, string> = {
-  open: "border-red-200 bg-red-50 text-red-700",
-  under_review: "border-amber-200 bg-amber-50 text-amber-800",
+  open: "border-red-200 dark:border-red-500/30 bg-red-50 dark:bg-red-500/15 text-red-700 dark:text-red-300",
+  under_review: "border-amber-200 dark:border-amber-500/30 bg-amber-50 dark:bg-amber-500/15 text-amber-800 dark:text-amber-300",
   resolved: "border-border bg-secondary text-foreground/70",
 };
 
@@ -90,7 +90,7 @@ function AdminDisputes() {
           {disputes.map((d) => {
             const c = d.contract as any;
             return (
-              <article key={d.id} className="rounded-xl border border-border bg-white p-6">
+              <article key={d.id} className="rounded-xl border border-border bg-card p-6">
                 <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0">
                     <div className="mb-2 flex flex-wrap items-center gap-2.5">
@@ -149,7 +149,7 @@ function AdminDisputes() {
                   <div className="flex flex-wrap gap-2">
                     <Button
                       size="sm"
-                      className="rounded-full bg-ink text-paper hover:bg-ink-soft"
+                      className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
                       onClick={() => setTarget(d)}
                     >
                       Resolve dispute
@@ -215,16 +215,16 @@ function AdminDisputes() {
                     onClick={() => setOutcome(o.value)}
                     className={cn(
                       "flex w-full items-start gap-3 rounded-lg border p-3 text-left transition-colors",
-                      outcome === o.value ? "border-ink bg-secondary" : "border-border hover:border-ink/40"
+                      outcome === o.value ? "border-foreground bg-secondary" : "border-border hover:border-foreground/40"
                     )}
                   >
                     <span
                       className={cn(
                         "mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border",
-                        outcome === o.value ? "border-ink" : "border-foreground/30"
+                        outcome === o.value ? "border-foreground" : "border-foreground/30"
                       )}
                     >
-                      {outcome === o.value && <span className="h-2 w-2 rounded-full bg-ink" />}
+                      {outcome === o.value && <span className="h-2 w-2 rounded-full bg-foreground" />}
                     </span>
                     <span>
                       <span className="block text-sm font-medium">{o.label}</span>
@@ -250,7 +250,7 @@ function AdminDisputes() {
               Cancel
             </Button>
             <Button
-              className="rounded-full bg-ink text-paper hover:bg-ink-soft"
+              className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
               disabled={busy || !note.trim()}
               onClick={resolve}
             >

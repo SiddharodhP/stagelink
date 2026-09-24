@@ -12,7 +12,7 @@ import {
  * Deliberately NOT used: Freelancer.com's API. Its data fits best (real
  * projects with budgets and bid counts) but §4.7 of their API T&Cs forbids
  * using it to "replicate or compete with the services offered by Freelancer",
- * which is exactly what Roster is. Using it would risk termination and hand a
+ * which is exactly what Jayree is. Using it would risk termination and hand a
  * competitor a legitimate complaint.
  *
  * Listings are filtered hard to employment types that are actually freelance
@@ -25,7 +25,7 @@ const PRODUCTIONHUB_URL = "https://www.productionhub.com";
 
 const REVALIDATE_SECONDS = 1800; // 30 min
 const MAX_RESULTS = 60;
-const UA = "Roster-Marketplace (+https://jayree.io)";
+const UA = "Jayree-Marketplace (+https://jayree.io)";
 
 /**
  * Remote OK was removed earlier: its feed has no employment-type field,
@@ -35,7 +35,7 @@ const UA = "Roster-Marketplace (+https://jayree.io)";
  */
 /**
  * Remotive was dropped when the marketplace narrowed to photo and video.
- * It was kept "for breadth" while Roster was a general freelance site;
+ * It was kept "for breadth" while Jayree was a general freelance site;
  * on a photography platform it is remote software jobs on the wrong site.
  *
  * The measured relevance was already the argument — one pull each:

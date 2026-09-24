@@ -118,7 +118,7 @@ export default async function CategoryPage({ params }: Props) {
             {/* Built as one template literal: a multi-line JSX text node
                 that follows an expression loses its leading space. */}
             <p className="text-lg leading-relaxed text-muted-foreground">
-              {`Every ${lower} project on Roster is split into milestones with a fixed price and deliverables agreed upfront. Freelancers see the full plan before bidding, and each milestone is funded into escrow before work starts — so you only pay for work you've approved.`}
+              {`Every ${lower} project on Jayree is split into milestones with a fixed price and deliverables agreed upfront. Freelancers see the full plan before bidding, and each milestone is funded into escrow before work starts — so you only pay for work you've approved.`}
             </p>
           </header>
 
@@ -170,16 +170,16 @@ export default async function CategoryPage({ params }: Props) {
                 ))}
               </div>
             ) : (
-              <div className="rounded-xl border border-dashed border-border bg-white px-6 py-14 text-center">
+              <div className="rounded-xl border border-dashed border-border bg-card px-6 py-14 text-center">
                 <p className="font-display mb-2 text-xl font-semibold">
                   No open {lower} projects right now
                 </p>
                 <p className="mx-auto mb-6 max-w-md text-sm text-muted-foreground">
                   New projects are posted regularly. Post one yourself, or browse
-                  every open shoot and edit on Roster.
+                  every open shoot and edit on Jayree.
                 </p>
                 <div className="flex flex-col justify-center gap-3 sm:flex-row">
-                  <Button asChild className="rounded-full bg-ink text-paper hover:bg-ink-soft">
+                  <Button asChild className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90">
                     <Link href="/projects/new">Post a {lower} project</Link>
                   </Button>
                   <Button asChild variant="outline" className="rounded-full">
@@ -200,7 +200,7 @@ export default async function CategoryPage({ params }: Props) {
                   <Link
                     key={c.slug}
                     href={`/projects/category/${c.slug}`}
-                    className="rounded-full border border-border bg-white px-4 py-2 text-sm font-medium transition-colors hover:border-ink/40"
+                    className="rounded-full border border-border bg-card px-4 py-2 text-sm font-medium transition-colors hover:border-foreground/40"
                   >
                     {c.name}
                   </Link>

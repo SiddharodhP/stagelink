@@ -7,7 +7,7 @@ import { Briefcase, Hammer, ArrowRight, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { setRole } from "@/lib/services/auth";
-import { APP_NAME } from "@/lib/constants";
+import { BRAND_NAME } from "@/lib/constants";
 
 export default function RoleSelectPage() {
   const router = useRouter();
@@ -20,7 +20,7 @@ export default function RoleSelectPage() {
     try {
       const { error } = await setRole(selectedRole);
       if (error) throw error;
-      toast.success(`Welcome to ${APP_NAME}!`);
+      toast.success(`Welcome to ${BRAND_NAME}!`);
       router.push("/onboarding");
     } catch (err: any) {
       toast.error(err.message || "Failed to set account type");
@@ -48,7 +48,7 @@ export default function RoleSelectPage() {
         <motion.div variants={itemVariants} className="mb-12 text-center">
           <p className="eyebrow mb-4">One quick question</p>
           <h1 className="font-display mb-4 text-4xl font-semibold tracking-tight md:text-5xl">
-            How will you use <span className="italic text-brand">{APP_NAME}</span>?
+            How will you use <span className="italic text-brand">{BRAND_NAME}</span>?
           </h1>
           <p className="text-lg text-muted-foreground">
             This sets up your workspace — it can&apos;t be changed later.
@@ -59,10 +59,10 @@ export default function RoleSelectPage() {
           <motion.div variants={itemVariants} whileHover={{ y: -3 }} whileTap={{ scale: 0.99 }}>
             <div
               onClick={() => setSelectedRole("client")}
-              className={`relative h-full cursor-pointer rounded-2xl border bg-white p-8 transition-all duration-300 ${
+              className={`relative h-full cursor-pointer rounded-2xl border bg-card p-8 transition-all duration-300 ${
                 selectedRole === "client"
-                  ? "border-ink shadow-[0_24px_50px_-30px_rgba(26,23,19,0.4)]"
-                  : "border-border hover:border-ink/40"
+                  ? "border-foreground shadow-[0_24px_50px_-30px_rgba(26,23,19,0.4)]"
+                  : "border-border hover:border-foreground/40"
               }`}
             >
               {selectedRole === "client" && (
@@ -84,10 +84,10 @@ export default function RoleSelectPage() {
           <motion.div variants={itemVariants} whileHover={{ y: -3 }} whileTap={{ scale: 0.99 }}>
             <div
               onClick={() => setSelectedRole("freelancer")}
-              className={`relative h-full cursor-pointer rounded-2xl border bg-white p-8 transition-all duration-300 ${
+              className={`relative h-full cursor-pointer rounded-2xl border bg-card p-8 transition-all duration-300 ${
                 selectedRole === "freelancer"
-                  ? "border-ink shadow-[0_24px_50px_-30px_rgba(26,23,19,0.4)]"
-                  : "border-border hover:border-ink/40"
+                  ? "border-foreground shadow-[0_24px_50px_-30px_rgba(26,23,19,0.4)]"
+                  : "border-border hover:border-foreground/40"
               }`}
             >
               {selectedRole === "freelancer" && (
@@ -112,7 +112,7 @@ export default function RoleSelectPage() {
             size="lg"
             className={`h-14 rounded-full px-10 text-lg transition-all ${
               selectedRole
-                ? "bg-ink text-paper hover:bg-ink-soft"
+                ? "bg-primary text-primary-foreground hover:bg-primary/90"
                 : "cursor-not-allowed bg-secondary text-muted-foreground"
             }`}
             onClick={handleContinue}

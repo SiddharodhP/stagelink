@@ -82,7 +82,7 @@ export function ProjectComments({
         {bidHref && (
           <Button
             asChild
-            className="rounded-full bg-ink text-paper hover:bg-ink-soft"
+            className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
           >
             <Link href={bidHref}>
               <Gavel className="mr-2 h-4 w-4" />
@@ -98,12 +98,12 @@ export function ProjectComments({
           {[0, 1].map((i) => (
             <div
               key={i}
-              className="h-24 animate-pulse rounded-xl border border-border bg-white"
+              className="h-24 animate-pulse rounded-xl border border-border bg-card"
             />
           ))}
         </div>
       ) : comments.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-border bg-white px-6 py-12 text-center">
+        <div className="rounded-xl border border-dashed border-border bg-card px-6 py-12 text-center">
           <MessageSquare className="mx-auto mb-3 h-8 w-8 text-border" />
           <p className="font-medium">Nothing here yet</p>
           <p className="mx-auto mt-1 max-w-sm text-sm text-muted-foreground">
@@ -121,7 +121,7 @@ export function ProjectComments({
               <li
                 key={c.id}
                 className={cn(
-                  "rounded-xl border border-border bg-white p-5 transition-opacity",
+                  "rounded-xl border border-border bg-card p-5 transition-opacity",
                   c.is_withdrawn && "opacity-55"
                 )}
               >
@@ -145,7 +145,7 @@ export function ProjectComments({
                       )}
                       {a?.is_verified && (
                         <ShieldCheck
-                          className="h-4 w-4 text-emerald-600"
+                          className="h-4 w-4 text-emerald-600 dark:text-emerald-400"
                           aria-label="Verified"
                         />
                       )}

@@ -202,10 +202,10 @@ function Wizard({ profile }: { profile: Profile }) {
               className={cn(
                 "flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-xs font-semibold transition-colors",
                 i < step
-                  ? "border-ink bg-ink text-paper"
+                  ? "border-foreground bg-primary text-primary-foreground"
                   : i === step
                     ? "border-brand bg-brand-soft text-brand-deep"
-                    : "border-border bg-white text-muted-foreground"
+                    : "border-border bg-card text-muted-foreground"
               )}
             >
               {i < step ? <Check className="h-3.5 w-3.5" /> : i + 1}
@@ -223,7 +223,7 @@ function Wizard({ profile }: { profile: Profile }) {
         ))}
       </ol>
 
-      <div className="rounded-xl border border-border bg-white p-6 md:p-8">
+      <div className="rounded-xl border border-border bg-card p-6 md:p-8">
         {/* ---------- Step 0: everything about the project ----------
              Basics and "Skills & scope" used to be two screens with a
              Continue between them. Splitting eight fields across two steps
@@ -340,7 +340,7 @@ function Wizard({ profile }: { profile: Profile }) {
                   {form.skills.map((sk) => (
                     <span
                       key={sk}
-                      className="inline-flex items-center gap-1.5 rounded-full bg-ink px-3 py-1.5 text-[13px] font-medium text-paper"
+                      className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-[13px] font-medium text-primary-foreground"
                     >
                       {sk}
                       <button
@@ -438,7 +438,7 @@ function Wizard({ profile }: { profile: Profile }) {
 
             <div>
               <p className="eyebrow mb-4">Milestone structure</p>
-              <div className="rounded-xl border border-border bg-white p-6">
+              <div className="rounded-xl border border-border bg-card p-6">
                 <p className="eyebrow mb-1">Budget</p>
                 <p className="font-display text-3xl font-semibold">
                   {form.budget_stated
@@ -478,12 +478,12 @@ function Wizard({ profile }: { profile: Profile }) {
             Save draft
           </Button>
           {step < STEPS.length - 1 ? (
-            <Button className="rounded-full bg-ink px-8 text-paper hover:bg-ink-soft" onClick={next}>
+            <Button className="rounded-full bg-primary px-8 text-primary-foreground hover:bg-primary/90" onClick={next}>
               Continue <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           ) : (
             <Button
-              className="rounded-full bg-ink px-8 text-paper hover:bg-ink-soft"
+              className="rounded-full bg-primary px-8 text-primary-foreground hover:bg-primary/90"
               onClick={publish}
               disabled={isPublishing}
             >

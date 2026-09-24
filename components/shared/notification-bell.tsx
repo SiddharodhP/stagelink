@@ -42,7 +42,7 @@ export function NotificationBell({ userId }: { userId: string }) {
       <DropdownMenuTrigger asChild>
         <button
           aria-label="Notifications"
-          className="relative rounded-full border border-border bg-white p-2.5 transition-colors hover:border-ink/40"
+          className="relative rounded-full border border-border bg-card p-2.5 transition-colors hover:border-foreground/40"
         >
           <Bell className="h-[18px] w-[18px] text-foreground/70" />
           {unread > 0 && (

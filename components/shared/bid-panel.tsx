@@ -101,7 +101,7 @@ export function BidPanel({
 
   if (!canBid) {
     return (
-      <div className="rounded-xl border border-border bg-white p-6 text-center">
+      <div className="rounded-xl border border-border bg-card p-6 text-center">
         <p className="font-display mb-1 text-lg font-semibold">Bidding closed</p>
         <p className="text-sm text-muted-foreground">
           This project is no longer accepting bids.
@@ -117,7 +117,7 @@ export function BidPanel({
   /* Existing bid, not editing → summary card */
   if (existingBid && !editing) {
     return (
-      <div className="rounded-xl border border-border bg-white p-6">
+      <div className="rounded-xl border border-border bg-card p-6">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="font-display text-xl font-semibold">Your bid</h2>
           <BidStatusPill status={existingBid.status} />
@@ -141,7 +141,7 @@ export function BidPanel({
         </p>
 
         {existingBid.status === "accepted" ? (
-          <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-900">
+          <div className="rounded-lg border border-emerald-200 dark:border-emerald-500/30 bg-emerald-50 dark:bg-emerald-500/15 p-4 text-sm text-emerald-900 dark:text-emerald-300">
             <p className="mb-2 font-semibold">You won this project.</p>
             <Link href="/freelancer/work" className="font-medium underline">
               Review the milestones and confirm →
@@ -180,7 +180,7 @@ export function BidPanel({
 
   /* Bid form */
   return (
-    <div className="rounded-xl border border-border bg-white p-6">
+    <div className="rounded-xl border border-border bg-card p-6">
       <h2 className="font-display mb-1 text-xl font-semibold">
         {existingBid ? "Update your bid" : "Place your bid"}
       </h2>
@@ -235,7 +235,7 @@ export function BidPanel({
 
       <div className="mt-5 flex gap-2">
         <Button
-          className="flex-1 rounded-full bg-ink text-paper hover:bg-ink-soft"
+          className="flex-1 rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
           onClick={save}
           disabled={isSaving}
         >

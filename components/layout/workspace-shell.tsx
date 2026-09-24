@@ -69,7 +69,7 @@ export function WorkspaceShell({
         </p>
         <a
           href={home}
-          className="rounded-full bg-ink px-6 py-3 text-sm font-medium text-paper hover:bg-ink-soft"
+          className="rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90"
         >
           Go to my dashboard
         </a>

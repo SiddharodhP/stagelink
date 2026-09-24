@@ -80,7 +80,7 @@ function PersonRow({ p }: { p: SeoFreelancer }) {
         <p className="flex flex-wrap items-center gap-2 font-semibold">
           {displayName(p)}
           {p.is_verified && (
-            <ShieldCheck className="h-4 w-4 text-emerald-600" aria-label="Verified" />
+            <ShieldCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400" aria-label="Verified" />
           )}
           {p.total_reviews > 0 && (
             <span className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground">
@@ -183,13 +183,13 @@ export default async function CityPage({ params }: Props) {
                   in and around {city.name}
                 </span>
               </h2>
-              <div className="overflow-hidden rounded-xl border border-border bg-white">
+              <div className="overflow-hidden rounded-xl border border-border bg-card">
                 {people.map((p) => (
                   <PersonRow key={p.id} p={p} />
                 ))}
               </div>
               <div className="mt-5 flex flex-wrap gap-3">
-                <Button asChild className="rounded-full bg-ink text-paper hover:bg-ink-soft">
+                <Button asChild className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90">
                   <Link href={`/people?city=${encodeURIComponent(city.name)}`}>
                     Filter by skill and rate
                   </Link>
@@ -200,7 +200,7 @@ export default async function CityPage({ params }: Props) {
               </div>
             </>
           ) : (
-            <div className="rounded-xl border border-dashed border-border bg-white px-6 py-14 text-center">
+            <div className="rounded-xl border border-dashed border-border bg-card px-6 py-14 text-center">
               <h2 className="font-display mb-2 text-xl font-semibold">
                 No one listed in {city.name} yet
               </h2>
@@ -209,7 +209,7 @@ export default async function CityPage({ params }: Props) {
                 those who travel or work remotely — can bid on it.
               </p>
               <div className="flex flex-wrap justify-center gap-3">
-                <Button asChild className="rounded-full bg-ink text-paper hover:bg-ink-soft">
+                <Button asChild className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90">
                   <Link href="/projects/new">Post a project</Link>
                 </Button>
                 <Button asChild variant="outline" className="rounded-full">
@@ -232,7 +232,7 @@ export default async function CityPage({ params }: Props) {
                 <Link
                   key={c.slug}
                   href={`/people/${c.slug}`}
-                  className="rounded-full border border-border bg-white px-4 py-2 text-sm font-medium transition-colors hover:bg-secondary"
+                  className="rounded-full border border-border bg-card px-4 py-2 text-sm font-medium transition-colors hover:bg-secondary"
                 >
                   {c.name}
                 </Link>
@@ -248,7 +248,7 @@ export default async function CityPage({ params }: Props) {
               <Link
                 key={c.slug}
                 href={`/people/${c.slug}`}
-                className="inline-flex items-center gap-1 rounded-full border border-border bg-white px-4 py-2 text-sm font-medium transition-colors hover:bg-secondary"
+                className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium transition-colors hover:bg-secondary"
               >
                 {c.name} <ArrowUpRight className="h-3.5 w-3.5 opacity-50" />
               </Link>

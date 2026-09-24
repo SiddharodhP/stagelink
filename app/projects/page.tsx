@@ -141,7 +141,7 @@ export default function BrowseProjectsPage() {
         <select
           value={filters.categoryId ?? ""}
           onChange={(e) => update({ categoryId: e.target.value ? Number(e.target.value) : null })}
-          className="w-full rounded-md border border-border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+          className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
         >
           <option value="">All categories</option>
           {categories.map((c) => (
@@ -167,10 +167,10 @@ export default function BrowseProjectsPage() {
               <span
                 className={cn(
                   "flex h-4 w-4 items-center justify-center rounded-full border transition-all",
-                  budgetPreset === i ? "border-ink" : "border-foreground/30 group-hover:border-foreground/50"
+                  budgetPreset === i ? "border-foreground" : "border-foreground/30 group-hover:border-foreground/50"
                 )}
               >
-                {budgetPreset === i && <span className="h-2 w-2 rounded-full bg-ink" />}
+                {budgetPreset === i && <span className="h-2 w-2 rounded-full bg-foreground" />}
               </span>
               <span className={budgetPreset === i ? "font-medium" : "text-muted-foreground"}>
                 {b.label}
@@ -230,7 +230,7 @@ export default function BrowseProjectsPage() {
 
           {/* Search + sort */}
           <div className="mb-6 flex flex-col gap-3 md:flex-row">
-            <div className="flex flex-1 items-center gap-2 rounded-full border border-border bg-white px-4 focus-within:border-ink/50">
+            <div className="flex flex-1 items-center gap-2 rounded-full border border-border bg-card px-4 focus-within:border-foreground/50">
               <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
               <input
                 value={searchInput}
@@ -257,7 +257,7 @@ export default function BrowseProjectsPage() {
                 <SlidersHorizontal className="mr-2 h-4 w-4" />
                 Filters
                 {activeCount > 0 && (
-                  <span className="ml-2 flex h-5 w-5 items-center justify-center rounded-full bg-ink text-[11px] font-semibold text-paper">
+                  <span className="ml-2 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[11px] font-semibold text-primary-foreground">
                     {activeCount}
                   </span>
                 )}
