@@ -12,6 +12,16 @@ import {
   Video,
   PhoneOff,
   Phone,
+  ClipboardList,
+  Handshake,
+  ListChecks,
+  PlayCircle,
+  Wallet,
+  PackageCheck,
+  Undo2,
+  BadgeCheck,
+  CheckCircle2,
+  ArrowRight,
 } from "lucide-react";
 
 import { WorkspaceShellFree } from "@/components/layout/workspace-shell-free";
@@ -35,6 +45,40 @@ import {
 import { CallSession, Conversation, Message, Profile } from "@/types/marketplace";
 import { cn, timeAgo, displayName, partyName } from "@/lib/utils";
 import { roleAccent } from "@/lib/roles";
+import { projectStatus, milestoneProgress } from "@/lib/project-status";
+import { buildTimeline, type TimelineEvent } from "@/lib/project-timeline";
+import {
+  getMyContracts,
+  getContractMilestones,
+  getMilestoneSubmissions,
+  getMyTransactions,
+} from "@/lib/services/contracts";
+import { MilestoneStatusPill } from "@/components/shared/marketplace-ui";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import type {
+  Contract,
+  Milestone,
+  MilestoneSubmission,
+  Transaction,
+} from "@/types/marketplace";
+
+/** One icon per step, so the thread is scannable without reading it. */
+const EVENT_ICON: Record<TimelineEvent["kind"], typeof Handshake> = {
+  awarded: Handshake,
+  plan: ListChecks,
+  started: PlayCircle,
+  funded: Wallet,
+  delivered: PackageCheck,
+  revision: Undo2,
+  released: BadgeCheck,
+  completed: CheckCircle2,
+};
 
 function MessagesInner({ profile }: { profile: Profile }) {
   const params = useSearchParams();
@@ -50,6 +94,11 @@ function MessagesInner({ profile }: { profile: Profile }) {
   const [call, setCall] = useState<CallSession | null>(null);
   const [inCall, setInCall] = useState(false);
   const [callBusy, setCallBusy] = useState(false);
+  const [contracts, setContracts] = useState<Contract[]>([]);
+  const [milestones, setMilestones] = useState<Milestone[]>([]);
+  const [statusOpen, setStatusOpen] = useState(false);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [submissions, setSubmissions] = useState<MilestoneSubmission[]>([]);
   const endRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -63,6 +112,50 @@ function MessagesInner({ profile }: { profile: Profile }) {
       setLoading(false);
     });
   }, [profile.id, initialId]);
+
+  // Every contract this person is party to, fetched once. Looking one up
+  // by project is then a local find, rather than a query per conversation.
+  useEffect(() => {
+    getMyContracts(profile.id).then(({ data }) => setContracts(data));
+    getMyTransactions(profile.id).then(({ data }) => setTransactions(data));
+  }, [profile.id]);
+
+  // Milestones only for the thread that is open -- the status sentence
+  // needs them, and no other thread is on screen.
+  useEffect(() => {
+    if (!active?.project_id) {
+      setMilestones([]);
+      return;
+    }
+    let cancelled = false;
+    getContractMilestones(active.project_id).then(({ data }) => {
+      if (!cancelled) setMilestones(data);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [active?.project_id]);
+
+  // Deliveries for the open thread. Keyed on the contract rather than the
+  // project, because that is what the table is indexed by.
+  const openContractId =
+    (active?.project_id
+      ? contracts.find((c) => c.project_id === active.project_id)?.id
+      : null) ?? null;
+
+  useEffect(() => {
+    if (!openContractId) {
+      setSubmissions([]);
+      return;
+    }
+    let cancelled = false;
+    getMilestoneSubmissions(openContractId).then(({ data }) => {
+      if (!cancelled) setSubmissions(data);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [openContractId]);
 
   useEffect(() => {
     if (!active) return;
@@ -125,6 +218,59 @@ function MessagesInner({ profile }: { profile: Profile }) {
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  /**
+   * Where the open thread's project stands. Null when the conversation is
+   * not attached to a project at all, which is the one case with nothing
+   * to report.
+   */
+  const threadContract = active?.project_id
+    ? contracts.find((c) => c.project_id === active.project_id) ?? null
+    : null;
+  const stage = active?.project_id
+    ? projectStatus({
+        contract: threadContract,
+        milestones,
+        viewerIsClient: profile.role === "client",
+      })
+    : null;
+  const progress = milestoneProgress(milestones);
+
+  /**
+   * Where the next step is actually done. Everything on an active contract
+   * happens on the contract page, but the anchor puts you at the right part
+   * of it rather than at the top.
+   */
+  const stageHref = threadContract
+    ? `/contracts/${threadContract.id}#${
+        threadContract.status === "pending_acceptance" ? "milestones" : "progress"
+      }`
+    : active?.project_id
+      ? `/projects/${active.project_id}`
+      : "#";
+
+  /**
+   * Chat and project history in one column, ordered by when things
+   * happened. Timeline events are derived from contract state, so they
+   * appear for projects that ran long before this view existed.
+   */
+  const timeline: TimelineEvent[] = threadContract
+    ? buildTimeline({
+        contract: threadContract,
+        milestones,
+        transactions: transactions.filter(
+          (t) => t.project_id === active?.project_id
+        ),
+        submissions,
+        viewerIsClient: profile.role === "client",
+        otherName: displayName(active?.other, "they"),
+      })
+    : [];
+
+  const thread = [
+    ...messages.map((m) => ({ at: m.created_at, message: m, event: null })),
+    ...timeline.map((e) => ({ at: e.at, message: null, event: e })),
+  ].sort((a, b) => a.at.localeCompare(b.at));
 
   const beginCall = async () => {
     if (!active) return;
@@ -323,14 +469,39 @@ function MessagesInner({ profile }: { profile: Profile }) {
                       {active.other?.role}
                     </span>
                     {active.project?.title && ` · ${active.project.title}`}
+                    {stage && (
+                      <>
+                        {" · "}
+                        <span
+                          className={cn(
+                            "font-medium",
+                            stage.who === "you" ? "text-brand" : "text-foreground/70"
+                          )}
+                        >
+                          {stage.who === "you" ? `${stage.label} — your move` : stage.label}
+                        </span>
+                      </>
+                    )}
                   </p>
                 </div>
               </Link>
 
+              {stage && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="ml-auto shrink-0 rounded-full"
+                  onClick={() => setStatusOpen(true)}
+                >
+                  <ClipboardList className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Status</span>
+                </Button>
+              )}
+
               <Button
                 variant="outline"
                 size="sm"
-                className="ml-auto shrink-0 rounded-full"
+                className={cn("shrink-0 rounded-full", !stage && "ml-auto")}
                 disabled={callBusy || inCall}
                 onClick={beginCall}
                 aria-label={`Start a video call with ${
@@ -419,13 +590,33 @@ function MessagesInner({ profile }: { profile: Profile }) {
               </div>
             ) : (
             <div className="flex-1 space-y-3 overflow-y-auto bg-background/60 p-6">
-              {messages.length === 0 ? (
+              {thread.length === 0 ? (
                 <div className="flex h-full flex-col items-center justify-center text-muted-foreground">
                   <MessageSquare className="mb-4 h-12 w-12 opacity-20" />
                   <p className="text-sm">Send a message to start the conversation</p>
                 </div>
               ) : (
-                messages.map((m) => {
+                thread.map((item) => {
+                  // ---- A step of the project ----
+                  if (item.event) {
+                    const Icon = EVENT_ICON[item.event.kind];
+                    return (
+                      <div key={item.event.id} className="flex justify-center py-1">
+                        <div className="flex max-w-[85%] items-start gap-2.5 rounded-xl border border-border bg-card/60 px-3.5 py-2.5 text-center">
+                          <Icon className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                          <p className="text-left text-xs leading-relaxed text-muted-foreground">
+                            {item.event.text}
+                            <span className="ml-1.5 whitespace-nowrap text-[10px] opacity-70">
+                              {timeAgo(item.event.at)}
+                            </span>
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  // ---- Something someone typed ----
+                  const m = item.message!;
                   const mine = m.sender_id === profile.id;
                   return (
                     <div key={m.id} className={cn("flex", mine ? "justify-end" : "justify-start")}>
@@ -451,6 +642,40 @@ function MessagesInner({ profile }: { profile: Profile }) {
                   );
                 })
               )}
+
+              {/* ---- What happens next. Live, so it is not part of the
+                     history above: it changes as the project moves. ---- */}
+              {stage && stage.who !== "none" && (
+                <div
+                  className={cn(
+                    "mx-auto mt-2 w-full max-w-md rounded-xl border p-4",
+                    stage.who === "you"
+                      ? "border-brand/40 bg-brand-soft"
+                      : "border-border bg-card"
+                  )}
+                >
+                  <p className="mb-1 text-xs font-semibold uppercase tracking-[0.08em]">
+                    {stage.who === "you"
+                      ? "Your move"
+                      : `Waiting on ${displayName(active.other, "them")}`}
+                  </p>
+                  <p className="text-sm leading-relaxed text-muted-foreground">
+                    {stage.text}
+                  </p>
+                  {stage.who === "you" && threadContract && (
+                    <Button
+                      asChild
+                      size="sm"
+                      className="mt-3 w-full rounded-full"
+                    >
+                      <Link href={stageHref}>
+                        {stage.label} <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+                      </Link>
+                    </Button>
+                  )}
+                </div>
+              )}
+
               <div ref={endRef} />
             </div>
             )}
@@ -482,6 +707,72 @@ function MessagesInner({ profile }: { profile: Profile }) {
           </div>
         )}
       </div>
+
+      {/* ---- Where the project stands ---- */}
+      <Dialog open={statusOpen} onOpenChange={setStatusOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Where this project stands</DialogTitle>
+            <DialogDescription>{active?.project?.title}</DialogDescription>
+          </DialogHeader>
+
+          {stage && (
+            <div className="space-y-5">
+              <div
+                className={cn(
+                  "rounded-xl border p-4",
+                  stage.who === "you"
+                    ? "border-brand/30 bg-brand-soft"
+                    : "border-border bg-secondary/50"
+                )}
+              >
+                <p className="mb-1 text-sm font-semibold">
+                  {stage.who === "you"
+                    ? "Your move"
+                    : stage.who === "them"
+                      ? `Waiting on ${displayName(active?.other, "them")}`
+                      : stage.label}
+                </p>
+                <p className="text-sm leading-relaxed text-muted-foreground">
+                  {stage.text}
+                </p>
+              </div>
+
+              {milestones.length > 0 && (
+                <div>
+                  <p className="eyebrow mb-2.5">
+                    Milestones · {progress.paid} of {progress.total} paid
+                  </p>
+                  <ol className="space-y-2">
+                    {milestones.map((m) => (
+                      <li
+                        key={m.id}
+                        className="flex items-center justify-between gap-3 rounded-lg border border-border bg-card px-3 py-2.5"
+                      >
+                        <span className="min-w-0 truncate text-sm">
+                          <span className="mr-2 font-mono text-xs text-muted-foreground">
+                            {String(m.seq).padStart(2, "0")}
+                          </span>
+                          {m.title}
+                        </span>
+                        <MilestoneStatusPill status={m.status} />
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              )}
+
+              {threadContract && (
+                <Button asChild variant="outline" className="w-full rounded-full">
+                  <Link href={`/contracts/${threadContract.id}`}>
+                    Open the contract
+                  </Link>
+                </Button>
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

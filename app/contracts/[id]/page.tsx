@@ -71,6 +71,7 @@ import {
   Profile,
 } from "@/types/marketplace";
 import { formatPrice, formatDate, cn, displayName, partyName } from "@/lib/utils";
+import { projectStatus } from "@/lib/project-status";
 
 type DialogKind =
   | { kind: "submit"; milestone: Milestone }
@@ -230,41 +231,17 @@ function Workspace({ profile }: { profile: Profile }) {
     (m) => !["paid", "cancelled"].includes(m.status)
   );
 
-  /** Whose turn is it? Drives the banner at the top. */
-  const nextAction = (() => {
-    if (isPending) {
-      // Before the plan is sent the ball is in the client's court, not the
-      // freelancer's — there is nothing yet for them to confirm.
-      if (!planSent)
-        return isClient
-          ? { who: "you", text: "Break the work into milestones below and send the plan to the freelancer." }
-          : { who: "them", text: "Waiting for the client to send a milestone plan. Talk the work through with them in the meantime." };
-      return isClient
-        ? { who: "them", text: "Waiting for the freelancer to confirm your milestone structure." }
-        : { who: "you", text: "Review the milestones below and confirm to start work." };
-    }
-    if (!isActive) return null;
-    if (!activeMilestone) return null;
-    switch (activeMilestone.status) {
-      case "pending":
-        return isClient
-          ? { who: "you", text: `Fund "${activeMilestone.title}" to let work begin.` }
-          : { who: "them", text: `Waiting for the client to fund "${activeMilestone.title}".` };
-      case "in_progress":
-      case "revision_requested":
-        return isClient
-          ? { who: "them", text: `Freelancer is working on "${activeMilestone.title}".` }
-          : { who: "you", text: `Deliver "${activeMilestone.title}" and submit it for review.` };
-      case "submitted":
-        return isClient
-          ? { who: "you", text: `Review "${activeMilestone.title}" and approve to release payment.` }
-          : { who: "them", text: `Waiting for the client to review "${activeMilestone.title}".` };
-      case "disputed":
-        return { who: "them", text: "This milestone is under dispute review." };
-      default:
-        return null;
-    }
-  })();
+  /**
+   * Whose turn is it? Drives the banner at the top.
+   *
+   * Shared with the messages panel via lib/project-status, so the two can
+   * never disagree about where a project stands.
+   */
+  const nextAction = projectStatus({
+    contract,
+    milestones,
+    viewerIsClient: isClient,
+  });
 
   const milestoneActions = (m: Milestone) => {
     // Completed contracts still render actions so a freelancer can generate
@@ -484,7 +461,11 @@ function Workspace({ profile }: { profile: Profile }) {
           </span>
           <div>
             <p className="text-sm font-semibold">
-              {nextAction.who === "you" ? "Your move" : "Waiting on them"}
+              {nextAction.who === "you"
+                ? "Your move"
+                : nextAction.who === "them"
+                  ? "Waiting on them"
+                  : nextAction.label}
             </p>
             <p className="text-sm text-muted-foreground">{nextAction.text}</p>
           </div>
@@ -492,8 +473,10 @@ function Workspace({ profile }: { profile: Profile }) {
       )}
 
       <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
-        {/* Milestone workspace */}
-        <div className="min-w-0 space-y-6">
+        {/* Milestone workspace. `id` is the target of the next-step button
+            in the chat thread; scroll-mt keeps the heading clear of the
+            fixed navbar. */}
+        <div id="milestones" className="min-w-0 scroll-mt-28 space-y-6">
           {/* ---- Planning: client drafts, after talking it through ---- */}
           {isPending && !planSent && isClient && (
             <SectionCard
@@ -628,7 +611,10 @@ function Workspace({ profile }: { profile: Profile }) {
 
         {/* Sidebar */}
         <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
-          <div className="rounded-xl border border-border bg-card p-6">
+          <div
+            id="progress"
+            className="scroll-mt-28 rounded-xl border border-border bg-card p-6"
+          >
             <h2 className="eyebrow mb-4">Progress</h2>
             <div className="mb-2 flex items-baseline justify-between">
               <span className="font-display text-3xl font-semibold">{progress}%</span>
