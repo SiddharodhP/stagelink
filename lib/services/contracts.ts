@@ -55,7 +55,9 @@ export async function getMilestoneSubmissions(contractId: string) {
 export async function getMyTransactions(userId: string) {
   const { data, error } = await supabase
     .from("transactions")
-    .select("*, project:project_id(title), milestone:milestone_id(title)")
+    .select(
+      "*, project:project_id(title), milestone:milestone_id(title), contract:contract_id(freelancer:freelancer_id(id, full_name, company_name), client:client_id(id, full_name, company_name))"
+    )
     .or(`payer_id.eq.${userId},payee_id.eq.${userId}`)
     .order("created_at", { ascending: false });
   return { data: (data || []) as Transaction[], error };

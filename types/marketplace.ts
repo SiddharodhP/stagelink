@@ -200,6 +200,23 @@ export interface Transaction {
   created_at: string;
   project?: { title: string };
   milestone?: { title: string };
+  /**
+   * Both sides of the contract the money belongs to.
+   *
+   * Not derivable from the transaction itself: fund_milestone writes
+   * payee_id as null, because funding escrow pays nobody yet. The contract
+   * is the only place a funding row can name the freelancer.
+   */
+  contract?: {
+    freelancer?: TransactionParty | null;
+    client?: TransactionParty | null;
+  } | null;
+}
+
+export interface TransactionParty {
+  id: string;
+  full_name: string | null;
+  company_name: string | null;
 }
 
 export interface Review {
