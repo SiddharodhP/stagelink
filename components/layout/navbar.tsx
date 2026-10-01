@@ -14,6 +14,7 @@ import { NotificationBell } from "@/components/shared/notification-bell";
 import { NavSpotlight } from "@/components/layout/nav-spotlight";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { UserAvatar } from "@/components/shared/marketplace-ui";
+import { roleAccent } from "@/lib/roles";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -128,7 +129,9 @@ export function Navbar() {
                     <p className="text-sm font-semibold leading-none">
                       {profile.full_name || "Account"}
                     </p>
-                    <p className="mt-1 text-xs capitalize leading-none text-muted-foreground">
+                    <p
+                      className={`mt-1 text-xs font-medium capitalize leading-none ${roleAccent(profile.role).text}`}
+                    >
                       {profile.role || "unassigned"}
                     </p>
                   </DropdownMenuLabel>

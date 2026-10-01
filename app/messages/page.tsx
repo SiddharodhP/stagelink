@@ -34,6 +34,7 @@ import {
 } from "@/lib/services/calls";
 import { CallSession, Conversation, Message, Profile } from "@/types/marketplace";
 import { cn, timeAgo, displayName, partyName } from "@/lib/utils";
+import { roleAccent } from "@/lib/roles";
 
 function MessagesInner({ profile }: { profile: Profile }) {
   const params = useSearchParams();
@@ -317,8 +318,10 @@ function MessagesInner({ profile }: { profile: Profile }) {
                   <h3 className="truncate font-semibold">
                     {partyName(active.other)}
                   </h3>
-                  <p className="truncate text-xs capitalize text-muted-foreground">
-                    {active.other?.role}
+                  <p className="truncate text-xs text-muted-foreground">
+                    <span className={`font-medium capitalize ${roleAccent(active.other?.role).text}`}>
+                      {active.other?.role}
+                    </span>
                     {active.project?.title && ` · ${active.project.title}`}
                   </p>
                 </div>

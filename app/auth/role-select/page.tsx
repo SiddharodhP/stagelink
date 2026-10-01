@@ -59,19 +59,20 @@ export default function RoleSelectPage() {
           <motion.div variants={itemVariants} whileHover={{ y: -3 }} whileTap={{ scale: 0.99 }}>
             <div
               onClick={() => setSelectedRole("client")}
-              className={`relative h-full cursor-pointer rounded-2xl border bg-card p-8 transition-all duration-300 ${
+              className={`relative h-full cursor-pointer overflow-hidden rounded-2xl border bg-card p-8 transition-all duration-300 ${
                 selectedRole === "client"
-                  ? "border-foreground shadow-[0_24px_50px_-30px_rgba(26,23,19,0.4)]"
-                  : "border-border hover:border-foreground/40"
+                  ? "border-client ring-1 ring-client shadow-[0_24px_50px_-30px_rgba(26,23,19,0.4)]"
+                  : "border-border hover:border-client/60"
               }`}
             >
+              <span aria-hidden className="absolute inset-x-0 top-0 h-1 bg-client" />
               {selectedRole === "client" && (
-                <div className="absolute right-6 top-6 text-brand">
+                <div className="absolute right-6 top-6 text-client">
                   <CheckCircle2 className="h-6 w-6" />
                 </div>
               )}
-              <div className="mb-6 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-brand-soft">
-                <Briefcase className="h-7 w-7 text-brand" />
+              <div className="mb-6 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-client-soft">
+                <Briefcase className="h-7 w-7 text-client" />
               </div>
               <h2 className="font-display mb-3 text-2xl font-semibold">I&apos;m hiring</h2>
               <p className="leading-relaxed text-muted-foreground">
@@ -84,19 +85,20 @@ export default function RoleSelectPage() {
           <motion.div variants={itemVariants} whileHover={{ y: -3 }} whileTap={{ scale: 0.99 }}>
             <div
               onClick={() => setSelectedRole("freelancer")}
-              className={`relative h-full cursor-pointer rounded-2xl border bg-card p-8 transition-all duration-300 ${
+              className={`relative h-full cursor-pointer overflow-hidden rounded-2xl border bg-card p-8 transition-all duration-300 ${
                 selectedRole === "freelancer"
-                  ? "border-foreground shadow-[0_24px_50px_-30px_rgba(26,23,19,0.4)]"
-                  : "border-border hover:border-foreground/40"
+                  ? "border-freelancer ring-1 ring-freelancer shadow-[0_24px_50px_-30px_rgba(26,23,19,0.4)]"
+                  : "border-border hover:border-freelancer/60"
               }`}
             >
+              <span aria-hidden className="absolute inset-x-0 top-0 h-1 bg-freelancer" />
               {selectedRole === "freelancer" && (
-                <div className="absolute right-6 top-6 text-brand">
+                <div className="absolute right-6 top-6 text-freelancer">
                   <CheckCircle2 className="h-6 w-6" />
                 </div>
               )}
-              <div className="mb-6 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-secondary">
-                <Hammer className="h-7 w-7 text-foreground" />
+              <div className="mb-6 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-freelancer-soft">
+                <Hammer className="h-7 w-7 text-freelancer" />
               </div>
               <h2 className="font-display mb-3 text-2xl font-semibold">I&apos;m freelancing</h2>
               <p className="leading-relaxed text-muted-foreground">

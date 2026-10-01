@@ -25,6 +25,7 @@ import {
 import { cn } from "@/lib/utils";
 import { APP_NAME } from "@/lib/constants";
 import { signOut } from "@/lib/services/auth";
+import { roleAccent } from "@/lib/roles";
 
 interface SidebarProps {
   role: "client" | "freelancer" | "admin";
@@ -86,7 +87,7 @@ export function Sidebar({ role, className }: SidebarProps) {
       </div>
 
       <div className="flex-1 overflow-y-auto px-4 py-6">
-        <p className="eyebrow mb-3 px-3">{sectionLabel}</p>
+        <p className={`eyebrow mb-3 px-3 ${roleAccent(role).textImportant}`}>{sectionLabel}</p>
         <nav className="space-y-1">
           {links.map((link) => {
             const isActive =

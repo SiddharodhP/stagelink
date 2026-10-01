@@ -80,6 +80,22 @@
   --paper: #f7f4ee;
 
   --hairline: rgba(236, 231, 221, 0.14);
+  /* Role colours. Orange is the freelancer side of the marketplace, blue the
+     client side -- set on the homepage panels and carried everywhere a role is
+     visible. Both are lifted for the dark ground; the light theme uses the
+     deeper pair. */
+  --role-freelancer: #f2703c;
+  --role-freelancer-soft: rgba(242, 112, 60, 0.15);
+  --role-client: #54a2ea;
+  --role-client-soft: rgba(84, 162, 234, 0.15);
+
+  /* Filled, for a pill or tab carrying white text. The colours above are
+     lifted so they read as TEXT on a dark ground, which makes them far too
+     light to sit BEHIND white -- #f2703c under white is 2.9:1. These stay
+     deep in both themes: 5.4:1 and 6.1:1. */
+  --role-freelancer-solid: #d6440f;
+  --role-client-solid: #1a659f;
+
   --board-rule: rgba(236, 231, 221, 0.06);
   --board-route: rgba(236, 231, 221, 0.22);
   --wash-weak: rgba(236, 231, 221, 0.06);
@@ -139,6 +155,13 @@ html.light {
   /* Greys used by the plain CSS further down, which cannot reach the
      Tailwind theme and would otherwise be stuck light. */
   --hairline: rgba(26, 23, 19, 0.12);
+  --role-freelancer: #c8410e;
+  --role-freelancer-soft: rgba(200, 65, 14, 0.1);
+  --role-client: #1a659f;
+  --role-client-soft: rgba(26, 101, 159, 0.1);
+  --role-freelancer-solid: #c8410e;
+  --role-client-solid: #1a659f;
+
   --board-rule: rgba(26, 23, 19, 0.055);
   --board-route: rgba(26, 23, 19, 0.22);
   --wash-weak: rgba(26, 23, 19, 0.05);
@@ -187,6 +210,14 @@ html.light {
   --color-brand: var(--brand);
   --color-brand-deep: var(--brand-deep);
   --color-brand-soft: var(--brand-soft);
+
+  /* Role accents — see :root */
+  --color-freelancer: var(--role-freelancer);
+  --color-freelancer-soft: var(--role-freelancer-soft);
+  --color-client: var(--role-client);
+  --color-client-soft: var(--role-client-soft);
+  --color-freelancer-solid: var(--role-freelancer-solid);
+  --color-client-solid: var(--role-client-solid);
 
   /* Ink panel (dark editorial sections) */
   --color-ink: var(--ink);

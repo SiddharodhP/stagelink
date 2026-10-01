@@ -22,6 +22,7 @@ import { CityCombobox } from "@/components/shared/city-combobox";
 import { getSkillsList } from "@/lib/services/projects";
 import { PeopleFilters, Profile } from "@/types/marketplace";
 import { cn } from "@/lib/utils";
+import { roleAccent } from "@/lib/roles";
 
 const SORTS = [
   { value: "relevance", label: "Most complete" },
@@ -138,7 +139,7 @@ function DirectoryInner() {
             className={cn(
               "rounded-full px-5 py-2 text-sm font-medium transition-colors",
               filters.role === r.key
-                ? "bg-primary text-primary-foreground"
+                ? roleAccent(r.key).solid
                 : "text-muted-foreground hover:text-foreground"
             )}
           >

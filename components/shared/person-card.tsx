@@ -35,13 +35,18 @@ export function FreelancerCard({ profile }: { profile: Profile }) {
   return (
     <Link
       href={`/u/${profile.id}`}
-      className="group flex h-full flex-col rounded-xl border border-border bg-card p-5 transition-all hover:-translate-y-0.5 hover:border-foreground/20 hover:shadow-sm"
+      className="group relative flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card p-5 transition-all hover:-translate-y-0.5 hover:border-freelancer hover:shadow-sm"
     >
+      {/* Which side of the marketplace this is, read before any word on
+          the card. */}
+      <span aria-hidden className="absolute inset-x-0 top-0 h-[3px] bg-freelancer" />
+
       <div className="flex items-start gap-3.5">
         <UserAvatar
           name={displayName(profile)}
           src={profile.avatar_url}
           size={52}
+          className="ring-2 ring-freelancer/35"
         />
         <div className="min-w-0 flex-1">
           <NameWithBadge
@@ -130,10 +135,17 @@ export function ClientCard({
   return (
     <Link
       href={`/u/${profile.id}`}
-      className="group flex h-full flex-col rounded-xl border border-border bg-card p-5 transition-all hover:-translate-y-0.5 hover:border-foreground/20 hover:shadow-sm"
+      className="group relative flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card p-5 transition-all hover:-translate-y-0.5 hover:border-client hover:shadow-sm"
     >
+      <span aria-hidden className="absolute inset-x-0 top-0 h-[3px] bg-client" />
+
       <div className="flex items-start gap-3.5">
-        <UserAvatar name={name} src={profile.avatar_url} size={52} />
+        <UserAvatar
+          name={name}
+          src={profile.avatar_url}
+          size={52}
+          className="ring-2 ring-client/35"
+        />
         <div className="min-w-0 flex-1">
           <NameWithBadge name={name} verified={profile.is_verified} />
           {profile.company_name && profile.full_name && (

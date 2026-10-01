@@ -2,11 +2,42 @@
 
 import { Star, BadgeCheck } from "lucide-react";
 import { cn, getInitials } from "@/lib/utils";
+import { roleAccent } from "@/lib/roles";
 import {
   MILESTONE_STATUS_LABELS,
   BID_STATUS_LABELS,
   CONTRACT_STATUS_LABELS,
 } from "@/lib/constants";
+
+/* ---------- Which side of the marketplace somebody is on ---------- */
+
+/**
+ * One pill for a role, so the orange/blue pairing looks identical wherever a
+ * role is named. Admins and unassigned accounts fall through to neutral --
+ * they are not a side of the marketplace and colouring them would dilute the
+ * signal.
+ */
+export function RolePill({
+  role,
+  className,
+}: {
+  role: string | null | undefined;
+  className?: string;
+}) {
+  const a = roleAccent(role);
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.08em] ring-1 ring-inset",
+        a.soft,
+        a.border,
+        className,
+      )}
+    >
+      {role || "unassigned"}
+    </span>
+  );
+}
 
 /* ---------- Status pills, tuned per domain ---------- */
 

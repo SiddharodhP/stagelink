@@ -12,6 +12,7 @@ import { UserAvatar } from "@/components/shared/marketplace-ui";
 import { getAllUsers, setUserFlags } from "@/lib/services/admin";
 import { Profile } from "@/types/marketplace";
 import { formatDate, cn, displayName } from "@/lib/utils";
+import { RolePill } from "@/components/shared/marketplace-ui";
 
 function AdminUsers() {
   const [users, setUsers] = useState<Profile[]>([]);
@@ -108,7 +109,7 @@ function AdminUsers() {
                       </div>
                     </Link>
                   </td>
-                  <td className="px-5 py-4 capitalize text-muted-foreground">{u.role || "—"}</td>
+                  <td className="px-5 py-4"><RolePill role={u.role} /></td>
                   <td className="whitespace-nowrap px-5 py-4 text-muted-foreground">
                     {formatDate(u.created_at)}
                   </td>
