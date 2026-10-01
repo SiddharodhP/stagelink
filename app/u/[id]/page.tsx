@@ -45,6 +45,7 @@ import { getOrCreateConversation } from "@/lib/services/messaging";
 import { PortfolioItem, Profile, Review } from "@/types/marketplace";
 import { formatPrice, formatDate, cn, displayName, partyName } from "@/lib/utils";
 import { AVAILABILITY_OPTIONS } from "@/lib/constants";
+import { roleAccent } from "@/lib/roles";
 
 export default function PublicProfilePage() {
   const params = useParams();
@@ -126,6 +127,8 @@ export default function PublicProfilePage() {
 
   const isFreelancer = profile.role === "freelancer";
   const isSelf = viewer?.id === profile.id;
+  // One screen handles both: the magic link signs you in or creates you.
+  const signUpHref = `/login?next=${encodeURIComponent(`/u/${profile.id}`)}`;
   const availability = AVAILABILITY_OPTIONS.find((a) => a.value === profile.availability);
 
   return (
@@ -159,7 +162,9 @@ export default function PublicProfilePage() {
                         verified={profile.is_verified}
                       />
                     </h1>
-                    <span className="rounded-full border border-border bg-secondary px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] capitalize">
+                    <span
+                      className={`rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] capitalize ring-1 ring-inset ${roleAccent(profile.role).soft} ${roleAccent(profile.role).border}`}
+                    >
                       {profile.role}
                     </span>
                   </div>
@@ -280,7 +285,7 @@ export default function PublicProfilePage() {
                                 {partyName(r.reviewer)}
                               </p>
                               <p className="text-xs capitalize text-muted-foreground">
-                                {r.reviewer?.role} · {formatDate(r.created_at)}
+                                <span className={`capitalize ${roleAccent(r.reviewer?.role).text}`}>{r.reviewer?.role}</span> · {formatDate(r.created_at)}
                               </p>
                             </div>
                           </div>
@@ -372,6 +377,31 @@ export default function PublicProfilePage() {
                   >
                     <MessageSquare className="mr-2 h-4 w-4" /> Send message
                   </Button>
+                )}
+
+                {/* Logged out, this panel used to end here -- the only hint
+                    that messaging existed was a toast telling you to log in,
+                    which you got after clicking a button you could not see.
+                    `next` brings them back to this profile afterwards rather
+                    than dropping them on a dashboard. */}
+                {!viewer && (
+                  <>
+                    <Button asChild className="mt-5 w-full rounded-full">
+                      <Link href={signUpHref}>
+                        <MessageSquare className="mr-2 h-4 w-4" /> Sign up to
+                        send a message
+                      </Link>
+                    </Button>
+                    <p className="mt-2.5 text-center text-xs text-muted-foreground">
+                      Already have an account?{" "}
+                      <Link
+                        href={signUpHref}
+                        className="font-medium text-foreground hover:underline"
+                      >
+                        Log in
+                      </Link>
+                    </p>
+                  </>
                 )}
                 {isSelf && (
                   <Button asChild variant="outline" className="mt-5 w-full rounded-full">

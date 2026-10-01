@@ -32,19 +32,27 @@ function missingItems(profile: Profile): string[] {
 /**
  * Nudges people to finish their profile.
  *
- * Hidden entirely at 100% — a permanent green banner is noise, and the
- * directory ranks by completeness, so the incentive is real rather than
- * decorative.
+ * Two readings of the same number:
+ *
+ * - `nudge` (dashboards) hides itself at 100% and links away to the editor.
+ *   A permanent green banner on a page you visit daily is noise, and the
+ *   directory ranks by completeness, so the incentive is real.
+ * - `status` (the profile editor itself) always shows, and links nowhere.
+ *   You are already where the link would send you, and having just filled
+ *   the form you want the confirmation that you are done.
  */
 export function CompletenessMeter({
   profile,
+  variant = "nudge",
   className,
 }: {
   profile: Profile;
+  variant?: "nudge" | "status";
   className?: string;
 }) {
   const pct = profile.completeness ?? 0;
-  if (pct >= 100) return null;
+  const isStatus = variant === "status";
+  if (pct >= 100 && !isStatus) return null;
 
   const missing = missingItems(profile);
   const tone =
@@ -54,12 +62,14 @@ export function CompletenessMeter({
     <div className={cn("rounded-xl border border-border bg-card p-5", className)}>
       <div className="mb-2 flex items-baseline justify-between gap-3">
         <p className="font-semibold">Your profile is {pct}% complete</p>
-        <Link
-          href="/settings/profile"
-          className="inline-flex shrink-0 items-center gap-1 text-sm font-medium text-brand hover:underline"
-        >
-          Finish it <ArrowRight className="h-3.5 w-3.5" />
-        </Link>
+        {!isStatus && (
+          <Link
+            href="/settings/profile"
+            className="inline-flex shrink-0 items-center gap-1 text-sm font-medium text-brand hover:underline"
+          >
+            Finish it <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
+        )}
       </div>
 
       <div
@@ -76,7 +86,7 @@ export function CompletenessMeter({
         />
       </div>
 
-      {missing.length > 0 && (
+      {missing.length > 0 ? (
         <p className="mt-3 text-sm text-muted-foreground">
           {profile.role === "freelancer"
             ? "Complete profiles rank higher in the directory. Still missing: "
@@ -84,6 +94,15 @@ export function CompletenessMeter({
           <span className="text-foreground/80">{missing.slice(0, 3).join(", ")}</span>
           {missing.length > 3 ? ` and ${missing.length - 3} more` : ""}.
         </p>
+      ) : (
+        isStatus && (
+          <p className="mt-3 text-sm text-muted-foreground">
+            Nothing left to fill in.{" "}
+            {profile.role === "freelancer"
+              ? "Complete profiles rank higher in the directory."
+              : "Freelancers bid more confidently on complete profiles."}
+          </p>
+        )
       )}
     </div>
   );

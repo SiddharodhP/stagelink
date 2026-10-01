@@ -11,7 +11,6 @@ import {
   PageHeader,
   Field,
   SectionCard,
-  ChipToggle,
   inputClass,
   selectClass,
   textareaClass,
@@ -21,10 +20,11 @@ import { UserAvatar } from "@/components/shared/marketplace-ui";
 import { getMyProfile } from "@/lib/services/auth";
 import { updateProfile, getMyBilling } from "@/lib/services/profiles";
 import { CityCombobox } from "@/components/shared/city-combobox";
-import { getSkillsList } from "@/lib/services/projects";
 import { uploadFile } from "@/lib/services/storage";
 import { Profile } from "@/types/marketplace";
 import { AVAILABILITY_OPTIONS } from "@/lib/constants";
+import { SkillPicker } from "@/components/shared/skill-picker";
+import { CompletenessMeter } from "@/components/shared/completeness-meter";
 
 function ProfileSettingsInner() {
   const router = useRouter();
@@ -32,8 +32,6 @@ function ProfileSettingsInner() {
   const isOnboarding = params.get("onboarding") === "1";
 
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [skillOptions, setSkillOptions] = useState<string[]>([]);
-  const [customSkill, setCustomSkill] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
   const [form, setForm] = useState({
@@ -105,7 +103,6 @@ function ProfileSettingsInner() {
       }));
     });
 
-    getSkillsList().then(({ data }) => setSkillOptions(data));
   }, [router]);
 
   const isFreelancer = profile?.role === "freelancer";
@@ -115,15 +112,6 @@ function ProfileSettingsInner() {
       ...f,
       skills: f.skills.includes(s) ? f.skills.filter((x) => x !== s) : [...f.skills, s],
     }));
-
-  const addCustomSkill = () => {
-    const s = customSkill.trim();
-    if (!s) return;
-    if (!form.skills.includes(s)) {
-      setForm((f) => ({ ...f, skills: [...f.skills, s] }));
-    }
-    setCustomSkill("");
-  };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -165,6 +153,13 @@ function ProfileSettingsInner() {
       return;
     }
     toast.success("Profile saved");
+
+    // completeness is recomputed by a trigger, so the saved row is the only
+    // place the new score exists. Without this the bar sits on its old value
+    // until a reload, which reads as the save not having worked.
+    const { data: fresh } = await getMyProfile();
+    if (fresh) setProfile(fresh);
+
     if (isOnboarding) {
       router.push(isFreelancer ? "/freelancer/dashboard" : "/client/dashboard");
     }
@@ -189,6 +184,10 @@ function ProfileSettingsInner() {
             : "Freelancers check who they'd be working with before bidding."
         }
       />
+
+      {/* The same number the dashboard nudges with, read here as a status:
+          this is where you act on it, so there is nowhere to link to. */}
+      <CompletenessMeter profile={profile} variant="status" className="mb-6" />
 
       <form onSubmit={handleSave} className="space-y-6">
         <SectionCard title="Identity" description="Name, photo, and how you introduce yourself.">
@@ -438,38 +437,11 @@ function ProfileSettingsInner() {
                 </div>
               )}
 
-              <div className="mb-5 flex gap-2">
-                <input
-                  className={inputClass}
-                  value={customSkill}
-                  onChange={(e) => setCustomSkill(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      addCustomSkill();
-                    }
-                  }}
-                  placeholder="Add a skill that isn't listed…"
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="shrink-0 rounded-md"
-                  onClick={addCustomSkill}
-                >
-                  <Plus className="mr-1.5 h-4 w-4" /> Add
-                </Button>
-              </div>
-
-              <div className="flex flex-wrap gap-2">
-                {skillOptions
-                  .filter((s) => !form.skills.includes(s))
-                  .map((s) => (
-                    <ChipToggle key={s} active={false} onClick={() => toggleSkill(s)}>
-                      {s}
-                    </ChipToggle>
-                  ))}
-              </div>
+              <SkillPicker
+                value={form.skills}
+                onChange={(skills) => setForm({ ...form, skills })}
+                placeholder="Try “wedding”, “retouching” or “Canva”…"
+              />
             </SectionCard>
           </>
         )}
