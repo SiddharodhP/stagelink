@@ -26,6 +26,42 @@ export async function getSkillsList() {
   return { data: (data || []).map((s: any) => s.name as string), error };
 }
 
+/**
+ * The same rows with their group, for the grouped picker. Kept separate from
+ * getSkillsList because the filter dropdowns only ever want names, and
+ * widening that return type would churn three call sites for nothing.
+ */
+export async function getSkillCatalog() {
+  const { data, error } = await supabase
+    .from("skills")
+    .select("name, category")
+    .order("name");
+
+  // `category` arrives with migration 027, and migrations here are run by
+  // hand. Against a database that has not had it yet PostgREST rejects the
+  // whole select, which would leave the picker permanently empty rather than
+  // merely ungrouped. Fall back to names, and let everything file under
+  // "Other" until the migration lands.
+  if (error) {
+    const fallback = await supabase.from("skills").select("name").order("name");
+    return {
+      data: (fallback.data || []).map((s: any) => ({
+        name: s.name as string,
+        category: null as string | null,
+      })),
+      error: fallback.error,
+    };
+  }
+
+  return {
+    data: (data || []).map((s: any) => ({
+      name: s.name as string,
+      category: (s.category ?? null) as string | null,
+    })),
+    error,
+  };
+}
+
 /* ---------- Discovery ---------- */
 
 export async function searchProjects(filters: Partial<ProjectFilters>) {

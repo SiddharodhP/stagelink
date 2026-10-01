@@ -19,18 +19,17 @@ import {
   inputClass,
   selectClass,
   textareaClass,
-  ChipToggle,
   blurOnWheel,
 } from "@/components/shared/dashboard-ui";
 import { UserAvatar } from "@/components/shared/marketplace-ui";
 import { getMyProfile } from "@/lib/services/auth";
 import { updateProfile } from "@/lib/services/profiles";
 import { CityCombobox } from "@/components/shared/city-combobox";
-import { getSkillsList } from "@/lib/services/projects";
 import { uploadFile } from "@/lib/services/storage";
 import { Profile } from "@/types/marketplace";
 import { BRAND_NAME } from "@/lib/constants";
 import { cn } from "@/lib/utils";
+import { SkillPicker } from "@/components/shared/skill-picker";
 
 /**
  * Guided profile setup, run once after role selection.
@@ -49,8 +48,6 @@ export default function OnboardingPage() {
   const fileRef = useRef<HTMLInputElement>(null);
 
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [skillOptions, setSkillOptions] = useState<string[]>([]);
-  const [customSkill, setCustomSkill] = useState("");
   const [step, setStep] = useState(0);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -99,7 +96,6 @@ export default function OnboardingPage() {
         bio: data.bio || "",
       }));
     });
-    getSkillsList().then(({ data }) => setSkillOptions(data));
   }, [router]);
 
   const isFreelancer = profile?.role === "freelancer";
@@ -128,14 +124,6 @@ export default function OnboardingPage() {
         ? f.skills.filter((x) => x !== s)
         : [...f.skills, s],
     }));
-
-  const addCustomSkill = () => {
-    const s = customSkill.trim();
-    if (s && !form.skills.includes(s)) {
-      setForm((f) => ({ ...f, skills: [...f.skills, s] }));
-    }
-    setCustomSkill("");
-  };
 
   /** Saves progress at every step, so leaving halfway doesn't lose it. */
   const persist = async () => {
@@ -355,40 +343,12 @@ export default function OnboardingPage() {
                 htmlFor="skills"
                 hint="Pick at least 3. Clients filter the directory by these."
               >
-                <div className="flex flex-wrap gap-2">
-                  {skillOptions.slice(0, 30).map((s) => (
-                    <ChipToggle
-                      key={s}
-                      active={form.skills.includes(s)}
-                      onClick={() => toggleSkill(s)}
-                    >
-                      {s}
-                    </ChipToggle>
-                  ))}
-                </div>
-              </Field>
-
-              <div className="flex gap-2">
-                <input
-                  className={inputClass}
-                  value={customSkill}
-                  onChange={(e) => setCustomSkill(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      addCustomSkill();
-                    }
-                  }}
-                  placeholder="Add your own skill"
+                <SkillPicker
+                  value={form.skills}
+                  onChange={(skills) => setForm({ ...form, skills })}
+                  placeholder="Try “wedding”, “colour grading” or “Canva”…"
                 />
-                <Button
-                  variant="outline"
-                  className="shrink-0 rounded-full"
-                  onClick={addCustomSkill}
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>
+              </Field>
 
               {form.skills.length > 0 && (
                 <div className="flex flex-wrap gap-2">

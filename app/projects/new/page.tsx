@@ -17,7 +17,6 @@ import { Button } from "@/components/ui/button";
 import { WorkspaceShell } from "@/components/layout/workspace-shell";
 import {
   Field,
-  ChipToggle,
   inputClass,
   selectClass,
   textareaClass,
@@ -31,33 +30,7 @@ import {
 import { Category, Profile } from "@/types/marketplace";
 import { LOCATION_PREFS, DURATION_OPTIONS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
-
-/**
- * Nine suggestions, three per craft, rather than the whole skills table.
- *
- * The picker used to render the first forty rows of `skills` in alphabetical
- * order, so it opened on "2D Animation, 3D Animation, Adobe After Effects"
- * and buried the things most shoots actually need thirty chips down. Nine
- * curated ones read as a starting point instead of a dump; everything else
- * goes in through the free text box, which is where a long tail belongs.
- *
- * These names match rows in the skills table, so freelancer filtering keeps
- * working on them.
- */
-const SKILL_SUGGESTIONS = [
-  {
-    label: "Photography",
-    skills: ["Wedding Photography", "Event Photography", "Product Photography"],
-  },
-  {
-    label: "Videography",
-    skills: ["Wedding Videography", "Event Videography", "Cinematography"],
-  },
-  {
-    label: "Editing",
-    skills: ["Video Editing", "Photo Retouching", "Colour Grading"],
-  },
-];
+import { SkillPicker } from "@/components/shared/skill-picker";
 
 const STEPS = ["Project details", "Review"] as const;
 
@@ -66,7 +39,6 @@ function Wizard({ profile }: { profile: Profile }) {
   const [step, setStep] = useState(0);
   const [isPublishing, setIsPublishing] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [customSkill, setCustomSkill] = useState("");
 
   const [form, setForm] = useState({
     title: "",
@@ -89,14 +61,6 @@ function Wizard({ profile }: { profile: Profile }) {
       ...f,
       skills: f.skills.includes(s) ? f.skills.filter((x) => x !== s) : [...f.skills, s],
     }));
-
-  const addCustomSkill = () => {
-    const s = customSkill.trim();
-    if (s && !form.skills.includes(s)) {
-      setForm((f) => ({ ...f, skills: [...f.skills, s] }));
-    }
-    setCustomSkill("");
-  };
 
   /**
    * Only what a posting genuinely cannot work without: something to call it,
@@ -332,70 +296,14 @@ function Wizard({ profile }: { profile: Profile }) {
             <div className="border-t border-border pt-6">
               <p className="mb-1 text-sm font-medium">Skills</p>
               <p className="mb-4 text-xs text-muted-foreground">
-                Optional. Tap a few, or type your own.
+                Optional. Search the list, or type anything that isn&apos;t in it.
               </p>
 
-              {form.skills.length > 0 && (
-                <div className="mb-4 flex flex-wrap gap-2">
-                  {form.skills.map((sk) => (
-                    <span
-                      key={sk}
-                      className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-[13px] font-medium text-primary-foreground"
-                    >
-                      {sk}
-                      <button
-                        type="button"
-                        onClick={() => toggleSkill(sk)}
-                        aria-label={`Remove ${sk}`}
-                      >
-                        <X className="h-3 w-3 opacity-70 hover:opacity-100" />
-                      </button>
-                    </span>
-                  ))}
-                </div>
-              )}
-
-              <div className="mb-5 flex gap-2">
-                <input
-                  className={inputClass}
-                  value={customSkill}
-                  onChange={(e) => setCustomSkill(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      addCustomSkill();
-                    }
-                  }}
-                  placeholder="Type a skill and press enter"
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="shrink-0"
-                  onClick={addCustomSkill}
-                >
-                  <Plus className="mr-1.5 h-4 w-4" /> Add
-                </Button>
-              </div>
-
-              <div className="space-y-3.5">
-                {SKILL_SUGGESTIONS.map((group) => {
-                  const rest = group.skills.filter((sk) => !form.skills.includes(sk));
-                  if (rest.length === 0) return null;
-                  return (
-                    <div key={group.label}>
-                      <p className="eyebrow mb-2">{group.label}</p>
-                      <div className="flex flex-wrap gap-2">
-                        {rest.map((sk) => (
-                          <ChipToggle key={sk} active={false} onClick={() => toggleSkill(sk)}>
-                            {sk}
-                          </ChipToggle>
-                        ))}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+              <SkillPicker
+                value={form.skills}
+                onChange={(skills) => setForm({ ...form, skills })}
+                placeholder="Try “wedding”, “retouching” or “Canva”…"
+              />
             </div>
           </div>
         )}
