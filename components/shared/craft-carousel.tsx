@@ -33,11 +33,11 @@ import {
  * horizontal overflow the brief asks to avoid. The section is a direct child
  * of <main>, so plain `w-full` already reaches both edges.
  *
- * Twelve slots for six photographs. The brief asks for eight to ten cards; six
- * would sit 60 degrees apart, which leaves you looking into the gap between
- * two steeply turned cards as often as at a card. Each photograph appears
- * twice, 180 degrees apart -- never both in view at once, so the repeat cannot
- * be seen from anywhere on the cylinder.
+ * Around eighteen slots for six photographs. The brief asks for eight to ten
+ * cards; six would sit 60 degrees apart, which leaves you looking into the gap
+ * between two steeply turned cards as often as at a card. Each photograph
+ * appears three times, 120 degrees apart -- never two at once, so the repeat
+ * cannot be seen from anywhere on the cylinder.
  *
  * The group is pushed back by one radius so the front card lands at z = 0.
  * Without that, a card at +460px under a 760px perspective is magnified two
@@ -65,12 +65,19 @@ function clamp(v: number, lo: number, hi: number) {
 }
 
 function cardSizeFor(w: number) {
-  if (w < 400) return 132;
-  if (w < 640) return 158;
-  if (w < 768) return 186;
-  if (w < 1024) return 206;
-  return 240;
+  if (w < 400) return 156;
+  if (w < 640) return 186;
+  if (w < 768) return 226;
+  if (w < 1024) return 264;
+  return 300;
 }
+
+/**
+ * Degrees per millisecond of the idle drift. One full turn takes a little
+ * over a minute -- enough that the images are visibly alive, slow enough
+ * that nobody has to chase a card to read its caption.
+ */
+const DRIFT_DEG_PER_MS = 0.0055;
 
 export function CraftCarousel({
   images,
@@ -102,6 +109,17 @@ export function CraftCarousel({
   /** Set while a pointer gesture travelled far enough to be a drag. */
   const suppressClick = useRef(false);
 
+  /**
+   * The idle drift writes to the same motion value as the drag and the
+   * momentum spring, so it has to stand down rather than fight them. These
+   * are refs, not state: the rAF loop reads them every frame and must not
+   * re-render to see a change.
+   */
+  const dragging = useRef(false);
+  const coasting = useRef(false);
+  const hovered = useRef(false);
+  const onScreen = useRef(true);
+
   // Deliberately NOT setPointerCapture. Capturing retargets the click that
   // follows pointerup to the capturing element, so the card's own onClick
   // never ran and nothing could be opened. Window listeners track the pointer
@@ -115,7 +133,10 @@ export function CraftCarousel({
   // is already long enough is used as it stands.
   const slots = useMemo(() => {
     if (!images.length) return [];
-    const repeat = images.length >= 8 ? 1 : Math.ceil(9 / images.length);
+    // Aiming for about eighteen slots. Twelve put only three cards across a
+    // 1440px band, because at 30 degrees apart the far ones foreshorten into
+    // each other; at 20 degrees the arc reaches most of the width.
+    const repeat = Math.max(1, Math.ceil(16 / images.length));
     return Array.from({ length: images.length * repeat }, (_, i) => ({
       image: images[i % images.length],
       index: i % images.length,
@@ -124,11 +145,15 @@ export function CraftCarousel({
 
   const step = slots.length ? 360 / slots.length : 0;
   const card = cardSizeFor(width || 1024);
-  const gap = Math.round(card * 0.16);
+  // Tighter than it was: the gap is space the photographs are not using.
+  const gap = Math.round(card * 0.1);
   const radius = slots.length
     ? (card + gap) / 2 / Math.tan(Math.PI / slots.length)
     : 0;
-  const perspective = Math.min(760, Math.max(520, (width || 1024) * 1.15));
+  // Flatter than the brief's 760. That value made a dramatic cylinder whose
+  // side cards collapsed toward the middle; this keeps them spread and
+  // legible, which is what the photographs are here for.
+  const perspective = Math.min(1150, Math.max(640, (width || 1024) * 0.85));
 
   useEffect(() => {
     const el = stageRef.current;
@@ -147,6 +172,54 @@ export function CraftCarousel({
     [],
   );
 
+  /**
+   * The idle drift. Turns the cylinder slowly so the section reads as alive
+   * before anybody touches it.
+   *
+   * Driven by elapsed time rather than a per-frame constant, so a 120Hz
+   * screen and a struggling one move at the same speed. It adds to the
+   * rotation rather than animating to a target, which is what lets a drag
+   * take over mid-drift without a fight.
+   */
+  useEffect(() => {
+    if (reduced) return;
+
+    let raf = 0;
+    let last = performance.now();
+
+    const tick = (now: number) => {
+      const dt = Math.min(now - last, 64); // a tab returning from sleep
+      last = now;
+      if (
+        !dragging.current &&
+        !coasting.current &&
+        !hovered.current &&
+        onScreen.current &&
+        !open
+      ) {
+        rotation.set(rotation.get() - dt * DRIFT_DEG_PER_MS);
+      }
+      raf = requestAnimationFrame(tick);
+    };
+
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [reduced, rotation, open]);
+
+  // Nothing should be turning while the band is scrolled past.
+  useEffect(() => {
+    const el = stageRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        onScreen.current = entry.isIntersecting;
+      },
+      { threshold: 0.05 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
   const groupTransform = useTransform(
     rotation,
     (r) => `translateZ(${-radius}px) rotateY(${r}deg)`,
@@ -156,9 +229,22 @@ export function CraftCarousel({
     (deltaDeg: number) => {
       momentum.current?.stop();
       const to = rotation.get() + deltaDeg;
-      momentum.current = reduced
-        ? (rotation.set(to), null)
-        : animate(rotation, to, SPRING);
+      if (reduced) {
+        rotation.set(to);
+        momentum.current = null;
+        return;
+      }
+      coasting.current = true;
+      const run = animate(rotation, to, SPRING);
+      momentum.current = run;
+      run.then(
+        () => {
+          coasting.current = false;
+        },
+        () => {
+          coasting.current = false;
+        }
+      );
     },
     [reduced, rotation],
   );
@@ -180,6 +266,8 @@ export function CraftCarousel({
       moved: 0,
     };
     drag.current = d;
+    dragging.current = true;
+    coasting.current = false;
     suppressClick.current = false;
 
     const move = (ev: PointerEvent) => {
@@ -200,6 +288,7 @@ export function CraftCarousel({
       if (ev.pointerId !== d.id) return;
       release.current?.();
       drag.current = null;
+      dragging.current = false;
       if (reduced) return;
       // Stale velocity from a pointer that came to rest before lifting would
       // fling the cylinder for a gesture that had already stopped.
@@ -208,7 +297,19 @@ export function CraftCarousel({
         ? 0
         : clamp(d.velocity * 1000 * DRAG_DEG_PER_PX * 0.22, -MAX_PROJECTION, MAX_PROJECTION);
       if (Math.abs(carry) < 0.5) return;
-      momentum.current = animate(rotation, rotation.get() + carry, SPRING);
+      // The drift resumes only once the flick has settled, otherwise the two
+      // would be adding to the same value at the same time.
+      coasting.current = true;
+      const run = animate(rotation, rotation.get() + carry, SPRING);
+      momentum.current = run;
+      run.then(
+        () => {
+          coasting.current = false;
+        },
+        () => {
+          coasting.current = false;
+        }
+      );
     };
 
     release.current = () => {
@@ -242,7 +343,7 @@ export function CraftCarousel({
 
   return (
     <div
-      className={`relative isolate h-[100svh] min-h-[560px] w-full overflow-hidden ${className ?? ""}`}
+      className={`relative isolate h-[min(66svh,600px)] min-h-[460px] w-full overflow-hidden ${className ?? ""}`}
       style={{
         background:
           "radial-gradient(circle at 50% 16%, rgba(214,68,17,0.22), transparent 36%)," +
@@ -251,15 +352,15 @@ export function CraftCarousel({
       }}
     >
       {/* ---- Header. Not in the way of the drag. ---- */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-20 flex items-start justify-between gap-6 px-5 pt-[calc(env(safe-area-inset-top,0px)+6rem)] sm:px-8 md:px-12 md:pt-[calc(env(safe-area-inset-top,0px)+7.5rem)]">
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-20 flex items-start justify-between gap-6 px-5 pt-[calc(env(safe-area-inset-top,0px)+5.5rem)] sm:px-8 md:px-12 md:pt-[calc(env(safe-area-inset-top,0px)+6.5rem)]">
         <div className="max-w-xl">
           <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-paper/45">
             {eyebrow}
           </p>
-          <h2 className="font-poster mt-3 text-[clamp(1.5rem,4vw,3rem)] font-bold leading-[1.05] tracking-tight text-paper">
+          <h2 className="font-poster mt-2.5 text-[clamp(1.4rem,3.4vw,2.5rem)] font-bold leading-[1.05] tracking-tight text-paper">
             {heading}
           </h2>
-          <p className="mt-3 max-w-sm text-[13px] leading-relaxed text-paper/55">
+          <p className="mt-2 max-w-sm text-[13px] leading-relaxed text-paper/55">
             {description}
           </p>
         </div>
@@ -276,6 +377,18 @@ export function CraftCarousel({
         tabIndex={0}
         onKeyDown={onKeyDown}
         onPointerDown={onPointerDown}
+        onPointerEnter={() => {
+          hovered.current = true;
+        }}
+        onPointerLeave={() => {
+          hovered.current = false;
+        }}
+        onFocus={() => {
+          hovered.current = true;
+        }}
+        onBlur={() => {
+          hovered.current = false;
+        }}
         className="absolute inset-0 z-10 cursor-grab select-none active:cursor-grabbing focus:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-paper/30"
         style={{ perspective: `${perspective}px`, touchAction: "pan-y" }}
       >
@@ -340,9 +453,6 @@ export function CraftCarousel({
         />
       </div>
 
-      <p className="pointer-events-none absolute inset-x-0 bottom-0 z-20 pb-[calc(env(safe-area-inset-bottom,0px)+1.75rem)] text-center font-mono text-[10px] uppercase tracking-[0.2em] text-paper/30">
-        Drag — or use the arrow keys
-      </p>
 
       <AnimatePresence>
         {open && (
