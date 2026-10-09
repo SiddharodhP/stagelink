@@ -83,13 +83,11 @@ export function CraftCarousel({
   images,
   eyebrow,
   heading,
-  description,
   className,
 }: {
   images: CarouselImage[];
   eyebrow: string;
   heading: string;
-  description: string;
   className?: string;
 }) {
   const reduced = useReducedMotion();
@@ -352,7 +350,7 @@ export function CraftCarousel({
       }}
     >
       {/* ---- Header. Not in the way of the drag. ---- */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-20 flex items-start justify-between gap-6 px-5 pt-[calc(env(safe-area-inset-top,0px)+5.5rem)] sm:px-8 md:px-12 md:pt-[calc(env(safe-area-inset-top,0px)+6.5rem)]">
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-20 px-5 pt-[calc(env(safe-area-inset-top,0px)+2.5rem)] sm:px-8 md:px-12 md:pt-[calc(env(safe-area-inset-top,0px)+3rem)]">
         <div className="max-w-xl">
           <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-paper/45">
             {eyebrow}
@@ -360,13 +358,7 @@ export function CraftCarousel({
           <h2 className="font-poster mt-2.5 text-[clamp(1.4rem,3.4vw,2.5rem)] font-bold leading-[1.05] tracking-tight text-paper">
             {heading}
           </h2>
-          <p className="mt-2 max-w-sm text-[13px] leading-relaxed text-paper/55">
-            {description}
-          </p>
         </div>
-        <span className="hidden shrink-0 rounded-full px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-paper/50 ring-1 ring-inset ring-paper/15 sm:inline-block">
-          {String(images.length).padStart(2, "0")} crafts
-        </span>
       </div>
 
       {/* ---- Stage ---- */}

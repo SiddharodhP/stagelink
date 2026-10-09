@@ -431,7 +431,6 @@ export default function Home() {
           className="border-t border-border"
           eyebrow="Built for people who shoot"
           heading="What Jayree does"
-          description="Drag to explore. Select an image to expand."
           images={[
             {
               src: "/marketing/cat-photography.webp",
