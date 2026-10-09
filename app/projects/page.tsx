@@ -27,7 +27,7 @@ import {
 import { getMyProfile } from "@/lib/services/auth";
 import { useDebounce } from "@/hooks/use-debounce";
 import { Category, Profile, Project, ProjectFilters } from "@/types/marketplace";
-import { PROJECT_SORTS, BUDGET_PRESETS } from "@/lib/constants";
+import { PROJECT_SORTS, BUDGET_PRESETS, budgetPresetLabel } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -157,7 +157,7 @@ export default function BrowseProjectsPage() {
         <div className="space-y-1">
           {BUDGET_PRESETS.map((b, i) => (
             <button
-              key={b.label}
+              key={budgetPresetLabel(b)}
               onClick={() => {
                 setBudgetPreset(i);
                 update({ budgetMin: b.min, budgetMax: b.max });
@@ -173,7 +173,7 @@ export default function BrowseProjectsPage() {
                 {budgetPreset === i && <span className="h-2 w-2 rounded-full bg-foreground" />}
               </span>
               <span className={budgetPreset === i ? "font-medium" : "text-muted-foreground"}>
-                {b.label}
+                {budgetPresetLabel(b)}
               </span>
             </button>
           ))}

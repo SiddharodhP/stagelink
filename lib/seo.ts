@@ -6,9 +6,22 @@ import type { Metadata } from "next";
  * Set NEXT_PUBLIC_SITE_URL in Vercel to the canonical production domain.
  * Everything below (canonicals, sitemap, OG tags, JSON-LD) derives from it,
  * so there is exactly one place to change the domain.
+ *
+ * This is the ONLY variable naming our own origin. There used to be a second,
+ * NEXT_PUBLIC_APP_URL, with a different fallback -- which meant the answer to
+ * "where does this site live" depended on which module you asked. Nothing ever
+ * read it, so it is gone.
+ *
+ * The fallback is environment-aware because the two it replaces disagreed for
+ * a good reason: in production an unset variable should still produce the real
+ * canonical domain, but in development it must not, or every canonical, OG tag
+ * and JSON-LD url generated on localhost would point at the live site.
  */
 export const SITE_URL = (
-  process.env.NEXT_PUBLIC_SITE_URL || "https://jayree.io"
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  (process.env.NODE_ENV === "production"
+    ? "https://jayree.io"
+    : "http://localhost:3000")
 ).replace(/\/$/, "");
 
 export const SITE_NAME = "jayree.io";
@@ -190,7 +203,7 @@ export function jobPostingJsonLd(p: JobPostingInput) {
     baseSalary: p.budget
       ? {
           "@type": "MonetaryAmount",
-          currency: "USD",
+          currency: "INR",
           value: { "@type": "QuantitativeValue", value: p.budget, unitText: "PROJECT" },
         }
       : undefined,

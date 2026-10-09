@@ -15,7 +15,7 @@ import {
 import { upsertMilestones } from "@/lib/services/projects";
 import { submitMilestonePlan } from "@/lib/services/contracts";
 import { Contract, Milestone } from "@/types/marketplace";
-import { formatPrice } from "@/lib/utils";
+import { CURRENCY_SYMBOL, formatPrice } from "@/lib/utils";
 
 interface Draft {
   key: string;
@@ -199,7 +199,7 @@ export function MilestonePlanner({
               </Field>
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <Field label="Amount ($)" htmlFor={`a-${r.key}`} required>
+                <Field label={`Amount (${CURRENCY_SYMBOL})`} htmlFor={`a-${r.key}`} required>
                   <input
                     id={`a-${r.key}`}
                     type="number"

@@ -29,7 +29,7 @@ import {
 } from "@/lib/services/projects";
 import { Category, Profile } from "@/types/marketplace";
 import { LOCATION_PREFS, DURATION_OPTIONS } from "@/lib/constants";
-import { cn } from "@/lib/utils";
+import { CURRENCY_SYMBOL, cn } from "@/lib/utils";
 import { SkillPicker } from "@/components/shared/skill-picker";
 
 const STEPS = ["Project details", "Review"] as const;
@@ -243,7 +243,7 @@ function Wizard({ profile }: { profile: Profile }) {
               </Field>
 
               <Field
-                label="Your budget ($)"
+                label={`Your budget (${CURRENCY_SYMBOL})`}
                 htmlFor="budget_stated"
                 required
                 hint="Freelancers bid against this. Milestones come later."
@@ -350,7 +350,7 @@ function Wizard({ profile }: { profile: Profile }) {
                 <p className="eyebrow mb-1">Budget</p>
                 <p className="font-display text-3xl font-semibold">
                   {form.budget_stated
-                    ? `$${Number(form.budget_stated).toLocaleString("en-US")}`
+                    ? `₹${Number(form.budget_stated).toLocaleString("en-IN")}`
                     : "—"}
                 </p>
                 <p className="mt-3 text-sm leading-relaxed text-muted-foreground">

@@ -18,12 +18,12 @@ import { amountInWords, displayName, partyName } from "@/lib/utils";
  * the moment an invoice was raised in anything but dollars.
  */
 function money(amount: number, currency: string) {
-  return `${currency} ${amount.toLocaleString("en-US")}`;
+  return `${currency} ${amount.toLocaleString("en-IN")}`;
 }
 
 function formatDay(value: string | null | undefined) {
   if (!value) return "—";
-  return new Date(value).toLocaleDateString("en-US", {
+  return new Date(value).toLocaleDateString("en-IN", {
     day: "numeric",
     month: "short",
     year: "numeric",
@@ -227,7 +227,7 @@ function Party({
 
 export function InvoicePdf({ invoice }: { invoice: Invoice }) {
   const status = STATUS[invoice.status] ?? STATUS.sent;
-  const currency = invoice.currency || "USD";
+  const currency = invoice.currency || "INR";
   const isReceipt = invoice.status === "paid";
 
   const fromName = invoice.from_name?.trim() || displayName(invoice.freelancer);

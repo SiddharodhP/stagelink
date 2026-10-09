@@ -1,3 +1,5 @@
+import { formatPrice } from '@/lib/utils';
+
 /** The wordmark: the logo, page titles, metadata and the legal footer. */
 export const APP_NAME = 'jayree.io';
 /**
@@ -8,7 +10,6 @@ export const APP_NAME = 'jayree.io';
 export const BRAND_NAME = 'Jayree';
 export const APP_DESCRIPTION =
   'The freelance marketplace where clients structure work into milestones, freelancers compete on merit, and every payment is protected by escrow.';
-export const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 
 export const NAV_LINKS = [
   { label: 'Find people', href: '/people' },
@@ -38,13 +39,31 @@ export const DURATION_OPTIONS = [
   'More than 6 months',
 ] as const;
 
+/**
+ * Budget filter brackets, as bounds only.
+ *
+ * The labels used to be written out with a currency sign in them, which meant
+ * the platform could change currency -- as it did, twice -- and these four
+ * strings would keep quietly saying dollars. They are built from the bounds by
+ * budgetPresetLabel instead, so there is one place that decides how money is
+ * written and these cannot drift from it.
+ */
 export const BUDGET_PRESETS = [
-  { label: 'Any budget', min: null, max: null },
-  { label: 'Under $500', min: null, max: 500 },
-  { label: '$500 – $2,500', min: 500, max: 2_500 },
-  { label: '$2,500 – $10,000', min: 2_500, max: 10_000 },
-  { label: '$10,000+', min: 10_000, max: null },
+  { min: null, max: null },
+  { min: null, max: 5_000 },
+  { min: 5_000, max: 25_000 },
+  { min: 25_000, max: 1_00_000 },
+  { min: 1_00_000, max: null },
 ] as const;
+
+/** Reads a bracket the way a person would say it: 'Under Rs 5,000'. */
+export function budgetPresetLabel(preset: { min: number | null; max: number | null }) {
+  const { min, max } = preset;
+  if (min === null && max === null) return 'Any budget';
+  if (min === null) return `Under ${formatPrice(max!)}`;
+  if (max === null) return `${formatPrice(min)}+`;
+  return `${formatPrice(min)} – ${formatPrice(max)}`;
+}
 
 export const PROJECT_SORTS = [
   { value: 'newest', label: 'Newest first' },

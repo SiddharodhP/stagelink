@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const isOpen = project.status === "open";
 
   const budget = project.budget_total
-    ? `$${project.budget_total.toLocaleString("en-US")}`
+    ? `₹${project.budget_total.toLocaleString("en-IN")}`
     : "Budget on request";
   const desc = project.description
     ? project.description.replace(/\s+/g, " ").slice(0, 155)

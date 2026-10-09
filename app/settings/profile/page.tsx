@@ -25,6 +25,7 @@ import { Profile } from "@/types/marketplace";
 import { AVAILABILITY_OPTIONS } from "@/lib/constants";
 import { SkillPicker } from "@/components/shared/skill-picker";
 import { CompletenessMeter } from "@/components/shared/completeness-meter";
+import { CURRENCY_SYMBOL } from "@/lib/utils";
 
 function ProfileSettingsInner() {
   const router = useRouter();
@@ -377,7 +378,7 @@ function ProfileSettingsInner() {
               description="Helps clients gauge fit before they read your bid."
             >
               <div className="grid gap-5 md:grid-cols-3">
-                <Field label="Indicative hourly rate ($)" htmlFor="hourly_rate">
+                <Field label={`Indicative hourly rate (${CURRENCY_SYMBOL})`} htmlFor="hourly_rate">
                   <input
                     id="hourly_rate"
                     type="number"

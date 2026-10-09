@@ -21,7 +21,7 @@ import { searchPeople, getOpenProjectCounts } from "@/lib/services/profiles";
 import { CityCombobox } from "@/components/shared/city-combobox";
 import { getSkillsList } from "@/lib/services/projects";
 import { PeopleFilters, Profile } from "@/types/marketplace";
-import { cn } from "@/lib/utils";
+import { CURRENCY_SYMBOL, cn } from "@/lib/utils";
 import { roleAccent } from "@/lib/roles";
 
 const SORTS = [
@@ -246,7 +246,7 @@ function DirectoryInner() {
           )}
 
           {isFreelancerView && (
-          <Field label="Max rate ($/hr)" htmlFor="f_rate">
+          <Field label={`Max rate (${CURRENCY_SYMBOL}/hr)`} htmlFor="f_rate">
             <input
               id="f_rate"
               type="number"

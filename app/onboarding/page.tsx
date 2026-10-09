@@ -28,7 +28,7 @@ import { CityCombobox } from "@/components/shared/city-combobox";
 import { uploadFile } from "@/lib/services/storage";
 import { Profile } from "@/types/marketplace";
 import { BRAND_NAME } from "@/lib/constants";
-import { cn } from "@/lib/utils";
+import { CURRENCY_SYMBOL, cn } from "@/lib/utils";
 import { SkillPicker } from "@/components/shared/skill-picker";
 
 /**
@@ -386,7 +386,7 @@ export default function OnboardingPage() {
 
             <div className="space-y-5">
               <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                <Field label="Indicative rate ($ per hour)" htmlFor="hourly_rate">
+                <Field label={`Indicative rate (${CURRENCY_SYMBOL} per hour)`} htmlFor="hourly_rate">
                   <input
                     id="hourly_rate"
                     type="number"

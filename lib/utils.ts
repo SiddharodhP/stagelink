@@ -6,12 +6,31 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatPrice(price: number): string {
-  return new Intl.NumberFormat('en-US', {
+  // en-IN groups the Indian way -- 2,50,000, not 250,000 -- which is what
+  // amountInWords below has to agree with.
+  return new Intl.NumberFormat('en-IN', {
     style: 'currency',
-    currency: 'USD',
+    currency: 'INR',
     maximumFractionDigits: 0,
   }).format(price);
 }
+
+/**
+ * The currency symbol alone, for form labels like "Your budget (Rs)".
+ *
+ * Taken out of the same formatter formatPrice uses rather than typed as a
+ * literal, so a label can never end up disagreeing with the amounts rendered
+ * next to it -- which is exactly how these labels came to still say dollars
+ * after the platform moved to rupees.
+ */
+export const CURRENCY_SYMBOL =
+  new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+    maximumFractionDigits: 0,
+  })
+    .formatToParts(0)
+    .find((part) => part.type === 'currency')?.value ?? '₹';
 
 export function formatDate(date: string | Date): string {
   return new Intl.DateTimeFormat('en-US', {
@@ -113,34 +132,37 @@ function threeDigits(n: number): string {
 }
 
 /**
- * Amount in words for the invoice PDF, in the short scale that goes with
- * dollars: billion / million / thousand, not crore / lakh.
+ * Amount in words for the invoice PDF, in the Indian scale that goes with
+ * rupees: crore / lakh / thousand, not billion / million.
  *
- * This line is the legal fallback when an invoice's numerals are disputed,
- * so it has to agree with the figure beside it. Spelling $250,000 as
- * "Two Lakh Fifty Thousand" would not.
+ * This line is the legal fallback when an invoice's numerals are disputed, so
+ * it has to agree with the figure beside it. formatPrice groups as 2,50,000,
+ * so spelling that "Two Hundred Fifty Thousand" would not match.
+ *
+ * Indian grouping is not uniform: the last three digits stand alone, and
+ * everything above them is read in pairs. That is why this splits off the
+ * hundreds first and then walks up in hundreds rather than thousands.
  */
-export function amountInWords(amount: number, currency = 'USD'): string {
-  const unit = currency === 'USD' ? 'Dollars' : currency;
+export function amountInWords(amount: number, currency = 'INR'): string {
+  const unit = currency === 'INR' ? 'Rupees' : currency;
 
   const n = Math.floor(Math.abs(amount));
   if (n === 0) return `${unit} Zero Only`;
 
-  const SCALES: [number, string][] = [
-    [1_000_000_000, 'Billion'],
-    [1_000_000, 'Million'],
-    [1_000, 'Thousand'],
-  ];
+  const last3 = n % 1000;
+  let rest = Math.floor(n / 1000);
+  const thousand = rest % 100;
+  rest = Math.floor(rest / 100);
+  const lakh = rest % 100;
+  const crore = Math.floor(rest / 100);
 
   const parts: string[] = [];
-  let rest = n;
-  for (const [size, name] of SCALES) {
-    if (rest >= size) {
-      parts.push(`${threeDigits(Math.floor(rest / size))} ${name}`);
-      rest %= size;
-    }
-  }
-  if (rest) parts.push(threeDigits(rest));
+  // Crore is the open-ended one -- 100 crore and up is still crore -- so it
+  // takes threeDigits, while lakh and thousand never exceed 99.
+  if (crore) parts.push(`${threeDigits(crore)} Crore`);
+  if (lakh) parts.push(`${twoDigits(lakh)} Lakh`);
+  if (thousand) parts.push(`${twoDigits(thousand)} Thousand`);
+  if (last3) parts.push(threeDigits(last3));
 
   return `${unit} ${parts.join(' ')} Only`;
 }

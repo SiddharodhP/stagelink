@@ -15,7 +15,7 @@ import {
 import { BidStatusPill } from "@/components/shared/marketplace-ui";
 import { submitBid, reviseBid, withdrawBid } from "@/lib/services/bids";
 import { Bid, Profile, Project } from "@/types/marketplace";
-import { formatPrice } from "@/lib/utils";
+import { CURRENCY_SYMBOL, formatPrice } from "@/lib/utils";
 
 /**
  * Freelancer-side bidding box on the project page.
@@ -192,7 +192,7 @@ export function BidPanel({
       </p>
 
       <div className="space-y-4">
-        <Field label="Your total price ($)" required hint="You can bid above or below the client's budget.">
+        <Field label={`Your total price (${CURRENCY_SYMBOL})`} required hint="You can bid above or below the client's budget.">
           <input
             type="number"
             onWheel={blurOnWheel}

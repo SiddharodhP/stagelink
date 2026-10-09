@@ -1,13 +1,13 @@
 import { Invoice } from "@/types/marketplace";
 import { SITE_URL } from "@/lib/seo";
 
-function money(amount: number, currency = "USD") {
-  return `${currency} ${amount.toLocaleString("en-US")}`;
+function money(amount: number, currency = "INR") {
+  return `${currency} ${amount.toLocaleString("en-IN")}`;
 }
 
 function formatDay(value: string | null | undefined) {
   if (!value) return "—";
-  return new Date(value).toLocaleDateString("en-US", {
+  return new Date(value).toLocaleDateString("en-IN", {
     day: "numeric",
     month: "short",
     year: "numeric",
@@ -33,7 +33,7 @@ function esc(value: string | null | undefined) {
  */
 export function buildInvoiceEmail(invoice: Invoice, note?: string) {
   const isReceipt = invoice.status === "paid";
-  const currency = invoice.currency || "USD";
+  const currency = invoice.currency || "INR";
   const fromName = esc(invoice.from_name || "Your freelancer");
   const toName = esc(invoice.to_name || "there");
   const url = `${SITE_URL}/invoices/${invoice.id}`;
