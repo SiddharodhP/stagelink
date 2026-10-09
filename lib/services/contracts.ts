@@ -86,6 +86,15 @@ export async function submitMilestonePlan(contractId: string) {
   return { error };
 }
 
+/**
+ * The pre-Razorpay path: marks a milestone funded without any money moving.
+ *
+ * No longer wired to a button -- FundMilestoneButton goes through Razorpay
+ * Checkout and the webhook. Kept because it is the only way to walk a
+ * contract through its states locally without payment keys, and because the
+ * fund_milestone RPC it calls still exists. Do not wire it to anything a
+ * client can reach.
+ */
 export async function fundMilestone(milestoneId: string) {
   const { error } = await supabase.rpc("fund_milestone", { p_milestone_id: milestoneId });
   return { error };

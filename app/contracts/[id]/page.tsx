@@ -8,7 +8,6 @@ import {
   ArrowLeft,
   Loader2,
   ShieldCheck,
-  Wallet,
   Upload,
   Check,
   RotateCcw,
@@ -51,7 +50,6 @@ import {
   // invoice helpers live in their own service; imported separately below
   getContractReviews,
   respondContract,
-  fundMilestone,
   submitMilestone,
   approveMilestone,
   requestRevision,
@@ -72,6 +70,7 @@ import {
 } from "@/types/marketplace";
 import { formatPrice, formatDate, cn, displayName, partyName } from "@/lib/utils";
 import { projectStatus } from "@/lib/project-status";
+import { FundMilestoneButton } from "@/components/shared/fund-milestone-button";
 
 type DialogKind =
   | { kind: "submit"; milestone: Milestone }
@@ -298,16 +297,12 @@ function Workspace({ profile }: { profile: Profile }) {
 
         <div className="flex flex-wrap gap-2">
           {isClient && m.status === "pending" && (
-            <Button
-              size="sm"
-              className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
+            <FundMilestoneButton
+              milestoneId={m.id}
+              amount={m.amount}
               disabled={busy}
-              onClick={() =>
-                run(() => fundMilestone(m.id), `${formatPrice(m.amount)} moved into escrow`)
-              }
-            >
-              <Wallet className="mr-1.5 h-3.5 w-3.5" /> Fund {formatPrice(m.amount)}
-            </Button>
+              onFunded={load}
+            />
           )}
 
           {!isClient && ["in_progress", "revision_requested"].includes(m.status) && (
