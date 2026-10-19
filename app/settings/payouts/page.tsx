@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { AlertCircle, BadgeCheck, Loader2, Save } from "lucide-react";
 
@@ -37,7 +38,13 @@ import { formatPrice, formatDate } from "@/lib/utils";
 const UPI_RE = /^[\w.\-]{2,256}@[a-zA-Z]{2,64}$/;
 const IFSC_RE = /^[A-Z]{4}0[A-Z0-9]{6}$/;
 
-export default function PayoutSettingsPage() {
+function PayoutSettingsInner() {
+  const router = useRouter();
+  // Set when someone was sent here mid-task -- from the bid form, say. They
+  // came to do one thing; put them back where they were rather than leaving
+  // them to find their way.
+  const next = useSearchParams().get("next");
+
   const [account, setAccount] = useState<PayoutAccount | null>(null);
   const [payouts, setPayouts] = useState<Payout[]>([]);
   const [loading, setLoading] = useState(true);
@@ -108,6 +115,8 @@ export default function PayoutSettingsPage() {
     setConfirmNumber("");
     const a = await getMyPayoutAccount();
     setAccount(a.data);
+
+    if (next) router.push(next);
   };
 
   const owed = payouts
@@ -311,5 +320,15 @@ export default function PayoutSettingsPage() {
         </div>
       )}
     </WorkspaceShellFree>
+  );
+}
+
+export default function PayoutSettingsPage() {
+  // useSearchParams needs a Suspense boundary to avoid opting the whole route
+  // into client-side rendering.
+  return (
+    <Suspense fallback={null}>
+      <PayoutSettingsInner />
+    </Suspense>
   );
 }

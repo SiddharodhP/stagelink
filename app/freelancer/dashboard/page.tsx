@@ -27,6 +27,7 @@ import {
   BidStatusPill,
 } from "@/components/shared/marketplace-ui";
 import { ProjectCard } from "@/components/shared/project-card";
+import { PayoutDetailsBanner } from "@/components/shared/payout-details-banner";
 import { getMyBids } from "@/lib/services/bids";
 import { getMyContracts, getMyTransactions } from "@/lib/services/contracts";
 import { searchProjects } from "@/lib/services/projects";
@@ -120,6 +121,8 @@ function Dashboard({ profile }: { profile: Profile }) {
 
   return (
     <div className="mx-auto max-w-5xl">
+      <PayoutDetailsBanner />
+
       <PageHeader
         eyebrow="Freelancer workspace"
         title={

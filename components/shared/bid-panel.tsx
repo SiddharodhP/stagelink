@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
-import { Loader2, Gavel, Pencil, Undo2 } from "lucide-react";
+import { Loader2, Gavel, Pencil, Undo2, Wallet } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -16,6 +16,7 @@ import { BidStatusPill } from "@/components/shared/marketplace-ui";
 import { submitBid, reviseBid, withdrawBid } from "@/lib/services/bids";
 import { Bid, Profile, Project } from "@/types/marketplace";
 import { CURRENCY_SYMBOL, formatPrice } from "@/lib/utils";
+import { getMyPayoutAccount } from "@/lib/services/payouts";
 
 /**
  * Freelancer-side bidding box on the project page.
@@ -33,6 +34,15 @@ export function BidPanel({
   onChange: (bid: Bid | null) => void;
 }) {
   const [editing, setEditing] = useState(!existingBid);
+  /**
+   * Whether this freelancer has anywhere to be paid.
+   *
+   * The rule itself lives in validate_bid_insert, because a check in a React
+   * component is a suggestion. This is here so the answer arrives before the
+   * form is filled in rather than as a database error after it. null while
+   * we do not know yet, so the form is not blocked on a slow request.
+   */
+  const [hasPayoutAccount, setHasPayoutAccount] = useState<boolean | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [amount, setAmount] = useState(
     existingBid ? String(existingBid.amount) : String(project.budget_total || "")
@@ -46,6 +56,16 @@ export function BidPanel({
 
   const isLive = existingBid && ["submitted", "shortlisted"].includes(existingBid.status);
   const canBid = project.status === "open";
+
+  useEffect(() => {
+    let alive = true;
+    getMyPayoutAccount().then(({ data }) => {
+      if (alive) setHasPayoutAccount(!!data);
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   const save = async () => {
     if (!Number(amount) || Number(amount) <= 0) return toast.error("Enter your bid amount");
@@ -174,6 +194,31 @@ export function BidPanel({
             )}
           </div>
         )}
+      </div>
+    );
+  }
+
+  /* No payout account: ask for it here rather than let someone write a
+     proposal and lose it to a database error on submit. Only shown once the
+     check has actually come back, so a slow request never looks like a
+     missing account. Editing an existing bid is left alone -- that freelancer
+     is already in the system and the dashboard banner chases them. */
+  if (hasPayoutAccount === false && !existingBid) {
+    return (
+      <div className="rounded-xl border border-freelancer/30 bg-freelancer-soft p-6">
+        <h2 className="font-display mb-1 text-xl font-semibold text-freelancer">
+          Add your payout details first
+        </h2>
+        <p className="mb-4 text-sm leading-relaxed text-freelancer">
+          We ask before you bid, not after you have been approved — so that
+          when a client releases your money there is somewhere to send it. It
+          takes a UPI ID or a bank account and about a minute.
+        </p>
+        <Button asChild className="rounded-full">
+          <Link href={`/settings/payouts?next=${encodeURIComponent(`/projects/${project.id}`)}`}>
+            <Wallet className="mr-2 h-4 w-4" /> Add payout details
+          </Link>
+        </Button>
       </div>
     );
   }
