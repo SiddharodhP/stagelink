@@ -3,23 +3,24 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  LayoutDashboard,
-  User,
-  Briefcase,
-  Gavel,
-  MessageSquare,
-  LogOut,
-  Heart,
-  Compass,
   ArrowUpRight,
-  Wallet,
-  Images,
-  PlusCircle,
-  Users,
-  ShieldAlert,
+  Banknote,
+  Briefcase,
+  Compass,
   Flag,
+  Gavel,
   Globe2,
+  Heart,
+  Images,
+  LayoutDashboard,
+  LogOut,
+  MessageSquare,
+  PlusCircle,
   Receipt,
+  ShieldAlert,
+  User,
+  Users,
+  Wallet,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -62,6 +63,7 @@ export function Sidebar({ role, className }: SidebarProps) {
     { href: "/admin", label: "Overview", icon: LayoutDashboard },
     { href: "/admin/users", label: "Users", icon: Users },
     { href: "/admin/disputes", label: "Disputes", icon: ShieldAlert },
+    { href: "/admin/payouts", label: "Payouts", icon: Banknote },
     { href: "/admin/reports", label: "Reports", icon: Flag },
   ];
 

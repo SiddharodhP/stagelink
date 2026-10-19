@@ -27,7 +27,11 @@ import {
   getPayoutQueueDetailed,
   recordPayoutSent,
   recordPayoutFailed,
+  getRefundQueue,
+  recordRefundSent,
+  recordRefundFailed,
   type PayoutQueueRow,
+  type RefundQueueRow,
 } from "@/lib/services/payouts";
 import { formatPrice, formatDate, displayName } from "@/lib/utils";
 
@@ -44,17 +48,22 @@ import { formatPrice, formatDate, displayName } from "@/lib/utils";
 
 function AdminPayouts() {
   const [rows, setRows] = useState<PayoutQueueRow[]>([]);
+  const [refunds, setRefunds] = useState<RefundQueueRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState<PayoutQueueRow | null>(null);
   const [failing, setFailing] = useState<PayoutQueueRow | null>(null);
+  const [sendingRefund, setSendingRefund] = useState<RefundQueueRow | null>(null);
+  const [failingRefund, setFailingRefund] = useState<RefundQueueRow | null>(null);
   const [reference, setReference] = useState("");
   const [reason, setReason] = useState("");
   const [busy, setBusy] = useState(false);
 
   const load = async () => {
-    const { data, error } = await getPayoutQueueDetailed();
-    if (error) toast.error(error.message || "Could not load the payout queue");
-    setRows(data);
+    const [p, r] = await Promise.all([getPayoutQueueDetailed(), getRefundQueue()]);
+    if (p.error) toast.error(p.error.message || "Could not load the payout queue");
+    if (r.error) toast.error(r.error.message || "Could not load the refund queue");
+    setRows(p.data);
+    setRefunds(r.data);
     setLoading(false);
   };
 
@@ -96,6 +105,44 @@ function AdminPayouts() {
     }
     toast.success("Marked as failed");
     setFailing(null);
+    setReason("");
+    load();
+  };
+
+  const confirmRefundSent = async () => {
+    if (!sendingRefund) return;
+    if (!reference.trim()) {
+      toast.error("A refund reference is required");
+      return;
+    }
+    setBusy(true);
+    const { error } = await recordRefundSent(sendingRefund.id, reference.trim(), "manual");
+    setBusy(false);
+    if (error) {
+      toast.error(error.message || "Could not record the refund");
+      return;
+    }
+    toast.success("Refund recorded");
+    setSendingRefund(null);
+    setReference("");
+    load();
+  };
+
+  const confirmRefundFailed = async () => {
+    if (!failingRefund) return;
+    if (!reason.trim()) {
+      toast.error("Say what went wrong");
+      return;
+    }
+    setBusy(true);
+    const { error } = await recordRefundFailed(failingRefund.id, reason.trim());
+    setBusy(false);
+    if (error) {
+      toast.error(error.message || "Could not record the failure");
+      return;
+    }
+    toast.success("Marked as failed");
+    setFailingRefund(null);
     setReason("");
     load();
   };
@@ -226,6 +273,76 @@ function AdminPayouts() {
         </div>
       )}
 
+      {/* ---- Refunds: money owed back to a client after a dispute ---- */}
+      {!loading && refunds.length > 0 && (
+        <div className="mt-10 space-y-3">
+          <div>
+            <h2 className="font-display text-lg font-semibold">Refunds owed</h2>
+            <p className="text-sm text-muted-foreground">
+              {formatPrice(refunds.reduce((sum, r) => sum + r.amount, 0))} to be
+              returned to clients. A refund goes back the way it came, so there
+              is no account to enter — refund it through the provider that took
+              it, then record the reference here.
+            </p>
+          </div>
+
+          {refunds.map((r) => (
+            <div key={r.id} className="rounded-lg border border-border bg-card p-4">
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <p className="font-medium text-foreground">
+                      {formatPrice(r.amount)}
+                    </p>
+                    <span className="text-sm text-muted-foreground">back to</span>
+                    <Link
+                      href={`/u/${r.payee_id}`}
+                      className="inline-flex items-center gap-1 text-sm text-client hover:underline"
+                    >
+                      {displayName(r.payee)}
+                      <ArrowUpRight className="h-3 w-3" />
+                    </Link>
+                    {r.status === "failed" && (
+                      <span className="rounded-full bg-destructive/10 px-2 py-0.5 text-xs text-destructive">
+                        Failed
+                      </span>
+                    )}
+                  </div>
+                  <p className="mt-1 truncate text-sm text-muted-foreground">
+                    {r.milestone?.title}
+                    {r.project?.title ? ` · ${r.project.title}` : ""}
+                  </p>
+                  <p className="mt-0.5 text-xs text-muted-foreground">
+                    {r.reason || "Refund owed"} · {formatDate(r.created_at)}
+                  </p>
+                  {r.status === "failed" && r.failure_reason && (
+                    <p className="mt-2 text-xs text-destructive">{r.failure_reason}</p>
+                  )}
+                </div>
+
+                <div className="flex shrink-0 gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="rounded-full"
+                    onClick={() => setFailingRefund(r)}
+                  >
+                    Couldn&apos;t send
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="rounded-full"
+                    onClick={() => setSendingRefund(r)}
+                  >
+                    Mark as refunded
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* ---- Record a payout ---- */}
       <Dialog open={!!sending} onOpenChange={(o) => !o && setSending(null)}>
         <DialogContent>
@@ -287,6 +404,73 @@ function AdminPayouts() {
               Cancel
             </Button>
             <Button variant="destructive" onClick={confirmFailed} disabled={busy}>
+              {busy && <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />}
+              Mark as failed
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ---- Record a refund ---- */}
+      <Dialog open={!!sendingRefund} onOpenChange={(o) => !o && setSendingRefund(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Record this refund</DialogTitle>
+            <DialogDescription>
+              {sendingRefund
+                ? `${formatPrice(sendingRefund.amount)} back to ${displayName(sendingRefund.payee)}. Enter the reference from the provider you refunded through.`
+                : ""}
+            </DialogDescription>
+          </DialogHeader>
+
+          <Field label="Refund reference" htmlFor="refund-ref" required>
+            <input
+              id="refund-ref"
+              className={inputClass}
+              value={reference}
+              onChange={(e) => setReference(e.target.value)}
+              placeholder="e.g. rfnd_XXXXXXXXXXXX"
+              autoComplete="off"
+            />
+          </Field>
+
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setSendingRefund(null)} disabled={busy}>
+              Cancel
+            </Button>
+            <Button onClick={confirmRefundSent} disabled={busy}>
+              {busy && <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />}
+              Confirm refunded
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ---- Record a failed refund ---- */}
+      <Dialog open={!!failingRefund} onOpenChange={(o) => !o && setFailingRefund(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Couldn&apos;t send this refund</DialogTitle>
+            <DialogDescription>
+              Write it for the client, who is owed this money and will want to
+              know why it has not arrived.
+            </DialogDescription>
+          </DialogHeader>
+
+          <Field label="What went wrong" htmlFor="refund-reason" required>
+            <textarea
+              id="refund-reason"
+              className={textareaClass}
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+            />
+          </Field>
+
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setFailingRefund(null)} disabled={busy}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={confirmRefundFailed} disabled={busy}>
               {busy && <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />}
               Mark as failed
             </Button>

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
-import { ShieldAlert, Loader2, ArrowUpRight } from "lucide-react";
+import { ShieldAlert, Loader2, ArrowUpRight, ChevronDown } from "lucide-react";
 
 import { WorkspaceShell } from "@/components/layout/workspace-shell";
 import { Button } from "@/components/ui/button";
@@ -24,6 +24,7 @@ import {
 } from "@/components/shared/dashboard-ui";
 import { getDisputes, resolveDispute, markDisputeUnderReview } from "@/lib/services/admin";
 import { Dispute } from "@/types/marketplace";
+import { DisputeEvidence } from "@/components/shared/dispute-evidence";
 import { formatPrice, formatDate, cn, displayName } from "@/lib/utils";
 
 const STATUS_TONE: Record<string, string> = {
@@ -39,6 +40,9 @@ function AdminDisputes() {
   const [outcome, setOutcome] = useState<"release" | "refund">("release");
   const [note, setNote] = useState("");
   const [busy, setBusy] = useState(false);
+  // Evidence loads on demand; most disputes in the list are not the one
+  // being read.
+  const [openEvidence, setOpenEvidence] = useState<string | null>(null);
 
   const load = () =>
     getDisputes().then(({ data }) => {
@@ -139,6 +143,32 @@ function AdminDisputes() {
                     <dd className="font-medium">{displayName(c?.freelancer)}</dd>
                   </div>
                 </dl>
+
+                {/* The dispute text says someone is unhappy; it does not say
+                    what was agreed or delivered. This is what the decision
+                    should actually rest on. */}
+                {d.milestone_id && (
+                  <div className="mb-4">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setOpenEvidence(openEvidence === d.id ? null : d.id)
+                      }
+                      className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+                    >
+                      <ChevronDown
+                        className={cn(
+                          "h-4 w-4 transition-transform",
+                          openEvidence === d.id && "rotate-180"
+                        )}
+                      />
+                      {openEvidence === d.id ? "Hide evidence" : "Show evidence"}
+                    </button>
+                    {openEvidence === d.id && (
+                      <DisputeEvidence milestoneId={d.milestone_id} />
+                    )}
+                  </div>
+                )}
 
                 {d.status === "resolved" ? (
                   <p className="text-sm text-muted-foreground">

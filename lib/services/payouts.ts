@@ -220,3 +220,71 @@ export const PAYOUT_STATUS_LABEL: Record<PayoutStatus, string> = {
   paid: "Paid",
   failed: "Failed",
 };
+
+/* ---------------- refunds: the same thing, pointing the other way ---------------- */
+
+export type RefundStatus = PayoutStatus;
+
+export type Refund = {
+  id: string;
+  milestone_id: string;
+  contract_id: string;
+  project_id: string;
+  payee_id: string;
+  amount: number;
+  status: RefundStatus;
+  provider: string;
+  reference: string | null;
+  reason: string | null;
+  failure_reason: string | null;
+  created_at: string;
+  paid_at: string | null;
+  failed_at: string | null;
+};
+
+export type RefundQueueRow = Refund & {
+  payee: { id: string; full_name: string | null; avatar_url: string | null } | null;
+  milestone: { id: string; title: string } | null;
+  project: { id: string; title: string } | null;
+};
+
+/**
+ * Money owed back to a client after a dispute went their way.
+ *
+ * Shaped exactly like the payout queue because it is the same job -- send
+ * money, record the reference -- and a second vocabulary for it would earn
+ * nothing. The destination is not shown: a refund goes back the way it came,
+ * through the provider that took it, so there is no bank account to read out.
+ */
+export async function getRefundQueue() {
+  const { data, error } = await supabase
+    .from("refunds")
+    .select(
+      "id, milestone_id, contract_id, project_id, payee_id, amount, status, provider, reference, reason, failure_reason, created_at, paid_at, failed_at, payee:profiles!refunds_payee_id_fkey(id, full_name, avatar_url), milestone:milestones!refunds_milestone_id_fkey(id, title), project:projects!refunds_project_id_fkey(id, title)"
+    )
+    .in("status", ["pending", "processing", "failed"])
+    .order("created_at", { ascending: true });
+
+  return { data: (data ?? []) as unknown as RefundQueueRow[], error };
+}
+
+export async function recordRefundSent(
+  refundId: string,
+  reference: string,
+  provider = "manual"
+) {
+  const { error } = await supabase.rpc("record_refund_sent", {
+    p_refund_id: refundId,
+    p_reference: reference,
+    p_provider: provider,
+  });
+  return { error };
+}
+
+export async function recordRefundFailed(refundId: string, reason: string) {
+  const { error } = await supabase.rpc("record_refund_failed", {
+    p_refund_id: refundId,
+    p_reason: reason,
+  });
+  return { error };
+}

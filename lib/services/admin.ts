@@ -86,3 +86,44 @@ export async function closeReport(id: string) {
   const { error } = await supabase.from("reports").update({ status: "reviewed" }).eq("id", id);
   return { error };
 }
+
+/**
+ * Everything an admin needs to actually decide a dispute.
+ *
+ * The dispute row says what someone is unhappy about; it does not say what
+ * was delivered. Deciding "release or refund" on the complaint text alone is
+ * guessing, so this fetches the evidence: what the freelancer submitted, and
+ * what money has moved.
+ *
+ * Message threads are deliberately NOT included. messages_read has no
+ * is_admin() clause, and adding one would give every admin standing access to
+ * every private conversation on the platform -- a much larger change than
+ * dispute resolution needs, and not one to make quietly. Submissions are the
+ * evidence in a delivery dispute.
+ */
+export async function getDisputeEvidence(milestoneId: string) {
+  const [submissions, transactions, milestone] = await Promise.all([
+    supabase
+      .from("milestone_submissions")
+      .select("id, note, attachment_url, created_at, freelancer_id")
+      .eq("milestone_id", milestoneId)
+      .order("created_at", { ascending: true }),
+    supabase
+      .from("transactions")
+      .select("id, type, amount, status, reference, created_at")
+      .eq("milestone_id", milestoneId)
+      .order("created_at", { ascending: true }),
+    supabase
+      .from("milestones")
+      .select("id, title, amount, status, escrow_funded, funded_at, due_date, description, deliverables, revision_note, submitted_at")
+      .eq("id", milestoneId)
+      .maybeSingle(),
+  ]);
+
+  return {
+    submissions: submissions.data ?? [],
+    transactions: transactions.data ?? [],
+    milestone: milestone.data ?? null,
+    error: submissions.error || transactions.error || milestone.error || null,
+  };
+}
